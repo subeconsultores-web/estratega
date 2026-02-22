@@ -3,6 +3,45 @@
 @tailwind utilities;
 
 :root {
+  /* Brand Colors - Light Mode Default */
   --color-primary: #1A56DB;
   --color-secondary: #3F83F8;
+  --color-accent: #0E9F6E;
+
+  /* Background & Surface */
+  --bg-base: #F9FAFB;
+  --bg-surface: #FFFFFF;
+  --bg-surface-hover: #F3F4F6;
+
+  /* Text */
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #9CA3AF;
+
+  /* Borders */
+  --border-color: #E5E7EB;
+}
+
+.dark {
+  /* Brand Colors - Dark Mode */
+  --color-primary: #3F83F8;
+  --color-secondary: #76A9FA;
+  --color-accent: #31C48D;
+
+  /* Background & Surface */
+  --bg-base: #111827;
+  --bg-surface: #1F2937;
+  --bg-surface-hover: #374151;
+
+  /* Text */
+  --text-primary: #F9FAFB;
+  --text-secondary: #D1D5DB;
+  --text-muted: #6B7280;
+
+  /* Borders */
+  --border-color: #374151;
+}
+
+body {
+  @apply bg-base text-primary antialiased min-h-screen transition-colors duration-200;
 }

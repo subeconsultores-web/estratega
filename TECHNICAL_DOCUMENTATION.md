@@ -1,15 +1,17 @@
-# SUBE GESTIÓN
-Software SaaS de Gestión Empresarial
+# ESTRATEGA SUBE IA
+SaaS Multi-Tenant — Angular 19 + Firebase + Gemini AI
 
 **Documento Técnico de Arquitectura y Especificaciones**  
-Versión 2.0 — Multi-Tenant SaaS  
+Versión 3.0 — Febrero 2026  
 Preparado para: Equipo Antigravity  
-Preparado por: SUBE IA Tech  
-Fecha: Febrero 2026
+Preparado por: SUBE IA Tech — www.subeia.tech
+CONFIDENCIAL
 
 ---
 
 ## Tabla de Contenidos
+
+### Parte I: Arquitectura Base
 1. [Resumen Ejecutivo](#1-resumen-ejecutivo)
 2. [Stack Tecnológico](#2-stack-tecnológico)
 3. [Arquitectura Multi-Tenant](#3-arquitectura-multi-tenant)
@@ -22,7 +24,32 @@ Fecha: Febrero 2026
 10. [Requisitos No Funcionales](#10-requisitos-no-funcionales)
 - [Apéndice A: Índices Firestore Requeridos](#apéndice-a-índices-firestore-requeridos)
 
+### Parte II: Instrucciones Completas de Implementación (Versión 3.0)
+11. [Análisis de Brechas: Qué Falta Implementar](#11-análisis-de-brechas-qué-falta-implementar)
+12. [Estructura del Proyecto Angular](#12-estructura-del-proyecto-angular)
+13. [Configuración de Routing Completa](#13-configuración-de-routing-completa)
+14. [Matriz de Permisos por Rol](#14-matriz-de-permisos-por-rol)
+15. [Firestore Security Rules Completas](#15-firestore-security-rules-completas)
+16. [Especificación de Servicios Angular](#16-especificación-de-servicios-angular)
+17. [Estrategia de Error Handling Global](#17-estrategia-de-error-handling-global)
+18. [Módulo Super Admin SaaS (admin-saas)](#18-módulo-super-admin-saas-admin-saas)
+19. [Sistema de Suscripciones y Billing](#19-sistema-de-suscripciones-y-billing)
+20. [Templates de Emails y PDFs](#20-templates-de-emails-y-pdfs)
+21. [Búsqueda Global](#21-búsqueda-global)
+22. [Gestión de Archivos](#22-gestión-de-archivos)
+23. [Módulo de Configuración del Tenant](#23-módulo-de-configuración-del-tenant)
+24. [Manejo de Multi-Moneda](#24-manejo-de-multi-moneda)
+25. [Estrategia de Testing](#25-estrategia-de-testing)
+26. [Pipeline CI/CD](#26-pipeline-cicd)
+27. [Audit Logging](#27-audit-logging)
+28. [Accesibilidad e Internacionalización](#28-accesibilidad-e-internacionalización)
+29. [Importación y Exportación de Datos](#29-importación-y-exportación-de-datos)
+30. [Hoja de Ruta Revisada (Sprints Detallados)](#30-hoja-de-ruta-revisada-sprints-detallados)
+31. [Naming y Branding del Producto](#31-naming-y-branding-del-producto)
+
 ---
+
+# PARTE I: ARQUITECTURA BASE
 
 # 1. Resumen Ejecutivo
 SUBE Gestión es un Software as a Service (SaaS) diseñado para empresas de servicios profesionales, consultoría y tecnología que necesitan gestionar el ciclo completo de vida de sus operaciones comerciales: desde la captación de leads hasta la facturación y análisis de rentabilidad.
@@ -876,3 +903,927 @@ Los siguientes índices compuestos deben configurarse en `firestore.indexes.json
 | `tareas` | tenantId, proyectoId, estado, orden | ASC, ASC, ASC, ASC |
 | `movimientosFinancieros` | tenantId, tipo, fecha | ASC, ASC, DESC |
 | `notificaciones` | tenantId, usuarioId, leida, createdAt | ASC, ASC, ASC, DESC |
+
+---
+
+# PARTE II: INSTRUCCIONES COMPLETAS DE IMPLEMENTACIÓN (VERSIÓN 3.0)
+
+## 11. Análisis de Brechas: Qué Falta Implementar
+
+El documento técnico v2.0 define correctamente la arquitectura, modelo de datos, especificación de módulos y roadmap. Sin embargo, para que Antigravity pueda ejecutar el desarrollo sin ambigüedades, se identificaron las siguientes brechas críticas que este documento resuelve:
+
+### 11.1 Brechas de Arquitectura de Código
+* Estructura de carpetas del proyecto Angular no definida: sin ella cada dev organiza diferente.
+* No hay especificación de Angular Services por módulo ni interfaces TypeScript.
+* Routing completo no detallado (lazy loading, guards por ruta, redirects).
+* Sin patrón estandarizado para llamadas a Cloud Functions desde Angular.
+* State management: solo mención de `@ngrx/component-store` sin guía de uso.
+* Sin estrategia de error handling global (interceptors, error boundaries).
+
+### 11.2 Brechas de Seguridad y Reglas
+* Firestore Security Rules: solo se muestra un patrón, falta el archivo completo.
+* Sin matriz de permisos por rol (qué puede hacer cada rol en cada módulo).
+* Storage Security Rules no definidas.
+* Sin estrategia de audit logging para acciones sensibles.
+* Rate limiting: mencionado pero sin implementación detallada.
+
+### 11.3 Brechas de Funcionalidad
+* Panel de Super Admin SaaS: no existe módulo para gestionar todos los tenants.
+* Sistema de suscripciones y billing: planes definidos pero sin flujo de pago/upgrade.
+* Templates de emails transaccionales: no especificados.
+* Templates HTML para PDFs: no detallados.
+* Búsqueda global: mencionada pero sin arquitectura.
+* Importación/exportación de datos: sin especificación.
+* Multi-moneda: campos existen pero sin lógica de conversión UF/USD.
+* Gestión de archivos del proyecto: sin patrón de upload/download.
+* Configuración del tenant (Settings): mencionada sin detallar.
+
+### 11.4 Brechas de Calidad
+* Sin estrategia de testing (unit, integration, E2E).
+* Sin pipeline de CI/CD detallado.
+* Sin guía de accesibilidad (a11y).
+* Sin guía de internacionalización (i18n) aunque `config.idioma` existe.
+* Sin convenciones de código (naming, commits, PRs).
+
+Las siguientes secciones de este documento resuelven cada una de estas brechas con especificaciones ejecutables.
+
+## 12. Estructura del Proyecto Angular
+
+Estructura de carpetas obligatoria. Cada módulo es lazy-loaded con su propio routing. Los servicios compartidos viven en `core/`, los componentes reutilizables en `shared/`.
+
+```text
+estratega-sube-ia/
+├── src/
+│   ├── app/
+│   │   ├── core/                          # Singleton services, guards, interceptors
+│   │   │   ├── guards/
+│   │   │   │   ├── auth.guard.ts
+│   │   │   │   ├── role.guard.ts
+│   │   │   │   └── plan.guard.ts
+│   │   │   ├── interceptors/
+│   │   │   │   ├── error.interceptor.ts          # Global HTTP error handling
+│   │   │   │   └── loading.interceptor.ts        # Global loading state
+│   │   │   ├── services/
+│   │   │   │   ├── auth.service.ts               # Firebase Auth + Custom Claims
+│   │   │   │   ├── tenant.service.ts             # Tenant config, branding, limits
+│   │   │   │   ├── notification.service.ts       # Toasts + in-app notifications
+│   │   │   │   ├── cloud-functions.service.ts    # Wrapper for callable functions
+│   │   │   │   ├── file-upload.service.ts        # Cloud Storage upload/download
+│   │   │   │   ├── search.service.ts             # Global search
+│   │   │   │   └── timer.service.ts              # Singleton timetracking timer
+│   │   │   ├── interfaces/
+│   │   │   │   ├── tenant.interface.ts
+│   │   │   │   ├── user.interface.ts
+│   │   │   │   ├── cliente.interface.ts
+│   │   │   │   ├── cotizacion.interface.ts
+│   │   │   │   ├── contrato.interface.ts
+│   │   │   │   ├── factura.interface.ts
+│   │   │   │   ├── proyecto.interface.ts
+│   │   │   │   ├── tarea.interface.ts
+│   │   │   │   ├── registro-tiempo.interface.ts
+│   │   │   │   ├── movimiento.interface.ts
+│   │   │   │   └── notificacion.interface.ts
+│   │   │   └── models/
+│   │   │       ├── enums.ts                      # All enums (estados, roles, etc.)
+│   │   │       └── constants.ts                  # App-wide constants
+│   │   ├── shared/                        # Reusable components & pipes
+│   │   │   ├── components/
+│   │   │   │   ├── data-table/                   # Generic data table
+│   │   │   │   ├── stat-card/                    # KPI card
+│   │   │   │   ├── badge/                        # Status badge
+│   │   │   │   ├── confirm-dialog/               # Generic confirmation modal
+│   │   │   │   ├── file-uploader/                # Drag-and-drop file upload
+│   │   │   │   ├── signature-pad/                # Reusable signature canvas
+│   │   │   │   ├── empty-state/                  # Empty state with CTA
+│   │   │   │   ├── skeleton-loader/              # Skeleton loading
+│   │   │   │   ├── search-input/                 # Debounced search
+│   │   │   │   └── pagination/                   # Cursor-based pagination
+│   │   │   ├── pipes/
+│   │   │   │   ├── currency-format.pipe.ts       # CLP, UF, USD formatting
+│   │   │   │   ├── rut-format.pipe.ts            # Chilean RUT formatting
+│   │   │   │   └── relative-time.pipe.ts         # 'hace 2 horas'
+│   │   │   ├── directives/
+│   │   │   │   ├── role-visible.directive.ts     # *appRoleVisible='admin'
+│   │   │   │   └── click-outside.directive.ts
+│   │   │   └── validators/
+│   │   │       ├── rut.validator.ts              # Chilean RUT validation
+│   │   │       └── email.validator.ts
+│   │   ├── layout/                        # App shell
+│   │   │   ├── sidebar/
+│   │   │   ├── navbar/
+│   │   │   ├── bottom-nav/                   # Mobile navigation
+│   │   │   └── layout.component.ts
+│   │   ├── features/                      # Feature modules (lazy-loaded)
+│   │   │   ├── auth/
+│   │   │   ├── dashboard/
+│   │   │   ├── clientes/
+│   │   │   ├── pipeline/
+│   │   │   ├── cotizaciones/
+│   │   │   ├── contratos/
+│   │   │   ├── facturas/
+│   │   │   ├── finanzas/
+│   │   │   ├── proyectos/
+│   │   │   ├── tareas/
+│   │   │   ├── timetracking/
+│   │   │   ├── catalogo/
+│   │   │   ├── asistente-ia/
+│   │   │   ├── portal-cliente/               # Lazy module, no AuthGuard
+│   │   │   ├── firma-publica/                # Public signature route
+│   │   │   ├── configuracion/                # Tenant settings
+│   │   │   └── admin-saas/                   # Super admin panel
+│   │   ├── app.routes.ts
+│   │   ├── app.component.ts
+│   │   └── app.config.ts
+│   ├── assets/
+│   ├── environments/
+│   │   ├── environment.ts
+│   │   └── environment.prod.ts
+│   └── styles/
+│       ├── globals.css                    # Tailwind + CSS variables
+│       └── themes.css                     # Tenant dynamic theming
+├── functions/                         # Firebase Cloud Functions
+│   ├── src/
+│   │   ├── triggers/
+│   │   ├── callable/
+│   │   ├── scheduled/
+│   │   ├── templates/                     # HTML templates for PDFs & emails
+│   │   ├── utils/
+│   │   └── index.ts
+│   ├── package.json
+│   └── tsconfig.json
+├── firestore.rules
+├── firestore.indexes.json
+├── storage.rules
+├── firebase.json
+└── .github/workflows/deploy.yml
+```
+
+Cada feature module sigue esta estructura interna:
+```text
+features/cotizaciones/
+  ├── components/                    # UI components del módulo
+  │   ├── cotizacion-list/
+  │   ├── cotizacion-form/
+  │   ├── cotizacion-detalle/
+  │   └── cotizacion-pdf-preview/
+  ├── services/
+  │   └── cotizaciones.service.ts        # Firestore CRUD + business logic
+  ├── cotizaciones.routes.ts
+  └── index.ts
+```
+
+## 13. Configuración de Routing Completa
+
+Todas las rutas protegidas usan `AuthGuard` + `RoleGuard`. Los módulos de features cargan via lazy loading con `loadChildren`.
+
+| Ruta | Módulo | Guards | Roles Mínimos |
+| :--- | :--- | :--- | :--- |
+| `/login` | auth | Ninguno (redirect si auth) | --- |
+| `/registro` | auth | Ninguno | --- |
+| `/recuperar` | auth | Ninguno | --- |
+| `/onboarding` | auth | AuthGuard | super-admin |
+| `/` | dashboard | AuthGuard | Todos |
+| `/clientes` | clientes | AuthGuard | vendedor+ |
+| `/clientes/:id` | clientes | AuthGuard | vendedor+ |
+| `/pipeline` | pipeline | AuthGuard | vendedor+ |
+| `/catalogo` | catalogo | AuthGuard | admin+ |
+| `/cotizaciones` | cotizaciones | AuthGuard | vendedor+ |
+| `/cotizaciones/nueva` | cotizaciones | AuthGuard | vendedor+ |
+| `/cotizaciones/:id` | cotizaciones | AuthGuard | vendedor+ |
+| `/contratos` | contratos | AuthGuard | vendedor+ |
+| `/contratos/:id` | contratos | AuthGuard | vendedor+ |
+| `/facturas` | facturas | AuthGuard | finanzas+ |
+| `/facturas/:id` | facturas | AuthGuard | finanzas+ |
+| `/finanzas/flujo-caja` | finanzas | AuthGuard | finanzas+ |
+| `/finanzas/movimientos` | finanzas | AuthGuard | finanzas+ |
+| `/finanzas/conciliacion` | finanzas | AuthGuard | admin+ |
+| `/proyectos` | proyectos | AuthGuard | consultor+ |
+| `/proyectos/:id` | proyectos | AuthGuard | consultor+ |
+| `/timetracking` | timetracking | AuthGuard | consultor+ |
+| `/timetracking/reportes` | timetracking | AuthGuard | admin+ |
+| `/asistente` | asistente-ia | AuthGuard, PlanGuard(starter+) | vendedor+ |
+| `/configuracion` | configuracion | AuthGuard | admin+ |
+| `/configuracion/equipo` | configuracion | AuthGuard | super-admin |
+| `/configuracion/planes` | configuracion | AuthGuard | super-admin |
+| `/admin` | admin-saas | AuthGuard, SuperAdminGuard | platform-admin |
+| `/firma/:contratoId/:token` | firma-publica | Ninguno | --- |
+| `/portal/**` | portal-cliente | PortalAuthGuard | --- |
+
+### 13.1 Jerarquía de Roles
+Los roles se evalúan jerárquicamente. Un rol superior hereda todos los permisos del inferior:
+
+`platform-admin` > `super-admin` > `admin` > `finanzas` > `vendedor` > `consultor` > `viewer`
+
+El `platform-admin` es un rol interno de SUBE IA Tech para gestionar todos los tenants. No es visible para los tenants.
+
+## 14. Matriz de Permisos por Rol
+
+Define exactamente qué puede hacer cada rol en cada módulo. C = Crear, L = Leer, E = Editar, D = Eliminar, X = Sin acceso.
+
+| Módulo / Acción | Super Admin | Admin | Finanzas | Vendedor | Consultor | Viewer |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Dashboard | CLED | CLED | L | L | L | L |
+| Clientes: CRUD | CLED | CLED | L | CLE | L | L |
+| Pipeline: mover etapas | CLED | CLED | X | CLE | X | L |
+| Actividades: registrar | CLED | CLED | X | CLE | CLE | X |
+| Catálogo servicios | CLED | CLED | L | L | L | L |
+| Cotizaciones: crear/editar | CLED | CLED | L | CLE | X | L |
+| Cotizaciones: aprobar/rechazar | CLED | CLE | X | X | X | X |
+| Contratos: gestionar | CLED | CLED | L | CLE | L | L |
+| Contratos: firmar interno | CLED | CLE | X | X | X | X |
+| Facturas: CRUD | CLED | CLED | CLED | L | X | L |
+| Facturas: registrar pago | CLED | CLE | CLE | X | X | X |
+| Finanzas: flujo caja | CLED | CLED | CLE | X | X | X |
+| Finanzas: conciliación | CLED | CLE | CLE | X | X | X |
+| Proyectos: CRUD | CLED | CLED | L | CLE | CLE | L |
+| Tareas: gestionar | CLED | CLED | X | CLE | CLE | L |
+| Timetracking: propio | CLED | CLE | CLE | CLE | CLE | X |
+| Timetracking: de otros | CLED | L | L | X | X | X |
+| Timetracking: reportes | CLED | CLE | L | X | X | X |
+| Asistente IA | CLED | CLE | CLE | CLE | CLE | X |
+| Configuración: branding | CLED | CLE | X | X | X | X |
+| Configuración: equipo | CLED | X | X | X | X | X |
+| Configuración: plan/billing | CLED | X | X | X | X | X |
+
+**Implementación:** Cada ruta usa `RoleGuard` con el rol mínimo. Dentro de los componentes, la directiva `*appRoleVisible` controla visibilidad de botones y acciones según el rol del usuario autenticado.
+
+## 15. Firestore Security Rules Completas
+
+Archivo completo `firestore.rules` que Antigravity debe implementar. Cubre todas las colecciones con validación de `tenantId`, roles y reglas específicas por colección.
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===== HELPER FUNCTIONS =====
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function getTenantId() {
+      return request.auth.token.tenantId;
+    }
+    function getRole() {
+      return request.auth.token.role;
+    }
+    function isOwnerTenant(data) {
+      return isAuthenticated() && getTenantId() == data.tenantId;
+    }
+    function tenantIdUnchanged() {
+      return request.resource.data.tenantId == resource.data.tenantId;
+    }
+    function hasRole(minRole) {
+      let hierarchy = {
+        'platform-admin': 7, 'super-admin': 6, 'admin': 5,
+        'finanzas': 4, 'vendedor': 3, 'consultor': 2, 'viewer': 1
+      };
+      return hierarchy[getRole()] >= hierarchy[minRole];
+    }
+
+    // ===== TENANTS =====
+    match /tenants/{tenantId} {
+      allow read: if isAuthenticated() && getTenantId() == tenantId;
+      allow update: if isAuthenticated() && getTenantId() == tenantId && hasRole('admin');
+      // create/delete only via Cloud Functions
+    }
+
+    // ===== USERS =====
+    match /users/{uid} {
+      allow read: if isAuthenticated() && getTenantId() == resource.data.tenantId;
+      allow update: if isAuthenticated() && getTenantId() == resource.data.tenantId
+        && (request.auth.uid == uid || hasRole('super-admin'))
+        && tenantIdUnchanged();
+      // create/delete only via Cloud Functions (role assignment)
+    }
+
+    // ===== GENERIC TENANT DATA PATTERN =====
+    // Applied to: clientes, actividades, catalogoServicios, cotizaciones,
+    // contratos, facturas, proyectos, tareas, registrosTiempo,
+    // movimientosFinancieros
+    match /{collection}/{docId} {
+      allow read: if collection in ['clientes','actividades','catalogoServicios',
+        'cotizaciones','contratos','facturas','proyectos','tareas',
+        'registrosTiempo','movimientosFinancieros']
+        && isOwnerTenant(resource.data);
+      allow create: if collection in ['clientes','actividades','catalogoServicios',
+        'cotizaciones','contratos','facturas','proyectos','tareas',
+        'registrosTiempo','movimientosFinancieros']
+        && isAuthenticated()
+        && getTenantId() == request.resource.data.tenantId
+        && hasRole('consultor');
+      allow update: if collection in ['clientes','actividades','catalogoServicios',
+        'cotizaciones','contratos','facturas','proyectos','tareas',
+        'registrosTiempo','movimientosFinancieros']
+        && isOwnerTenant(resource.data)
+        && tenantIdUnchanged()
+        && hasRole('consultor');
+      allow delete: if collection in ['clientes','actividades','catalogoServicios',
+        'cotizaciones','contratos','facturas','proyectos','tareas',
+        'registrosTiempo','movimientosFinancieros']
+        && isOwnerTenant(resource.data)
+        && hasRole('admin');
+    }
+
+    // ===== NOTIFICACIONES =====
+    match /notificaciones/{docId} {
+      allow read: if isAuthenticated()
+        && resource.data.usuarioId == request.auth.uid;
+      allow update: if isAuthenticated()
+        && resource.data.usuarioId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['leida']);
+      // create/delete only via Cloud Functions
+    }
+
+    // ===== CONTRATOS PUBLIC SIGNATURE =====
+    match /contratos_publicos/{docId} {
+      allow read: if true;  // Public access for signature page
+      // write only via Cloud Functions
+    }
+  }
+}
+```
+
+### 15.1 Storage Security Rules
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /tenants/{tenantId}/{allPaths=**} {
+      allow read: if request.auth != null
+        && request.auth.token.tenantId == tenantId;
+      allow write: if request.auth != null
+        && request.auth.token.tenantId == tenantId
+        && request.resource.size < 10 * 1024 * 1024;  // Max 10MB
+    }
+    match /firmas/{allPaths=**} {
+      allow read: if true;  // Public for PDF rendering
+      // write only via Cloud Functions
+    }
+  }
+}
+```
+
+## 16. Especificación de Servicios Angular
+
+Cada servicio se detalla con sus métodos, parámetros y responsabilidades. Estos son los servicios core singleton inyectados en root.
+
+### 16.1 AuthService
+| Método | Retorno | Descripción |
+| :--- | :--- | :--- |
+| `login(email, password)` | `Promise<UserCredential>` | Login con Firebase Auth, fuerza refresh de token para obtener Claims |
+| `loginWithGoogle()` | `Promise<UserCredential>` | Google SSO popup |
+| `register(empresaData, userData)` | `Promise<void>` | Crea cuenta Auth, trigger Cloud Function onUserCreated |
+| `logout()` | `Promise<void>` | Sign out + limpiar estado local |
+| `resetPassword(email)` | `Promise<void>` | Envía email de recuperación |
+| `getCurrentUser()` | `Observable<User \| null>` | Stream del usuario autenticado |
+| `getClaims()` | `Observable<CustomClaims>` | Stream de Custom Claims (tenantId, role, plan) |
+| `refreshToken()` | `Promise<void>` | Fuerza refresh del JWT para obtener Claims actualizados |
+
+### 16.2 TenantService
+| Método | Retorno | Descripción |
+| :--- | :--- | :--- |
+| `getTenantConfig()` | `Observable<Tenant>` | Stream reactivo de la config del tenant actual |
+| `updateConfig(config)` | `Promise<void>` | Actualiza configuración (branding, impuesto, moneda) |
+| `uploadLogo(file)` | `Promise<string>` | Sube logo a Storage, retorna URL |
+| `getCorrelativos()` | `Observable<Correlativos>` | Obtiene estado actual de correlativos |
+| `applyBranding()` | `void` | Aplica CSS variables de colores del tenant al DOM |
+| `checkLimits(resource)` | `Observable<boolean>` | Verifica si el tenant está dentro de los límites del plan |
+
+### 16.3 CloudFunctionsService
+Wrapper estandarizado para todas las llamadas a Cloud Functions callable. Maneja errores, loading state y tipado.
+
+```typescript
+// Patrón de uso:
+async call<T>(functionName: string, data: any): Promise<T> {
+  const fn = httpsCallable<any, T>(this.functions, functionName);
+  try {
+    const result = await fn(data);
+    return result.data;
+  } catch (error) {
+    this.handleError(error); // Mapea códigos Firebase a mensajes amigables
+    throw error;
+  }
+}
+```
+
+### 16.4 TimerService (Singleton)
+Servicio singleton que mantiene el estado del cronómetro de timetracking entre navegaciones.
+
+| Propiedad/Método | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `isRunning$` | `Observable<boolean>` | Si el timer está activo |
+| `elapsed$` | `Observable<number>` | Segundos transcurridos |
+| `currentProject$` | `Observable<Proyecto>` | Proyecto seleccionado |
+| `currentTask$` | `Observable<Tarea>` | Tarea seleccionada (opcional) |
+| `start(proyectoId, tareaId?)` | `void` | Inicia el cronómetro |
+| `stop()` | `Promise<RegistroTiempo>` | Detiene y abre modal de confirmación |
+| `discard()` | `void` | Descarta el registro actual |
+
+### 16.5 Servicios de Feature Modules
+Cada feature module tiene su propio servicio con el patrón CRUD estandarizado:
+
+| Método Estándar | Descripción |
+| :--- | :--- |
+| `getAll(filters?, pagination?)` | Query Firestore con tenantId automático, filtros y cursor-based pagination |
+| `getById(id)` | Documento individual con listener en tiempo real (onSnapshot) |
+| `create(data)` | Inyecta tenantId + createdAt + usuarioId, valida contra límites del plan |
+| `update(id, data)` | Partial update preservando tenantId, actualiza updatedAt |
+| `delete(id)` | Soft delete o hard delete según colección |
+| `getByCliente(clienteId)` | Filtra por clienteId dentro del tenant |
+| `exportToCsv(filters?)` | Genera y descarga CSV con los datos filtrados |
+
+## 17. Estrategia de Error Handling Global
+
+### 17.1 HTTP Error Interceptor
+Interceptor Angular que captura todos los errores de Cloud Functions y los mapea a mensajes amigables en español.
+
+| Código Firebase | Mensaje Usuario | Acción |
+| :--- | :--- | :--- |
+| `unauthenticated` | Sesión expirada. Por favor inicia sesión. | Redirect a /login |
+| `permission-denied` | No tienes permisos para esta acción. | Toast error |
+| `not-found` | El recurso solicitado no existe. | Toast warning |
+| `already-exists` | Este registro ya existe. | Toast warning |
+| `resource-exhausted` | Has alcanzado el límite de tu plan. | Toast warning + link upgrade |
+| `unavailable` | Servicio temporalmente no disponible. Reintentando... | Auto-retry x3 |
+| `internal` | Error interno. Si persiste, contacta soporte. | Toast error + log |
+| `invalid-argument` | Datos inválidos. Revisa el formulario. | Toast error |
+
+### 17.2 Global Error Handler
+Implementar ErrorHandler de Angular que captura excepciones no controladas, las logea en console (dev) o en un servicio de monitoreo (prod), y muestra toast genérico al usuario.
+
+### 17.3 Firestore Offline Handling
+* Activar persistencia offline de Firestore: `enableIndexedDbPersistence()`
+* Detectar estado de conexión con `navigator.onLine` y mostrar banner cuando está offline.
+* Las operaciones escritas offline se sincronizan automáticamente al reconectar.
+* Mostrar indicador visual (badge naranja) cuando hay escrituras pendientes de sincronizar.
+
+## 18. Módulo Super Admin SaaS (admin-saas)
+
+Panel exclusivo para el equipo de SUBE IA Tech para gestionar todos los tenants del sistema. Requiere rol `platform-admin` (asignado manualmente en Firebase Console).
+
+### 18.1 Vistas del Panel
+* **TenantsListComponent:** Tabla de todas las empresas registradas con: nombre, plan, estado suscripción, usuarios activos, storage usado, fecha registro, último acceso.
+* **TenantDetailComponent:** Vista detallada del tenant: métricas de uso, historial de pagos, cambio manual de plan, suspensión/reactivación, impersonación (ver como el tenant).
+* **MetricasGlobalesComponent:** Dashboard con: total tenants activos, MRR (Monthly Recurring Revenue), churn rate, tenants por plan, crecimiento mensual.
+* **SoporteComponent:** Tickets de soporte de todos los tenants. Poder responder y escalar.
+
+### 18.2 Funcionalidades críticas
+* **Impersonación segura:** el platform-admin puede navegar como cualquier tenant sin conocer su password. Se implementa con Custom Claims temporales via Cloud Function.
+* **Suspensión de tenant:** desactiva acceso de todos los usuarios del tenant. Datos se preservan.
+* **Upgrade/downgrade de plan manual:** para acuerdos especiales o cortesias.
+* **Export de métricas globales** para reporting interno de SUBE IA Tech.
+
+## 19. Sistema de Suscripciones y Billing
+
+Flujo completo para que los tenants gestionen su plan y pagos. Se recomienda integrar con Mercado Pago (Chile/LatAm) o Stripe como pasarela.
+
+### 19.1 Flujo de Upgrade
+1. Super-admin del tenant accede a Configuración > Plan y Facturación.
+2. Ve comparativa de planes con features y precios.
+3. Selecciona nuevo plan y hace clic en Upgrade.
+4. Se redirige a checkout de la pasarela (Mercado Pago / Stripe).
+5. Webhook de la pasarela notifica a Cloud Function del pago exitoso.
+6. Cloud Function actualiza plan en `tenant doc` + Custom Claims de todos los usuarios.
+7. Frontend detecta cambio de Claims y desbloquea features del nuevo plan.
+
+### 19.2 Manejo de Límites
+Cuando un tenant alcanza un límite de su plan (ej: máx 3 usuarios en Free):
+* La acción bloqueada muestra modal con mensaje claro del límite.
+* El modal ofrece botón de Upgrade con link directo al checkout.
+* Cloud Functions validan límites server-side antes de ejecutar operaciones.
+* Nunca bloquear lectura de datos existentes, solo creación de nuevos.
+
+### 19.3 Colección Firestore: suscripciones
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `id` | string (auto) | ID del documento |
+| `tenantId` | string | Tenant asociado |
+| `plan` | string | free \| starter \| professional \| enterprise |
+| `estado` | string | active \| trial \| past_due \| cancelled |
+| `pasarelaId` | string | ID de la suscripción en Mercado Pago/Stripe |
+| `metodoPago` | map | `{tipo, ultimos4, marca}` |
+| `montoMensual` | number | Monto en USD |
+| `fechaInicio` | timestamp | Inicio del periodo actual |
+| `fechaRenovacion` | timestamp | Próxima fecha de cobro |
+| `historialPagos` | array | `[{fecha, monto, estado, pasarelaRef}]` |
+| `createdAt` | timestamp | Fecha de creación |
+
+
+## 20. Templates de Emails y PDFs
+
+### 20.1 Emails Transaccionales
+Todos los emails se envían via Firebase Extension Trigger Email con SendGrid. Cada email usa el branding del tenant (logo + colores).
+
+| Template | Trigger | Destinatario | Contenido |
+| :--- | :--- | :--- | :--- |
+| Bienvenida | Registro exitoso | Admin del tenant | Datos de acceso, link al dashboard, guía inicio rápido |
+| Cotización enviada | Estado → enviada | Cliente | PDF adjunto, link al portal, botón aprobar/rechazar |
+| Contrato para firma | Envío de firma | Cliente | Resumen del contrato, link de firma pública, expiración |
+| Contrato firmado | Firma completada | Ambas partes | PDF final con firmas, link al portal |
+| Factura emitida | Factura creada | Cliente | PDF adjunto, monto, vencimiento, link de pago si hay pasarela |
+| Recordatorio pago | 3 días antes vencimiento | Cliente | Monto pendiente, fecha límite, link de pago |
+| Factura vencida | Día posterior a vencimiento | Cliente + Admin | Monto vencido, días de mora, link al portal |
+| Magic link portal | Solicitud de acceso | Cliente | Link temporal válido 24h, branding del tenant |
+| Resumen semanal | Lunes 09:00 scheduled | Admin del tenant | KPIs de la semana, tareas pendientes, alertas |
+| Nuevo usuario invitado | Admin invita usuario | Nuevo usuario | Link de activación, rol asignado, datos de acceso |
+
+
+### 20.2 Templates HTML para PDFs
+Los PDFs se generan server-side con Puppeteer en Cloud Functions. Cada template es un archivo HTML con Handlebars para variables dinámicas.
+
+| Template | Variables Clave | Elementos |
+| :--- | :--- | :--- |
+| `cotizacion.html` | tenant (logo, colores, datos fiscales), cliente, items[], totales, condiciones, correlativo | Header con logo, tabla de ítems responsiva, pie con condiciones, número correlativo |
+| `contrato.html` | tenant, cliente, items[], clausulas[], firmaRepresentante, firmaCliente, correlativo | Encabezado, cláusulas numeradas, tabla de servicios, zona de firmas con fecha/nombre |
+| `factura.html` | tenant, cliente, items[], totales, cuotas[], pagos[], correlativo | Header fiscal, detalle de ítems, estado de pagos, pie con condiciones de pago |
+| `reporte-rentabilidad.html` | proyecto, equipo[], registrosTiempo[], metricas | KPIs, tabla de horas por persona, gráfico de rentabilidad, comparativo |
+
+Ubicación de templates: `functions/src/templates/*.html`
+El servicio `generarPdf` recibe el nombre del template + data, renderiza con Handlebars, genera PDF con Puppeteer (formato carta, márgenes 2cm), y retorna URL de Cloud Storage.
+
+## 21. Búsqueda Global
+
+El `SearchService` implementa búsqueda unificada across todas las colecciones del tenant.
+
+### 21.1 Arquitectura
+Dado que Firestore no soporta full-text search nativo, se implementa con un enfoque híbrido:
+
+1. **Búsqueda client-side rápida**: Para colecciones pequeñas (< 500 docs por tenant), se mantiene un cache local y se busca con Fuse.js (fuzzy search).
+2. **Keywords array en Firestore**: Cada documento tiene un campo `searchKeywords: array<string>` generado al crear/actualizar, con tokens del nombre, email, código, etc. Se usa `array-contains` para queries.
+3. **Upgrade futuro**: Si un tenant supera 10,000 docs, migrar a Algolia o Typesense via Cloud Function sync.
+
+### 21.2 Colecciones buscables
+| Colección | Campos indexados | Display |
+| :--- | :--- | :--- |
+| `clientes` | nombreEmpresa, rut, contactoPrincipal.nombre, contactoPrincipal.email | Nombre empresa + contacto |
+| `cotizaciones` | codigoFormateado, titulo, cliente.nombre | COT-XXX + título |
+| `contratos` | codigoFormateado, titulo, cliente.nombre | CONT-XXX + título |
+| `facturas` | codigoFormateado, cliente.nombre | FACT-XXX + cliente |
+| `proyectos` | nombre, cliente.nombre | Nombre proyecto |
+
+El campo `searchKeywords` se genera automáticamente en Cloud Functions trigger onCreate/onUpdate para cada colección buscable. Ejemplo para un cliente 'Empresa ABC SpA': keywords = `['empresa', 'abc', 'spa', 'empresa abc', 'empresa abc spa']`
+
+## 22. Gestión de Archivos
+
+### 22.1 Estructura en Cloud Storage
+```text
+/tenants/{tenantId}/
+  ├── branding/
+  │   └── logo.png
+  ├── firmas/
+  │   ├── representante_{contratoId}.png
+  │   └── cliente_{contratoId}.png
+  ├── pdfs/
+  │   ├── cotizaciones/COT-001.pdf
+  │   ├── contratos/CONT-001.pdf
+  │   └── facturas/FACT-001.pdf
+  ├── proyectos/{proyectoId}/
+  │   ├── entregables/
+  │   └── documentos/
+  ├── comprobantes/
+  │   └── pago_{facturaId}_{fecha}.jpg
+  └── portal/
+      └── compartidos/{clienteId}/
+```
+
+### 22.2 FileUploadService
+* Upload con progress tracking (`Observable<number>` de 0-100%).
+* Validación client-side: tipos permitidos (pdf, jpg, png, doc, xls), tamaño máximo 10MB.
+* Compresión automática de imágenes > 2MB con canvas API antes de subir.
+* Nombre de archivo sanitizado: eliminar caracteres especiales, agregar timestamp.
+* Al completar upload, retorna la downloadURL para vincular al documento Firestore.
+* Componente `FileUploaderComponent` con drag-and-drop zone + preview de archivos.
+
+## 23. Módulo de Configuración del Tenant
+
+Vista organizada en tabs accesible desde Configuración en el sidebar. Solo visible para admin+ roles.
+
+| Tab | Contenido | Rol Mínimo |
+| :--- | :--- | :--- |
+| Empresa | Razón social, RUT, giro, dirección, teléfono, email, sitio web | admin |
+| Branding | Logo (upload), color primario (color picker), color secundario, preview en tiempo real | admin |
+| Facturación | Moneda por defecto, tasa de impuesto, condiciones de pago por defecto, numeración correlativa | admin |
+| Equipo | Lista de usuarios del tenant, invitar nuevo usuario, cambiar roles, desactivar usuario, costo/tarifa hora | super-admin |
+| Pipeline | Personalizar etapas del pipeline de ventas: nombre, color, orden. Agregar/quitar etapas | admin |
+| Plantillas | Cláusulas contractuales por defecto, condiciones de cotización, pie de factura | admin |
+| Notificaciones | Configurar qué eventos envían email, frecuencia de resumenes, destinatarios | admin |
+| Plan | Plan actual, uso vs límites, historial de pagos, botón upgrade/downgrade | super-admin |
+| Integraciones | Conexión con Google Calendar, configuración de WhatsApp (futuro) | super-admin |
+| Datos | Exportar todos los datos (CSV/JSON), importar clientes desde CSV | super-admin |
+
+
+## 24. Manejo de Multi-Moneda
+
+El sistema soporta CLP, UF y USD. Cada tenant configura su moneda por defecto, pero cada cotización/contrato/factura puede usar una moneda diferente.
+
+### 24.1 Reglas de conversión
+* La UF se obtiene diariamente del SII (Servicio de Impuestos Internos de Chile) via Cloud Function scheduled.
+* USD/CLP se obtiene de una API gratuita (exchangerate-api.com o similar).
+* Los valores se almacenan SIEMPRE en la moneda original del documento. La conversión es solo para visualización en dashboard y reportes.
+* Se guarda el tipo de cambio del día de creación del documento para referencia.
+
+### 24.2 Colección: tiposCambio
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `fecha` | string (YYYY-MM-DD) | Fecha del tipo de cambio (document ID) |
+| `uf_clp` | number | Valor de 1 UF en CLP |
+| `usd_clp` | number | Valor de 1 USD en CLP |
+| `updatedAt` | timestamp | Fecha de actualización |
+
+
+### 24.3 CurrencyFormatPipe
+Pipe personalizado que formatea según moneda:
+* CLP: `$1.234.567` (sin decimales, separador de miles con punto)
+* UF: `45,3 UF` (1 decimal, separador decimal con coma)
+* USD: `US$1,234.56` (2 decimales, formato americano)
+
+## 25. Estrategia de Testing
+
+| Nivel | Herramienta | Cobertura Mínima | Qué Testear |
+| :--- | :--- | :--- | :--- |
+| Unit Tests | Jest + Angular Testing Utilities | 80% servicios core | AuthService, TenantService, cálculos de totales, validadores de RUT, pipes |
+| Component Tests | Jest + Angular TestBed | 60% componentes críticos | Formularios de cotización, tabla de datos, KPI cards, pipeline kanban |
+| Integration Tests | Firebase Emulators + Jest | Flujos críticos | Registro → Custom Claims, crear cotización → correlativo, firma → estado |
+| E2E Tests | Playwright | Happy paths | Login → crear cotización → enviar → firmar contrato → crear factura |
+| Security Rules Tests | Firebase Emulators + @firebase/rules-unit-testing | 100% reglas | Cada regla de lectura/escritura/delete con y sin permisos |
+
+
+### 25.1 Firebase Emulators
+Obligatorio para desarrollo local. Configurar emuladores de: Auth, Firestore, Storage, Functions. El comando `npm run dev` debe levantar Angular + todos los emuladores automáticamente.
+
+## 26. Pipeline CI/CD
+
+### 26.1 GitHub Actions Workflow
+Archivo: `.github/workflows/deploy.yml`
+
+* **Push a branch feature/*:** Lint + Unit Tests + Build.
+* **Pull Request a develop:** Lint + Unit Tests + Integration Tests + Build + Deploy a preview channel (Firebase Hosting preview).
+* **Merge a develop:** Deploy automático a ambiente staging.
+* **Merge a main:** Deploy automático a producción (Firebase Hosting + Cloud Functions).
+
+### 26.2 Convenciones de Código
+* **Commits:** Conventional Commits: `feat(cotizaciones): add PDF generation`
+* **Branches:** `feature/modulo-nombre`, `fix/modulo-bug`, `hotfix/descripcion`
+* **PRs:** Template obligatorio: descripción, screenshots, checklist de testing
+* **Code Review:** Al menos 1 aprobación requerida antes de merge
+* **Linting:** ESLint + Prettier con config compartida. Pre-commit hook con Husky
+
+## 27. Audit Logging
+
+Registro inmutable de acciones sensibles para seguridad y compliance. Colección raíz `auditLog`.
+
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `id` | string (auto) | ID único |
+| `tenantId` | string | Tenant del evento |
+| `usuarioId` | string | UID del actor |
+| `usuarioEmail` | string | Email (denormalizado) |
+| `accion` | string | create \| update \| delete \| login \| export \| firma \| cambio_estado |
+| `entidad` | string | cotizacion \| contrato \| factura \| usuario \| tenant \| config |
+| `entidadId` | string | ID del recurso afectado |
+| `detalles` | map | Datos específicos del cambio (before/after parcial) |
+| `ip` | string | IP del request (obtenida en Cloud Function) |
+| `timestamp` | timestamp | Fecha exacta del evento |
+
+### 27.1 Eventos que generan audit log
+* Login exitoso y fallido
+* Creación, modificación y eliminación de usuarios
+* Cambios de rol o permisos
+* Cambios de plan/suscripción
+* Firma de contratos (interna y externa, con IP)
+* Cambios de estado en cotizaciones, contratos y facturas
+* Registro y anulación de pagos
+* Exportación masiva de datos
+* Cambios en configuración del tenant
+
+Los audit logs solo son legibles por super-admin y platform-admin. No se pueden eliminar ni modificar (enforced en Security Rules).
+
+## 28. Accesibilidad e Internacionalización
+
+### 28.1 Accesibilidad (a11y)
+* WCAG 2.1 nivel AA como objetivo mínimo.
+* Todos los formularios con labels explícitos y `aria-describedby` para errores.
+* Navegación completa por teclado: Tab, Enter, Escape, flechas en Kanban.
+* Contraste mínimo 4.5:1 para texto normal, 3:1 para texto grande.
+* Alt text en todas las imágenes. `aria-live` regions para toasts y cambios dinámicos.
+* Focus visible (outline) nunca eliminado, solo estilizado.
+* Skip navigation link oculto que aparece con Tab.
+
+### 28.2 Internacionalización (i18n)
+* Idioma inicial: español (`es-CL`). Preparado para inglés (`en`) en fase posterior.
+* Usar Angular i18n built-in o `@ngx-translate/core`.
+* Todos los strings visibles al usuario deben estar en archivos de traducción, no hardcoded.
+* Formato de fechas y números según locale (date-fns con locale es).
+* El campo `config.idioma` del usuario determina el idioma de la interfaz.
+
+## 29. Importación y Exportación de Datos
+
+### 29.1 Importación
+| Dato | Formato | Mapeo | Validación |
+| :--- | :--- | :--- | :--- |
+| Clientes | CSV | nombreEmpresa, rut, contacto, email, telefono | RUT válido, email válido, sin duplicados por RUT |
+| Catálogo servicios | CSV | nombre, descripcion, categoria, precioBase, unidad | Precio numérico, unidad válida |
+| Cartola bancaria | CSV / OFX | fecha, monto, referencia, descripcion | Fecha válida, monto numérico |
+
+Flujo: Upload CSV → Preview de datos mapeados → Mostrar errores de validación → Confirmar importación → Cloud Function procesa en batch (máx 500 docs por batch write).
+
+### 29.2 Exportación
+* Cada tabla/listado tiene botón de exportar a CSV.
+* Exportación completa del tenant (super-admin): todos los datos en JSON, descargable como ZIP.
+* Reportes financieros: exportar a PDF o Excel via Cloud Function.
+* Cumplimiento GDPR: capacidad de exportar y eliminar todos los datos de un cliente.
+
+## 30. Hoja de Ruta Revisada (Sprints Detallados)
+
+Plan actualizado que incorpora todas las brechas identificadas. 12 sprints de 2 semanas = 24 semanas (6 meses).
+
+### Sprint 1 — Setup, Auth y Multi-Tenancy (Sem 1-2) **[IMPLEMENTADO]**
+**Entregable:** usuario puede registrarse, hacer login y ver dashboard vacío.
+* Crear proyecto Angular 19 + Tailwind 4 + @angular/fire. Configurar environments.
+* Configurar Firebase: Auth, Firestore, Storage, Functions Gen 2, Emulators.
+* Definir todas las interfaces TypeScript (`core/interfaces/*.ts`).
+* Definir enums y constantes (`core/models/enums.ts`, `constants.ts`).
+* LoginComponent con email/password y Google SSO.
+* RegisterComponent: formulario 2 pasos con validación de RUT.
+* ForgotPasswordComponent.
+* Cloud Function onUserCreated: crear tenant + user + Custom Claims (transacción atómica).
+* AuthGuard, RoleGuard, PlanGuard.
+* AuthService completo con refresh de token y Claims.
+* Firestore Security Rules completas (Sección 15).
+* Storage Security Rules.
+* OnboardingWizardComponent (logo, colores, moneda, impuesto).
+* TenantService con `applyBranding()`.
+* Error Interceptor global.
+* Configurar CI: GitHub Actions lint + test + build.
+
+### Sprint 2 — Layout, Dashboard y Shared Components (Sem 3-4)
+**Entregable:** app shell completa con dashboard, componentes compartidos listos.
+* Sidebar colapsable con íconos Lucide y secciones agrupadas.
+* Navbar: logo tenant, búsqueda global (UI sin lógica aún), timer placeholder, notificaciones, avatar.
+* BottomNavComponent para móvil.
+* Shared components: DataTable, StatCard, Badge, ConfirmDialog, EmptyState, SkeletonLoader, SearchInput, Pagination, FileUploader.
+* Shared pipes: CurrencyFormat, RutFormat, RelativeTime.
+* Shared directives: RoleVisible, ClickOutside.
+* Shared validators: RUT, Email.
+* NotificationService (toasts con ngx-toastr).
+* DashboardComponent con 6 KPI cards (mockeados).
+* Integración chart.js: embudo, barras, donut, scatter.
+* Widgets: tareas urgentes, cotizaciones pendientes, feed de actividad.
+* Responsividad completa del layout.
+* CSS variables para theming dinámico.
+
+### Sprint 3 — CRM, Clientes y Pipeline (Sem 5-6)
+**Entregable:** gestión completa de clientes con pipeline Kanban funcional.
+* ClientesService con CRUD Firestore + inyección automática de tenantId.
+* ClientesListComponent con DataTable: búsqueda, filtros, paginación cursor-based.
+* ClienteFormComponent con validación de RUT chileno.
+* ClienteDetalleComponent: vista 360° con tabs (datos, actividades, cotizaciones, contratos, facturas).
+* ActividadFormComponent: modal para registrar llamadas, reuniones, emails, notas.
+* ActividadesService con CRUD.
+* PipelineKanbanComponent con @angular/cdk drag-drop.
+* Etapas configurables del pipeline almacenadas en `tenant.config.pipelineEtapas`.
+* Cloud Function `onActividadCreated`: recalcular lead score.
+* Cloud Function para generar `searchKeywords` en clientes.
+* Importación de clientes desde CSV (upload + preview + confirm).
+
+### Sprint 4 — Catálogo y Cotizaciones (Sem 7-8)
+**Entregable:** catálogo de servicios y flujo completo de cotizaciones con PDF.
+* CatalogoService + CRUD completo con historial de precios.
+* CotizacionesService con CRUD + lógica de estados.
+* CotizacionFormComponent: selección cliente (autocomplete), ítems dinámicos desde catálogo, cálculos en tiempo real.
+* Cloud Function `generarCorrelativo`: transacción atómica con `FieldValue.increment`.
+* CotizacionDetalleComponent con preview estilo PDF.
+* Flujo de estados con `historialEstados` y validaciones de transición.
+* Template HTML `cotizacion.html` en `functions/src/templates/`.
+* Cloud Function `generarPdf` con Puppeteer.
+* Cloud Function `onCotizacionUpdated`: si estado=enviada → generar PDF + enviar email.
+* Template de email `cotizacion-enviada`.
+* Cloud Function scheduled `verificarCotizacionesExpiradas`.
+
+### Sprint 5 — Contratos y Firma Digital (Sem 9-10)
+**Entregable:** flujo completo de contrato con firma digital interna y pública.
+* ContratosService con CRUD + conversión desde cotización.
+* Cloud Function `convertirACotizacion`: transacción atómica.
+* Editor de cláusulas contractuales.
+* SignaturePadComponent compartido (`shared/components/signature-pad/`).
+* Firma interna del representante: canvas → PNG → Cloud Storage.
+* Cloud Function `enviarContratoFirma`: generar token UUID v4, email con link.
+* Módulo firma-publica: ruta Angular sin AuthGuard, lazy-loaded.
+* FirmaPublicaComponent: mobile-first, responsive, touch-enabled canvas.
+* Cloud Function `validarFirmaCliente`: validar token, guardar firma, registrar IP/timestamp.
+* Colección `contratos_publicos` para datos públicos del contrato (sin info sensible).
+* Template `contrato.html` + generación PDF final con ambas firmas.
+* Email de confirmación a ambas partes.
+* Cloud Function `limpiarTokensExpirados` (scheduled).
+* Audit log para firma de contratos.
+
+### Sprint 6 — Facturación y Pagos (Sem 11-12)
+**Entregable:** sistema de facturación con pagos parciales y cuotas.
+* FacturasService con CRUD + generación desde contrato.
+* FacturaFormComponent: manual o desde contrato, cuotas programadas.
+* FacturaDetalleComponent: datos, pagos, registrar pago, enviar recordatorio.
+* PagosService: registrar pago con comprobante (upload).
+* Cloud Function `onPagoRegistrado`: actualizar factura + crear movimiento financiero.
+* Template `factura.html` + PDF generation.
+* Cloud Function `verificarFacturasVencidas` (scheduled).
+* Cloud Function `recordatorioFacturasPorVencer` (scheduled).
+* Email templates: factura emitida, recordatorio, vencida.
+* Audit log para pagos.
+
+### Sprint 7 — Finanzas (Sem 13-14)
+**Entregable:** dashboard financiero, movimientos, conciliación básica.
+* FlujoCajaComponent: proyección 90 días, aging 30/60/90 días.
+* MovimientosService + CRUD de ingresos/egresos manuales.
+* ConciliacionComponent: importar CSV de cartola, matching automático.
+* Gráfico ingresos vs egresos mensual (chart.js).
+* Multi-moneda: Cloud Function para obtener UF diaria del SII.
+* CurrencyFormatPipe con soporte CLP/UF/USD.
+* Colección `tiposCambio` con scheduled update.
+* Exportación de reportes financieros a CSV/PDF.
+
+### Sprint 8 — Timetracking y Rentabilidad (Sem 15-16)
+**Entregable:** timer funcional, registros de horas, reportes de rentabilidad.
+* TimerService singleton + TimerComponent en navbar.
+* RegistrosTiempoService con CRUD.
+* RegistroManualComponent para entrada manual de horas.
+* Vista semanal/mensual tipo calendario.
+* Cloud Function `onRegistroTiempoCreated`: calcular costos, actualizar tarea/proyecto.
+* ReporteRentabilidadComponent por proyecto.
+* ReporteEquipoComponent: carga vs capacidad.
+* Alerta automática si proyecto supera 80% presupuesto.
+* Cloud Function `resumenSemanalEquipo` (scheduled).
+
+### Sprint 9 — Proyectos, Tareas y Archivos (Sem 17-18)
+**Entregable:** gestión completa de proyectos con Kanban y archivos.
+* ProyectosService + CRUD con creación desde contrato.
+* ProyectoDetalleComponent: overview, Kanban, timeline, archivos.
+* KanbanBoardComponent con drag-and-drop.
+* TareasService con CRUD y ordenamiento.
+* Subtareas dentro de cada tarea.
+* Gestión de archivos por proyecto (upload/download/preview).
+* FileUploadService completo con progress tracking.
+* Cálculo automático de progreso del proyecto.
+
+### Sprint 10 — Portal del Cliente (Sem 19-20)
+**Entregable:** portal externo funcional para clientes.
+* Módulo portal-cliente lazy-loaded con su propio layout.
+* Sistema de magic link via Cloud Function + email.
+* PortalAuthGuard: valida token temporal.
+* Vistas: Mis Cotizaciones, Mis Contratos, Mis Facturas, Mis Proyectos.
+* Aprobación/rechazo de cotizaciones con comentario.
+* Firma de contratos integrada en el portal.
+* Documentos compartidos: upload/download bidireccional.
+* Mensajería simple (nueva colección `mensajesPortal`).
+* Branding dinámico del tenant (logo + colores).
+* 100% responsive mobile-first.
+
+### Sprint 11 — Asistente IA y Búsqueda Global (Sem 21-22)
+**Entregable:** chat IA funcional y búsqueda global.
+* AsistenteIAComponent: interfaz de chat tipo ChatGPT.
+* Cloud Function `chatIA`: consulta contexto del tenant + proxy a Gemini 2.0 Flash.
+* System prompts especializados para cada tipo de análisis.
+* Streaming de respuesta al frontend.
+* Historial de conversaciones almacenado en Firestore (por tenant).
+* Límites por plan enforced server-side.
+* SearchService: generar `searchKeywords` en Cloud Functions triggers.
+* Búsqueda global en navbar con resultados agrupados por tipo.
+* Fuse.js para fuzzy matching client-side.
+
+### Sprint 12 — Admin SaaS, Billing, Polish y Deploy (Sem 23-24)
+**Entregable:** plataforma lista para producción.
+* Módulo admin-saas para `platform-admin` (SUBE IA Tech).
+* Integración pasarela de pago (Mercado Pago o Stripe).
+* Flujo de upgrade/downgrade de plan.
+* Webhooks de pasarela → Cloud Function → actualizar plan + Claims.
+* Módulo configuracion completo (todas las tabs).
+* Audit logging completo (Sección 27).
+* Dashboard con datos reales (conectar KPIs a queries Firestore onSnapshot).
+* Notificaciones in-app completas (colección + UI).
+* Cloud Function `calcularMetricasMensuales` + `alertasClientesSinContacto`.
+* Testing E2E de flujos críticos con Playwright.
+* Security Rules unit tests con Firebase Emulators.
+* Optimización: lazy loading, tree shaking, bundle analysis.
+* Deploy a Firebase Hosting + configurar dominio personalizado.
+* Documentación de API de Cloud Functions para referencia del equipo.
+
+## 31. Naming y Branding del Producto
+
+### 31.1 Nombre oficial
+El software se llama **Estratega Sube IA**. Se usa siempre en este formato:
+* **Logo:** `ESTRATEGA` (línea 1, bold) + `SUBE IA` (línea 2, color accent)
+* **URL propuesta:** `app.estratega.subeia.tech`
+* **Nombre corto para UI:** Estratega
+* **En código:** `estratega-sube-ia` (kebab-case para proyecto y repositorio)
+
+### 31.2 Colores de marca del producto
+| Token | Hex | Uso |
+| :--- | :--- | :--- |
+| `--brand-primary` | `#0F4C81` | Sidebar, headers, botones principales, links |
+| `--brand-accent` | `#E8740C` | CTAs destacados, badges importantes, hover states |
+| `--brand-dark` | `#0D1B2A` | Texto principal, fondos oscuros |
+| `--brand-success` | `#0D9F6E` | Estados positivos, pagado, completado, aprobado |
+| `--brand-warning` | `#D97706` | Alertas, pendiente, en revisión |
+| `--brand-error` | `#DC2626` | Errores, rechazado, vencido, cancelado |
+| `--brand-surface` | `#F8FAFC` | Fondo general de la app |
+
+> **Recordar:** estos son los colores del producto Estratega Sube IA. Cada tenant configura sus propios colores de branding que se aplican en sus documentos (PDFs, portal del cliente) via CSS variables dinámicas.

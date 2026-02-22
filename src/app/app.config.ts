@@ -1,5 +1,7 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { tenantInterceptor } from './core/auth/interceptors/tenant.interceptor';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
@@ -26,6 +28,7 @@ export const appConfig: ApplicationConfig = {
       })
     ),
     provideBrowserGlobalErrorListeners(),
+    provideHttpClient(withInterceptors([tenantInterceptor])),
     provideRouter(routes),
     provideAnimationsAsync(),
     provideCharts(withDefaultRegisterables()),

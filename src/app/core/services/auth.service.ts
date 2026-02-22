@@ -66,4 +66,17 @@ export class AuthService {
         const token = await user.getIdTokenResult();
         return token.claims['role'] as string || null;
     }
+
+    async hasRole(role: string): Promise<boolean> {
+        const currentRole = await this.getUserRole();
+        return currentRole === role;
+    }
+
+    async isTenantAdmin(): Promise<boolean> {
+        return await this.hasRole('tenant_admin');
+    }
+
+    async isSuperAdmin(): Promise<boolean> {
+        return await this.hasRole('super_admin');
+    }
 }
