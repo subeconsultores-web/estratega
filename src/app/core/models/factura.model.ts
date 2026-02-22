@@ -42,6 +42,12 @@ export interface Factura {
     montoPagado: number;
     montoPendiente: number;
     pdfUrl?: string;
+
+    // Integración Stripe
+    urlStripeCheckout?: string; // URL generada temporal de la sesión para el cliente
+    stripeCheckoutSessionId?: string; // ID interno de la sesión de Stripe
+    stripePaymentIntentId?: string; // Referencia del cobro validado en Stripe
+
     createdAt: Date;
     updatedAt: Date;
 }

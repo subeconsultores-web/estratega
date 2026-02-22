@@ -1,0 +1,352 @@
+[33m❯[39m Building...
+[32m✔[39m Building...
+Application bundle generation failed. [13.387 seconds] - 2026-02-22T17:52:27.221Z
+
+\n-----STDERR-----\n[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:52:85:
+[37m      52 │ ...e;n: <strong>{{ cotizacion.createdAt?.[32mtoDate[37m() | date:'dd/MM/yyyy'
+         ╵                                          [32m~~~~~~[0m
+
+  Warning occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: SlicePipe is not used within the template of CotizacionViewComponent[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-view/cotizacion-view.component.ts:17:77:
+[37m      17 │ ...dule, RouterModule, LucideAngularModule, CurrencyPipe, [32mSlicePipe[37m],
+         ╵                                                           [32m~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: LoadingSkeleton is not used within the template of DashboardFinancieroComponent[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/finanzas/dashboard-financiero/dashboard-financiero.component.ts:12:63:
+[37m      12 │ ...CommonModule, RouterModule, LucideAngularModule, [32mLoadingSkeleton[37m],
+         ╵                                                     [32m~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'codigoFormateado' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:9:64:
+[37m      9 │ ...">&bull;</span> {{ cotizacion?.[32mcodigoFormateado[37m || 'Cargando...' }}
+        ╵                                   [32m~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'estado' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:15:73:
+[37m      15 │ ...elect *ngIf="cotizacion" #estadoSelect [value]="cotizacion.[32mestado[37m"
+         ╵                                                               [32m~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'titulo' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:47:64:
+[37m      47 │ ...         <p class="text-gray-500 mt-1">{{ cotizacion.[32mtitulo[37m }}</p>
+         ╵                                                         [32m~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'codigoFormateado' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:50:81:
+[37m      50 │ ...bold text-gray-800">{{ cotizacion.[32mcodigoFormateado[37m || 'S/N' }}</p>
+         ╵                                      [32m~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'toDate' does not exist on type 'Timestamp | Date'.
+  Property 'toDate' does not exist on type 'Date'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:52:85:
+[37m      52 │ ...e;n: <strong>{{ cotizacion.createdAt?.[32mtoDate[37m() | date:'dd/MM/yyyy'
+         ╵                                          [32m~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'validezDias' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:54:63:
+[37m      54 │ ...ido hasta: <strong>{{ cotizacion[32m.validezDia[37ms }} días</strong></p>
+         ╵                                    [32m~~~~~~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'estado' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:59:42:
+[37m      59 │                             {{ cotizacion.[32mestado[37m }}
+         ╵                                           [32m~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'descuento' does not exist on type 'CotizacionItemDetalle'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:105:47:
+[37m      105 │ ...            <p *ngIf="item.[32mdescuento[37m > 0" class="text-xs text-...
+          ╵                               [32m~~~~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'moneda' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:106:47:
+[37m      106 │ ...                 cotizacion.[32mmoneda[37m }} {{ item.descuento | numb...
+          ╵                                [32m~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'descuento' does not exist on type 'CotizacionItemDetalle'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:106:65:
+[37m      106 │ ...   cotizacion.moneda }} {{ item.[32mdescuento[37m | number:'1.0-0' }}</p>
+          ╵                                    [32m~~~~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'moneda' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:109:98:
+[37m      109 │ ...ext-right align-top whitespace-nowrap">{{ cotizacion.[32mmoneda[37m }} {{
+          ╵                                                         [32m~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'moneda' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:112:43:
+[37m      112 │ ...                 cotizacion.[32mmoneda[37m }} {{ item.total | number:'...
+          ╵                                [32m~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'total' does not exist on type 'CotizacionItemDetalle'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:112:61:
+[37m      112 │ ...      cotizacion.moneda }} {{ item.[32mtotal[37m | number:'1.0-0' }}</td>
+          ╵                                       [32m~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'moneda' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:123:78:
+[37m      123 │ ...m text-gray-900">{{ cotizacion.[32mmoneda[37m }} {{ cotizacion.subtotal |
+          ╵                                   [32m~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'descuentoGlobal' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:126:43:
+[37m      126 │                     <div *ngIf="cotizacion.[32mdescuentoGlobal[37m > 0"
+          ╵                                            [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'moneda' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:129:46:
+[37m      129 │ ...      <span>- {{ cotizacion.[32mmoneda[37m }} {{ cotizacion.descuentoG...
+          ╵                                [32m~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'descuentoGlobal' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:129:70:
+[37m      129 │ ...moneda }} {{ cotizacion.[32mdescuentoGlobal[37m | number:'1.0-0' }}</s...
+          ╵                            [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'moneda' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:133:78:
+[37m      133 │ ... text-gray-900">{{ cotizacion.[32mmoneda[37m }} {{ cotizacion.impuestos |
+          ╵                                  [32m~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'impuestos' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:133:102:
+[37m      133 │ ... text-gray-900">{{ cotizacion.moneda }} {{ cotizacion.[32mimpuestos[37m |
+          ╵                                                          [32m~~~~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'moneda' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:139:65:
+[37m      139 │ ...text-primary">{{ cotizacion.[32mmoneda[37m }} {{ cotizacion.total | nu...
+          ╵                                [32m~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'total' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:139:89:
+[37m      139 │ ...ary">{{ cotizacion.moneda }} {{ cotizacion.[32mtotal[37m | number:'1.0-0'
+          ╵                                               [32m~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'condiciones' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.html:149:34:
+[37m      149 │                     {{ cotizacion.[32mcondiciones[37m }}
+          ╵                                   [32m~~~~~~~~~~~[0m
+
+  Error occurs in the template of component CotizacionDetalleComponent.
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:16:15:
+[37m      16 │   templateUrl: [32m'./cotizacion-detalle.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'estado' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:64:40:
+[37m      64 │   cambiarEstado(nuevoEstado: Cotizacion[[32m'estado'[37m]) {
+         ╵                                         [32m~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2353: Object literal may only specify known properties, and 'estado' does not exist in type 'Partial<Cotizacion>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:68:66:
+[37m      68 │ ...vice.updateCotizacion(this.cotizacion.id, { [32mestado[37m: nuevoEstado })
+         ╵                                                [32m~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'estado' does not exist on type 'Cotizacion'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-detalle/cotizacion-detalle.ts:72:26:
+[37m      72 │           this.cotizacion.[32mestado[37m = nuevoEstado;
+         ╵                           [32m~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'nombreRepresentante' does not exist on type 'Cliente'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-form/cotizacion-form.component.html:58:34:
+[37m      58 │ ...                    c.[32mnombreRepresentante[37m || c.nombreEmpresa }}...
+         ╵                          [32m~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component CotizacionFormComponent.
+
+    src/app/features/cotizaciones/cotizacion-form/cotizacion-form.component.ts:21:17:
+[37m      21 │     templateUrl: [32m'./cotizacion-form.component.html'[37m
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m

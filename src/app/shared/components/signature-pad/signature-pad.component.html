@@ -1,0 +1,94 @@
+<div
+    class="bg-background rounded-xl border border-border shadow-md overflow-hidden animate-fade-in w-full max-w-lg mx-auto">
+    <!-- TABS -->
+    <div class="flex border-b border-border bg-surface text-sm">
+        <button (click)="setTab('dibujo')" [class.border-b-2]="activeTab === 'dibujo'"
+            [class.border-primary]="activeTab === 'dibujo'" [class.text-primary]="activeTab === 'dibujo'"
+            [class.text-txt-secondary]="activeTab !== 'dibujo'"
+            class="flex-1 py-3 font-medium transition-colors hover:bg-surface-hover flex items-center justify-center">
+            <lucide-icon name="pen-tool" class="w-4 h-4 mr-2"></lucide-icon> Dibujar
+        </button>
+        <button (click)="setTab('upload')" [class.border-b-2]="activeTab === 'upload'"
+            [class.border-primary]="activeTab === 'upload'" [class.text-primary]="activeTab === 'upload'"
+            [class.text-txt-secondary]="activeTab !== 'upload'"
+            class="flex-1 py-3 font-medium transition-colors hover:bg-surface-hover flex items-center justify-center">
+            <lucide-icon name="upload-cloud" class="w-4 h-4 mr-2"></lucide-icon> Cargar Imagen
+        </button>
+        <button (click)="setTab('digital')" [class.border-b-2]="activeTab === 'digital'"
+            [class.border-primary]="activeTab === 'digital'" [class.text-primary]="activeTab === 'digital'"
+            [class.text-txt-secondary]="activeTab !== 'digital'"
+            class="flex-1 py-3 font-medium transition-colors hover:bg-surface-hover flex items-center justify-center">
+            <lucide-icon name="keyboard" class="w-4 h-4 mr-2"></lucide-icon> Firma E-Digital
+        </button>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="p-6">
+
+        <!-- Tab: Dibujo -->
+        <div *ngIf="activeTab === 'dibujo'" class="animate-fade-in">
+            <p class="text-sm text-txt-secondary mb-3 text-center">Utiliza el mouse o tu dedo para dibujar tu firma en
+                el recuadro blanco.</p>
+            <div class="border-2 border-dashed border-border rounded-lg bg-white overflow-hidden touch-none">
+                <canvas #canvas class="w-full h-48 cursor-crosshair" (mousedown)="startDrawing($event)"
+                    (mousemove)="draw($event)" (mouseup)="stopDrawing()" (mouseleave)="stopDrawing()"
+                    (touchstart)="startDrawing($event)" (touchmove)="draw($event)" (touchend)="stopDrawing()"></canvas>
+            </div>
+            <div class="flex justify-end mt-2">
+                <button (click)="clearCanvas()" class="text-xs text-red-500 hover:text-red-600 font-medium">Limpiar
+                    Canvas</button>
+            </div>
+        </div>
+
+        <!-- Tab: Upload -->
+        <div *ngIf="activeTab === 'upload'" class="animate-fade-in">
+            <p class="text-sm text-txt-secondary mb-3 text-center">Sube una fotografía de tu rúbrica o firma
+                corporativa.</p>
+            <div
+                class="border-2 border-dashed border-border rounded-lg bg-background p-8 flex flex-col items-center justify-center text-center">
+                <lucide-icon name="image" class="w-10 h-10 text-txt-muted mb-3"></lucide-icon>
+                <input type="file" id="firmaFile" accept=".png, .jpg, .jpeg" class="hidden"
+                    (change)="onFileSelected($event)">
+                <label for="firmaFile"
+                    class="cursor-pointer px-4 py-2 bg-surface border border-border rounded-lg text-sm font-medium hover:bg-surface-hover transition-colors inline-block mb-2">
+                    Buscar Archivo
+                </label>
+                <p class="text-xs text-info" *ngIf="selectedFile">Archivo listo: {{ selectedFile.name }}</p>
+            </div>
+        </div>
+
+        <!-- Tab: Digital -->
+        <div *ngIf="activeTab === 'digital'" class="animate-fade-in space-y-4">
+            <p class="text-sm text-txt-secondary text-center">Este método certificará legalmente el documento trazando
+                tu Firma Electrónica Simple bajo metadata unívoca.</p>
+            <div>
+                <label class="block text-sm font-medium text-txt-primary mb-1">Escribe tu Nombre Completo <span
+                        class="text-red-500">*</span></label>
+                <input type="text" [(ngModel)]="nombreDigital" placeholder="Ej: Juan Pérez"
+                    class="w-full px-3 py-2 bg-surface font-mono border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none">
+            </div>
+            <label
+                class="flex items-start space-x-3 cursor-pointer mt-4 bg-primary/5 p-3 rounded-lg border border-primary/10">
+                <input type="checkbox" [(ngModel)]="aceptaTerminos"
+                    class="mt-1 flex-shrink-0 w-4 h-4 text-primary bg-background border-border rounded outline-none focus:ring-1 focus:ring-primary">
+                <span class="text-xs text-txt-secondary leading-tight">
+                    Comprendo y acepto que el tipo mi nombre genera una <strong>Firma Electrónica Simple</strong>,
+                    equivaliendo a mi autoría y plena conformidad sobre el anverso legal dispuesto en este Contrato,
+                    registrándose mi dirección y dispositivo con fecha cierta ante el servicio subyacente de
+                    infraestructura.
+                </span>
+            </label>
+        </div>
+
+    </div>
+
+    <!-- ACTION FOOTER -->
+    <div class="bg-surface border-t border-border p-4 flex justify-end">
+        <button (click)="firmarContrato()" [disabled]="isSubmitting"
+            class="px-5 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover font-medium flex items-center shadow-sm disabled:opacity-50">
+            <lucide-icon *ngIf="isSubmitting" name="loader-2" class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
+            <lucide-icon *ngIf="!isSubmitting" name="check-circle" class="w-4 h-4 mr-2"></lucide-icon>
+            {{ isSubmitting ? 'Procesando...' : 'Aplicar mi Firma' }}
+        </button>
+    </div>
+</div>

@@ -1,0 +1,137 @@
+<div class="space-y-6 pt-2 pb-16 animate-fade-in max-w-4xl mx-auto" *ngIf="!isLoading && contrato">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4 bg-surface p-6 rounded-xl border border-border shadow-sm">
+        <div>
+            <div class="flex items-center space-x-3 mb-2">
+                <button type="button" (click)="goBack()"
+                    class="p-2 hover:bg-surface-hover rounded-full transition-colors text-txt-muted hover:text-txt-primary">
+                    <lucide-icon name="arrow-left" class="w-5 h-5"></lucide-icon>
+                </button>
+                <div class="flex flex-col">
+                    <span class="text-xs font-mono text-txt-muted">{{ contrato.correlativo }}</span>
+                    <h1 class="text-2xl font-bold text-txt-primary">{{ contrato.titulo }}</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-end space-y-2">
+            <!-- Badge -->
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                [class.bg-yellow-500/10]="contrato.estadoActual==='Borrador'"
+                [class.text-yellow-600]="contrato.estadoActual==='Borrador'"
+                [class.bg-blue-500/10]="contrato.estadoActual==='Enviado'"
+                [class.text-blue-500]="contrato.estadoActual==='Enviado'"
+                [class.bg-green-500/10]="contrato.estadoActual==='Firmado'"
+                [class.text-green-500]="contrato.estadoActual==='Firmado'"
+                [class.bg-red-500/10]="contrato.estadoActual==='Cancelado'"
+                [class.text-red-500]="contrato.estadoActual==='Cancelado'">
+                <lucide-icon [name]="contrato.estadoActual === 'Firmado' ? 'shield-check' : 'file-text'"
+                    class="w-4 h-4 mr-1"></lucide-icon>
+                Estado: {{ contrato.estadoActual }}
+            </span>
+
+            <button *ngIf="contrato.estadoActual === 'Borrador'" (click)="enviarContrato()"
+                class="px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-primary-hover shadow-sm flex items-center">
+                <lucide-icon name="send" class="w-4 h-4 mr-2"></lucide-icon> Enviar para Firma
+            </button>
+        </div>
+    </div>
+
+    <!-- CUERPO LEGAL -->
+    <div class="bg-white border border-border rounded-xl shadow-sm p-8 max-w-4xl mx-auto flex flex-col min-h-[500px]">
+        <h2 class="text-xl font-bold text-center mb-6 underline decoration-border underline-offset-8">
+            {{ contrato.titulo | uppercase }}
+        </h2>
+
+        <!-- Pre formatted legal text -->
+        <div class="font-serif leading-relaxed text-txt-primary whitespace-pre-wrap text-justify">
+            {{ contrato.cuerpoLegal }}
+        </div>
+
+        <!-- ITEMS ANEXADOS -->
+        <div class="mt-8 border-t border-border/50 pt-6" *ngIf="contrato.items && contrato.items.length > 0">
+            <h3 class="text-lg font-bold mb-4">Anexo: Resumen Económico o Entregables</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-surface text-txt-secondary border-y border-border">
+                        <tr>
+                            <th class="px-4 py-3 font-medium">Descripción</th>
+                            <th class="px-4 py-3 font-medium text-center">Cant.</th>
+                            <th class="px-4 py-3 font-medium text-right">Unitario</th>
+                            <th class="px-4 py-3 font-medium text-right">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border">
+                        <tr *ngFor="let it of contrato.items" class="hover:bg-surface-hover/50">
+                            <td class="px-4 py-3">{{ it.descripcion }}</td>
+                            <td class="px-4 py-3 text-center">{{ it.cantidad }}</td>
+                            <td class="px-4 py-3 text-right">{{ it.precioUnitario |
+                                currency:contrato.moneda:'symbol-narrow':'1.0-0' }}</td>
+                            <td class="px-4 py-3 text-right">{{ it.total |
+                                currency:contrato.moneda:'symbol-narrow':'1.0-0' }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="bg-surface font-semibold border-y border-border text-txt-primary">
+                        <tr>
+                            <td colspan="3" class="px-4 py-3 text-right">TOTAL {{ contrato.moneda }}</td>
+                            <td class="px-4 py-3 text-right">{{ contrato.total |
+                                currency:contrato.moneda:'symbol-narrow':'1.0-0' }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- ESPACIO DE FIRMA (Visualización Post-Firma) -->
+        <div class="mt-16 border border-border rounded-lg bg-surface p-6 mx-auto w-full max-w-xl text-center"
+            *ngIf="contrato.estadoActual === 'Firmado' && contrato.firmaData">
+            <h4 class="text-primary font-bold mb-4 uppercase tracking-wider text-sm flex justify-center items-center">
+                <lucide-icon name="shield-check" class="w-5 h-5 mr-2 text-green-500"></lucide-icon>
+                Documento Firmado y Autenticado
+            </h4>
+
+            <div *ngIf="contrato.firmaData.metodo === 'dibujo' || contrato.firmaData.metodo === 'upload'">
+                <img [src]="contrato.firmaData.urlFirmaStorage" alt="Firma del Cliente"
+                    class="mx-auto max-h-32 mb-4 object-contain">
+                <p class="text-xs text-txt-muted border-t border-border pt-2 mt-2">
+                    Validado a través de Captura Visual ({{ contrato.firmaData.metodo | uppercase }}).
+                    Fecha de firma: {{ contrato.fechaFirma?.toDate ? (contrato.fechaFirma.toDate() | date:'medium') :
+                    (contrato.fechaFirma | date:'medium') }}
+                </p>
+            </div>
+
+            <div *ngIf="contrato.firmaData.metodo === 'digital'" class="space-y-2">
+                <p class="font-mono text-lg font-bold text-txt-primary">{{ contrato.firmaData.auditTrail?.nombreTipeado
+                    }}</p>
+                <div
+                    class="text-left text-xs text-txt-secondary bg-background border border-border p-3 rounded-lg overflow-hidden break-words">
+                    <p><strong>Método:</strong> Firma Electrónica Simple / Audit Trail</p>
+                    <p><strong>Timestamp:</strong> {{ contrato.firmaData.auditTrail?.timestamp?.toDate ?
+                        (contrato.firmaData.auditTrail?.timestamp.toDate() | date:'short') :
+                        contrato.firmaData.auditTrail?.timestamp | date:'short' }}</p>
+                    <p><strong>Consentimiento:</strong> Otorgado explícitamente vía digital UI.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Módulo de Firma Activo solo si no está firmado -->
+    <div class="mt-6" *ngIf="(contrato.estadoActual === 'Borrador' || contrato.estadoActual === 'Enviado')">
+        <div class="text-center mb-4">
+            <h3 class="text-xl font-bold text-txt-primary">Proceso de Certificación</h3>
+            <p class="text-sm text-txt-secondary">Seleccione su método preferido para validar este documento legal.</p>
+        </div>
+
+        <app-signature-pad [contratoId]="contrato.id!" [tenantId]="contrato.tenantId"
+            (firmaCompletada)="onFirmaCompletada($event)">
+        </app-signature-pad>
+    </div>
+
+</div>
+
+<!-- Loading -->
+<div *ngIf="isLoading" class="flex justify-center items-center min-h-[50vh]">
+    <lucide-icon name="loader-2" class="w-10 h-10 text-primary animate-spin"></lucide-icon>
+</div>

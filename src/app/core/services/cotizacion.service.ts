@@ -1,24 +1,9 @@
-import { inject, Injectable } from '@angular/core';
-import { Auth } from '@angular/fire/auth';
-import {
-    Firestore,
-    collection,
-    collectionData,
-    doc,
-    docData,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    query,
-    where,
-    orderBy,
-    serverTimestamp,
-    Timestamp,
-    getDoc
-} from '@angular/fire/firestore';
-import { Observable, from, switchMap, map } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { Firestore, collection, doc, docData, collectionData, setDoc, updateDoc, deleteDoc, query, where, Timestamp, orderBy } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
-import { CatalogoServicio, Cotizacion } from '../models/cotizacion.model';
+import { Cotizacion, CotizacionEstado, CotizacionHistorialEstado } from '../models/cotizacion.model';
+import { Observable, of, firstValueFrom } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -26,101 +11,101 @@ import { CatalogoServicio, Cotizacion } from '../models/cotizacion.model';
 export class CotizacionService {
     private firestore = inject(Firestore);
     private authService = inject(AuthService);
+    private collectionName = 'cotizaciones';
 
-    private async getTenantIdOrThrow(): Promise<string> {
-        const tenantId = await this.authService.getTenantId();
-        if (!tenantId) {
-            throw new Error('No tenantId found for current user');
-        }
-        return tenantId;
-    }
-
-    // ============== CATÁLOGO DE SERVICIOS ==============
-
-    getCatalogo(): Observable<CatalogoServicio[]> {
-        return from(this.getTenantIdOrThrow()).pipe(
-            switchMap(tenantId => {
-                const catalogoRef = collection(this.firestore, 'catalogoServicios');
-                const q = query(catalogoRef, where('tenantId', '==', tenantId), orderBy('createdAt', 'desc'));
-                return collectionData(q, { idField: 'id' }) as Observable<CatalogoServicio[]>;
-            })
-        );
-    }
-
-    getServicio(id: string): Observable<CatalogoServicio | undefined> {
-        const docRef = doc(this.firestore, `catalogoServicios/${id}`);
-        return docData(docRef, { idField: 'id' }) as Observable<CatalogoServicio | undefined>;
-    }
-
-    async createServicio(servicio: Omit<CatalogoServicio, 'id' | 'tenantId' | 'createdAt'>): Promise<string> {
-        const tenantId = await this.getTenantIdOrThrow();
-        const catalogoRef = collection(this.firestore, 'catalogoServicios');
-        const newServicio: CatalogoServicio = {
-            ...servicio,
-            tenantId,
-            createdAt: serverTimestamp()
-        };
-        const docRef = await addDoc(catalogoRef, newServicio);
-        return docRef.id;
-    }
-
-    async updateServicio(id: string, data: Partial<CatalogoServicio>): Promise<void> {
-        const docRef = doc(this.firestore, `catalogoServicios/${id}`);
-        await updateDoc(docRef, data);
-    }
-
-    async deleteServicio(id: string): Promise<void> {
-        const docRef = doc(this.firestore, `catalogoServicios/${id}`);
-        await deleteDoc(docRef);
-    }
-
-    // ============== COTIZACIONES ==============
-
+    // Obtiene cotizaciones (Admin ve todas, vendedor podría ver solo las suyas luego extendiendo la lógica)
     getCotizaciones(): Observable<Cotizacion[]> {
-        return from(this.getTenantIdOrThrow()).pipe(
-            switchMap(tenantId => {
-                const cotizacionesRef = collection(this.firestore, 'cotizaciones');
-                const q = query(cotizacionesRef, where('tenantId', '==', tenantId), orderBy('createdAt', 'desc'));
+        return this.authService.user$.pipe(
+            switchMap(user => {
+                if (!user || !user.tenantId) return of([]);
+                const q = query(
+                    collection(this.firestore, this.collectionName),
+                    where('tenantId', '==', user.tenantId),
+                    orderBy('createdAt', 'desc')
+                );
                 return collectionData(q, { idField: 'id' }) as Observable<Cotizacion[]>;
             })
         );
     }
 
+    // Get por ID
     getCotizacion(id: string): Observable<Cotizacion | undefined> {
-        const docRef = doc(this.firestore, `cotizaciones/${id}`);
+        const docRef = doc(this.firestore, `${this.collectionName}/${id}`);
         return docData(docRef, { idField: 'id' }) as Observable<Cotizacion | undefined>;
     }
 
-    // Llama a una funcion 'generarCorrelativo' asíncrona del backend en una etapa madura, o delega la asignación.
-    // Por ahora lo dejaremos base y el correlativo lo proveerá la UI o una Function temporal
-    async createCotizacion(cotizacion: Omit<Cotizacion, 'id' | 'tenantId' | 'createdAt' | 'updatedAt' | 'correlativo'>): Promise<string> {
-        const tenantId = await this.getTenantIdOrThrow();
-        const cotizacionesRef = collection(this.firestore, 'cotizaciones');
-
-        // Obtener un correlativo temporal si el BE no lo hace (Ideal delegar a CF)
-        const newCotizacion = {
-            ...cotizacion,
-            tenantId,
-            correlativo: 0, // Should be managed by a CF Trigger ideally or transaction
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-        };
-
-        const docRef = await addDoc(cotizacionesRef, newCotizacion);
-        return docRef.id;
+    // Función interna auxiliar (temporal) para Generar un Correlativo "suave" frontalmente. 
+    // TODO: En producción estricta, usar transaction o Cloud Function secuencial.
+    private generateMockCorrelativo(): string {
+        const date = new Date();
+        return `COT-${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}-${Math.floor(Math.random() * 9000) + 1000}`;
     }
 
-    async updateCotizacion(id: string, data: Partial<Cotizacion>): Promise<void> {
-        const docRef = doc(this.firestore, `cotizaciones/${id}`);
-        const updateData = {
-            ...data,
-            updatedAt: serverTimestamp()
+    // Crear Documento
+    async createCotizacion(payload: Partial<Cotizacion>): Promise<string> {
+        const user = await firstValueFrom(this.authService.user$);
+        if (!user || !user.tenantId || !user.uid) throw new Error('Usuario inválido o sin tenantId');
+
+        const newDocRef = doc(collection(this.firestore, this.collectionName));
+
+        // Configura el timestamp inical de historial
+        const historiaInical: CotizacionHistorialEstado = {
+            estado: 'Borrador',
+            fecha: Timestamp.now(),
+            actorId: user.uid,
+            comentario: 'Cotización inicial creada por sistema'
         };
-        await updateDoc(docRef, updateData);
+
+        const cotizacionBase: Cotizacion = {
+            ...payload as any,
+            id: newDocRef.id,
+            tenantId: user.tenantId,
+            vendedorId: user.uid,
+            correlativo: payload.correlativo || this.generateMockCorrelativo(),
+            estadoActual: 'Borrador',
+            historialEstados: [historiaInical],
+            createdAt: Timestamp.now(),
+            updatedAt: Timestamp.now(),
+        };
+
+        await setDoc(newDocRef, cotizacionBase);
+        return newDocRef.id;
     }
 
+    // Modificar Documento Base
+    async updateCotizacion(id: string, updates: Partial<Cotizacion>): Promise<void> {
+        const docRef = doc(this.firestore, `${this.collectionName}/${id}`);
+        updates.updatedAt = Timestamp.now();
+        return updateDoc(docRef, updates);
+    }
+
+    // Cambiar de Estado Oficial (Añadiendo a trazabilidad)
+    async changeStatus(id: string, nuevoEstado: CotizacionEstado, historialActual: CotizacionHistorialEstado[], comentario?: string): Promise<void> {
+        const user = await firstValueFrom(this.authService.user$);
+        const actorId = user ? user.uid : 'SISTEMA_O_CLIENTE'; // Permitir que un cliente modifique el estado via portal público (luego validaremos esto en Function o Rules)
+
+        const nuevoRegistro: CotizacionHistorialEstado = {
+            estado: nuevoEstado,
+            fecha: Timestamp.now(),
+            actorId: actorId,
+            comentario: comentario || `Cambiado a ${nuevoEstado}`
+        };
+
+        // Agregar al tope histórico (inmutable)
+        const nuevoHistorial = [...historialActual, nuevoRegistro];
+
+        const docRef = doc(this.firestore, `${this.collectionName}/${id}`);
+        return updateDoc(docRef, {
+            estadoActual: nuevoEstado,
+            historialEstados: nuevoHistorial,
+            updatedAt: Timestamp.now()
+        });
+    }
+
+    // Delete
     async deleteCotizacion(id: string): Promise<void> {
-        const docRef = doc(this.firestore, `cotizaciones/${id}`);
-        await deleteDoc(docRef);
+        const docRef = doc(this.firestore, `${this.collectionName}/${id}`);
+        return deleteDoc(docRef);
     }
+
 }

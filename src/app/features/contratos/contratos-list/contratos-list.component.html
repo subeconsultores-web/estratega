@@ -1,0 +1,29 @@
+<div class="space-y-6 pt-2 pb-16 animate-fade-in max-w-7xl mx-auto">
+    <!-- Header Tools -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-txt-primary flex items-center">
+                Legales y Contratos
+            </h1>
+            <p class="text-sm text-txt-secondary mt-1">Gestiona los acuerdos legales, firmas y estados de validación</p>
+        </div>
+        <div class="flex space-x-3 w-full sm:w-auto">
+            <button routerLink="/contratos/new"
+                class="w-full sm:w-auto flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium shadow-sm shadow-primary/20 flex items-center justify-center">
+                <lucide-icon name="plus" class="w-4 h-4 mr-2"></lucide-icon>
+                Redactar Contrato
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN TABLE COMPONENT -->
+    <div class="bg-surface border border-border rounded-xl shadow-sm overflow-hidden">
+        <app-data-table *ngIf="!isLoading" [data]="contratos" [columns]="columns"
+            searchPlaceholder="Buscar por título o ID de contrato..." (actionClick)="onAction($event)">
+        </app-data-table>
+
+        <div *ngIf="isLoading" class="p-12 flex justify-center items-center">
+            <lucide-icon name="loader-2" class="w-8 h-8 text-primary animate-spin"></lucide-icon>
+        </div>
+    </div>
+</div>

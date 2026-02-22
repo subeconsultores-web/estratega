@@ -1,0 +1,479 @@
+﻿Application bundle generation failed. [11.602 seconds] - 2026-02-22T18:30:44.091Z
+
+node.exe : 
+[1m[33m[33mÔû▓ [43;
+33m[[43;30mWARNING[43
+;33m][0m [1mNG8113: 
+SlicePipe is not used 
+within the template of 
+CotizacionViewComponent
+[0m [1m[35m[plugin 
+angular-compiler][0m
+En C:\Users\bruno\AppDa
+ta\Roaming\npm\ng.ps1: 
+24 Carácter: 5
++     & "node$exe"  "$b
+asedir/node_modules/@an
+gular/cli/bin/ng.js" 
+$arg ...
++     ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: ([1m[33m[33   
+ mÔ...r-compiler][    
+0m:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+
+    src/app/features/co
+tizaciones/cotizacion-v
+iew/cotizacion-view.com
+ponent.ts:17:77:
+[37m      17 Ôöé 
+...dule, RouterModule, 
+LucideAngularModule, 
+CurrencyPipe, 
+[32mSlicePipe[37m],
+         ÔòÁ           
+                       
+                       
+  [32m~~~~~~~~~[0m
+
+
+[33mÔû▓ [43;33m[[43;
+30mWARNING[43;33m][0m
+ [1mNG8107: The left 
+side of this optional 
+chain operation does 
+not include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the '.' 
+operator.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/features/fa
+cturas/factura-view/fac
+tura-view.component.htm
+l:67:83:
+[37m      67 Ôöé ...g 
+class="ml-1">{{ factura
+.fechaEmision?[32m.toD
+at[37me() | 
+date:'longDate'
+         ÔòÁ           
+                       
+         
+[32m~~~~~~[0m
+
+  Warning occurs in 
+the template of 
+component 
+FacturaViewComponent.
+
+    src/app/features/fa
+cturas/factura-view/fac
+tura-view.component.ts:
+16:17:
+[37m      16 Ôöé     
+templateUrl: [32m'./fa
+ctura-view.component.ht
+ml'[37m
+         ÔòÁ           
+       [32m~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~[0
+m
+
+
+[33mÔû▓ [43;33m[[43;
+30mWARNING[43;33m][0m
+ [1mNG8107: The left 
+side of this optional 
+chain operation does 
+not include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the '.' 
+operator.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/features/fa
+cturas/factura-view/fac
+tura-view.component.htm
+l:72:95:
+[37m      72 Ôöé 
+...ong class="ml-1 
+text-info">{{ factura.f
+echaVencimiento?.[32mt
+oDate[37m() |
+         ÔòÁ           
+                       
+                       
+   [32m~~~~~~[0m
+
+  Warning occurs in 
+the template of 
+component 
+FacturaViewComponent.
+
+    src/app/features/fa
+cturas/factura-view/fac
+tura-view.component.ts:
+16:17:
+[37m      16 Ôöé     
+templateUrl: [32m'./fa
+ctura-view.component.ht
+ml'[37m
+         ÔòÁ           
+       [32m~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~[0
+m
+
+
+[33mÔû▓ [43;33m[[43;
+30mWARNING[43;33m][0m
+ [1mNG8113: 
+LoadingSkeleton is not 
+used within the 
+template of DashboardFi
+nancieroComponent[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/features/fi
+nanzas/dashboard-financ
+iero/dashboard-financie
+ro.component.ts:12:63:
+[37m      12 Ôöé 
+...CommonModule, 
+RouterModule, 
+LucideAngularModule, [
+32mLoadingSkeleton[37m
+],
+         ÔòÁ           
+                       
+                   [32
+m~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31
+m[[41;97mERROR[41;31m
+][0m [1mTS2367: This 
+comparison appears to 
+be unintentional 
+because the types 
+'EstadoContrato' and 
+'"Enviada"' have no 
+overlap.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/features/co
+ntratos/contrato-view/c
+ontrato-view.component.
+html:23:40:
+[37m      23 Ôöé ...  
+      [class.bg-blue-50
+0/10]="[32mcontrato.es
+tadoActual==='Enviada'
+[37m"
+         ÔòÁ           
+                       
+  [32m~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the 
+template of component 
+ContratoViewComponent.
+
+    src/app/features/co
+ntratos/contrato-view/c
+ontrato-view.component.
+ts:15:17:
+[37m      15 Ôöé     
+templateUrl: [32m'./co
+ntrato-view.component.h
+tml'[37m
+         ÔòÁ           
+       [32m~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~[
+0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mTS2367: This 
+comparison appears to 
+be unintentional 
+because the types 
+'EstadoContrato' and 
+'"Enviada"' have no 
+overlap.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/features/co
+ntratos/contrato-view/c
+ontrato-view.component.
+html:24:39:
+[37m      24 Ôöé ...  
+       [class.text-blue
+-500]="[32mcontrato.es
+tadoActual==='Enviada'
+[37m"
+         ÔòÁ           
+                       
+  [32m~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the 
+template of component 
+ContratoViewComponent.
+
+    src/app/features/co
+ntratos/contrato-view/c
+ontrato-view.component.
+ts:15:17:
+[37m      15 Ôöé     
+templateUrl: [32m'./co
+ntrato-view.component.h
+tml'[37m
+         ÔòÁ           
+       [32m~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~[
+0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mTS2367: This 
+comparison appears to 
+be unintentional 
+because the types 
+'"Enviado" | "Firmado" 
+| "Cancelado"' and 
+'"Enviada"' have no 
+overlap.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/features/co
+ntratos/contrato-view/c
+ontrato-view.component.
+html:121:70:
+[37m      121 Ôöé 
+...doActual === 
+'Borrador' || [32mcont
+rato.estadoActual === 
+'Enviada'[37m)">
+          ÔòÁ          
+                     [
+32m~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the 
+template of component 
+ContratoViewComponent.
+
+    src/app/features/co
+ntratos/contrato-view/c
+ontrato-view.component.
+ts:15:17:
+[37m      15 Ôöé     
+templateUrl: [32m'./co
+ntrato-view.component.h
+tml'[37m
+         ÔòÁ           
+       [32m~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~[
+0m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mTS2339: Property 
+'toDate' does not 
+exist on type 
+'Date'.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/features/fa
+cturas/factura-view/fac
+tura-view.component.htm
+l:67:83:
+[37m      67 Ôöé ...g 
+class="ml-1">{{ factura
+.fechaEmision?[32m.toD
+at[37me() | 
+date:'longDate'
+         ÔòÁ           
+                       
+         
+[32m~~~~~~[0m
+
+  Error occurs in the 
+template of component 
+FacturaViewComponent.
+
+    src/app/features/fa
+cturas/factura-view/fac
+tura-view.component.ts:
+16:17:
+[37m      16 Ôöé     
+templateUrl: [32m'./fa
+ctura-view.component.ht
+ml'[37m
+         ÔòÁ           
+       [32m~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~[0
+m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mTS2339: Property 
+'toDate' does not 
+exist on type 
+'Date'.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/features/fa
+cturas/factura-view/fac
+tura-view.component.htm
+l:72:95:
+[37m      72 Ôöé 
+...ong class="ml-1 
+text-info">{{ factura.f
+echaVencimiento?.[32mt
+oDate[37m() |
+         ÔòÁ           
+                       
+                       
+   [32m~~~~~~[0m
+
+  Error occurs in the 
+template of component 
+FacturaViewComponent.
+
+    src/app/features/fa
+cturas/factura-view/fac
+tura-view.component.ts:
+16:17:
+[37m      16 Ôöé     
+templateUrl: [32m'./fa
+ctura-view.component.ht
+ml'[37m
+         ÔòÁ           
+       [32m~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~[0
+m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mTS7053: Element 
+implicitly has an 
+'any' type because 
+expression of type '"po
+rcentajeDescuento"' 
+can't be used to index 
+type 'Factura'.
+  Property 
+'porcentajeDescuento' 
+does not exist on type 
+'Factura'.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/features/fa
+cturas/factura-view/fac
+tura-view.component.htm
+l:116:72:
+[37m      116 Ôöé 
+...een text-info" *ngIf
+="([32mfactura['porcen
+tajeDescuento'][37m 
+|| 0) > 0">
+          ÔòÁ          
+                 [32m~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~[0m
+
+  Error occurs in the 
+template of component 
+FacturaViewComponent.
+
+    src/app/features/fa
+cturas/factura-view/fac
+tura-view.component.ts:
+16:17:
+[37m      16 Ôöé     
+templateUrl: [32m'./fa
+ctura-view.component.ht
+ml'[37m
+         ÔòÁ           
+       [32m~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~[0
+m
+
+
+[31mX [41;31m[[41;97
+mERROR[41;31m][0m 
+[1mTS7053: Element 
+implicitly has an 
+'any' type because 
+expression of type '"po
+rcentajeDescuento"' 
+can't be used to index 
+type 'Factura'.
+  Property 
+'porcentajeDescuento' 
+does not exist on type 
+'Factura'.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/features/fa
+cturas/factura-view/fac
+tura-view.component.htm
+l:118:33:
+[37m      118 Ôöé ... 
+              <span>{{ 
+[32mfactura['porcentaj
+eDescuento'][37m 
+}}%</span>
+          ÔòÁ          
+                  [32m
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~[0m
+
+  Error occurs in the 
+template of component 
+FacturaViewComponent.
+
+    src/app/features/fa
+cturas/factura-view/fac
+tura-view.component.ts:
+16:17:
+[37m      16 Ôöé     
+templateUrl: [32m'./fa
+ctura-view.component.ht
+ml'[37m
+         ÔòÁ           
+       [32m~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~[0
+m
+
+[39m[22m

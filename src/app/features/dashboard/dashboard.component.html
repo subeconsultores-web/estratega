@@ -1,19 +1,19 @@
-<div class="max-w-7xl mx-auto space-y-6">
+<div class="space-y-6">
 
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Dashboard General</h1>
-            <p class="text-gray-500 mt-1">Resumen del rendimiento comercial y operativo de tu empresa.</p>
+            <h1 class="text-2xl font-bold text-txt-primary tracking-tight">Dashboard General</h1>
+            <p class="text-txt-muted mt-1">Resumen del rendimiento comercial y operativo de tu empresa.</p>
         </div>
         <div class="flex space-x-3">
             <button
-                class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm flex items-center">
+                class="bg-surface border border-border text-txt-secondary px-4 py-2 rounded-lg text-sm font-medium hover:bg-surface-hover transition-colors shadow-sm flex items-center">
                 <lucide-icon name="clock" [size]="16" class="mr-2"></lucide-icon>
                 Últimos 30 días
             </button>
             <button
-                class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm flex items-center">
+                class="bg-primary text-white border border-transparent px-4 py-2 rounded-lg text-sm font-medium hover:brightness-110 transition-all shadow-sm flex items-center">
                 <lucide-icon name="plus" [size]="16" class="mr-2"></lucide-icon>
                 Nueva Cotización
             </button>
@@ -21,23 +21,22 @@
     </div>
 
     <!-- Estratega IA Insights Widget -->
-    <div
-        class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-5 shadow-sm relative overflow-hidden">
-        <div class="absolute -right-4 -top-4 text-blue-100 opacity-50 transform rotate-12">
+    <div class="bg-primary/5 border border-primary/20 rounded-xl p-5 shadow-sm relative overflow-hidden">
+        <div class="absolute -right-4 -top-4 text-primary/10 transform rotate-12">
             <lucide-icon name="sparkles" [size]="120"></lucide-icon>
         </div>
 
         <div class="relative z-10">
             <div class="flex items-center space-x-2 mb-3">
-                <lucide-icon name="sparkles" [size]="20" class="text-blue-600"></lucide-icon>
-                <h2 class="text-lg font-bold text-blue-900">Estratega IA Insights</h2>
+                <lucide-icon name="sparkles" [size]="20" class="text-primary"></lucide-icon>
+                <h2 class="text-lg font-bold text-primary">Estratega IA Insights</h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div *ngFor="let insight of estrategaInsights"
-                    class="bg-white/80 backdrop-blur-sm rounded-lg p-4 border border-blue-50/50 shadow-sm text-sm text-blue-800 flex items-start">
+                    class="bg-surface/80 backdrop-blur-sm rounded-lg p-4 border border-border shadow-sm text-sm text-txt-secondary flex items-start">
                     <lucide-icon name="chevron-right" [size]="16"
-                        class="mt-0.5 mr-2 text-blue-400 shrink-0"></lucide-icon>
+                        class="mt-0.5 mr-2 text-primary shrink-0"></lucide-icon>
                     <p>{{ insight }}</p>
                 </div>
             </div>
@@ -46,32 +45,19 @@
 
     <!-- KPIs Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div *ngFor="let kpi of kpis"
-            class="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
-            <div class="flex justify-between items-start mb-4">
-                <div
-                    [class]="kpi.color + ' w-10 h-10 rounded-lg flex items-center justify-center text-white shadow-sm'">
-                    <lucide-icon [name]="kpi.icon" [size]="20"></lucide-icon>
-                </div>
-                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium"
-                    [ngClass]="kpi.trendUp ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'">
-                    {{ kpi.trend }}
-                </span>
-            </div>
-            <div>
-                <h3 class="text-gray-500 text-sm font-medium">{{ kpi.label }}</h3>
-                <p class="text-2xl font-bold text-gray-900 mt-1">{{ kpi.value }}</p>
-            </div>
-        </div>
+        <app-stat-card *ngFor="let kpi of kpis" [title]="kpi.label" [value]="kpi.value" [type]="kpi.type"
+            [trend]="kpi.trend" [trendText]="kpi.trendText" [trendDesc]="kpi.trendDesc" [icon]="kpi.icon"
+            [color]="kpi.color">
+        </app-stat-card>
     </div>
 
     <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Main Bar Chart -->
-        <div class="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+        <div class="lg:col-span-2 bg-surface rounded-xl border border-border shadow-sm p-6">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-base font-bold text-gray-900">Ingresos vs Gastos</h3>
-                <button class="text-gray-400 hover:text-gray-600"><lucide-icon name="settings"
+                <h3 class="text-base font-bold text-txt-primary">Ingresos vs Gastos</h3>
+                <button class="text-txt-muted hover:text-txt-primary"><lucide-icon name="settings"
                         [size]="18"></lucide-icon></button>
             </div>
             <div class="h-80 w-full relative">
@@ -81,10 +67,10 @@
         </div>
 
         <!-- Doughnut Chart -->
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 flex flex-col">
+        <div class="bg-surface rounded-xl border border-border shadow-sm p-6 flex flex-col">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-base font-bold text-gray-900">Distribución de Horas</h3>
-                <button class="text-gray-400 hover:text-gray-600"><lucide-icon name="settings"
+                <h3 class="text-base font-bold text-txt-primary">Distribución de Horas</h3>
+                <button class="text-txt-muted hover:text-txt-primary"><lucide-icon name="settings"
                         [size]="18"></lucide-icon></button>
             </div>
             <div class="h-64 flex-1 w-full relative flex items-center justify-center">
@@ -92,7 +78,7 @@
                     [type]="doughnutChartType">
                 </canvas>
             </div>
-            <div class="mt-4 pt-4 border-t border-gray-100 text-center">
+            <div class="mt-4 pt-4 border-t border-border text-center">
                 <button class="text-sm text-primary font-medium hover:underline">Ver reporte de rentabilidad
                     &rarr;</button>
             </div>
@@ -103,10 +89,10 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
 
         <!-- Tareas Urgentes -->
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
-            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
-                <h3 class="text-base font-bold text-gray-900">Tareas Pendientes</h3>
-                <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">3
+        <div class="bg-surface rounded-xl border border-border shadow-sm">
+            <div class="px-6 py-5 border-b border-border flex justify-between items-center">
+                <h3 class="text-base font-bold text-txt-primary">Tareas Pendientes</h3>
+                <span class="bg-yellow-500/10 text-yellow-500 text-xs font-semibold px-2.5 py-0.5 rounded-full">3
                     Urgentes</span>
             </div>
             <div class="p-6">
@@ -118,43 +104,44 @@
         </div>
 
         <!-- Actividad Reciente -->
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
-            <div class="px-6 py-5 border-b border-gray-100">
-                <h3 class="text-base font-bold text-gray-900">Actividad del Equipo</h3>
+        <div class="bg-surface rounded-xl border border-border shadow-sm">
+            <div class="px-6 py-5 border-b border-border">
+                <h3 class="text-base font-bold text-txt-primary">Actividad del Equipo</h3>
             </div>
             <div class="p-6">
                 <div class="space-y-6">
                     <div class="flex items-start">
-                        <div class="bg-blue-100 p-2 rounded-full text-primary mr-4 mt-0.5 z-10 relative">
+                        <div class="bg-primary/10 p-2 rounded-full text-primary mr-4 mt-0.5 z-10 relative">
                             <lucide-icon name="file-text" [size]="16"></lucide-icon>
                         </div>
-                        <div class="flex-1 border-l-2 border-gray-100 -ml-[23px] pl-8 pb-1">
-                            <p class="text-sm font-medium text-gray-900">Cotización COT-042 enviada</p>
-                            <p class="text-sm text-gray-500 mt-1">María envió la cotización a "TechCorp Ltda."</p>
-                            <span class="text-xs text-gray-400 mt-1 block">Hace 2 horas</span>
+                        <div class="flex-1 border-l-2 border-border -ml-[23px] pl-8 pb-1">
+                            <p class="text-sm font-medium text-txt-primary">Cotización COT-042 enviada</p>
+                            <p class="text-sm text-txt-secondary mt-1">María envió la cotización a "TechCorp Ltda."</p>
+                            <span class="text-xs text-txt-muted mt-1 block">Hace 2 horas</span>
                         </div>
                     </div>
 
                     <div class="flex items-start">
-                        <div class="bg-emerald-100 p-2 rounded-full text-emerald-600 mr-4 mt-0.5 z-10 relative">
+                        <div class="bg-accent/10 p-2 rounded-full text-accent mr-4 mt-0.5 z-10 relative">
                             <lucide-icon name="dollar-sign" [size]="16"></lucide-icon>
                         </div>
-                        <div class="flex-1 border-l-2 border-gray-100 -ml-[23px] pl-8 pb-1">
-                            <p class="text-sm font-medium text-gray-900">Pago recibido</p>
-                            <p class="text-sm text-gray-500 mt-1">Factura FACT-089 fue pagada en su totalidad.</p>
-                            <span class="text-xs text-gray-400 mt-1 block">Hace 5 horas</span>
+                        <div class="flex-1 border-l-2 border-border -ml-[23px] pl-8 pb-1">
+                            <p class="text-sm font-medium text-txt-primary">Pago recibido</p>
+                            <p class="text-sm text-txt-secondary mt-1">Factura FACT-089 fue pagada en su totalidad.</p>
+                            <span class="text-xs text-txt-muted mt-1 block">Hace 5 horas</span>
                         </div>
                     </div>
 
                     <div class="flex items-start">
-                        <div class="bg-purple-100 p-2 rounded-full text-purple-600 mr-4 mt-0.5 z-10 relative">
+                        <div class="bg-purple-500/10 p-2 rounded-full text-purple-500 mr-4 mt-0.5 z-10 relative">
                             <lucide-icon name="briefcase" [size]="16"></lucide-icon>
                         </div>
                         <div class="flex-1 pl-4 pb-1">
-                            <p class="text-sm font-medium text-gray-900">Nuevo Proyecto iniciado</p>
-                            <p class="text-sm text-gray-500 mt-1">"Implementación CRM" ha pasado a estado En Progreso.
+                            <p class="text-sm font-medium text-txt-primary">Nuevo Proyecto iniciado</p>
+                            <p class="text-sm text-txt-secondary mt-1">"Implementación CRM" ha pasado a estado En
+                                Progreso.
                             </p>
-                            <span class="text-xs text-gray-400 mt-1 block">Ayer</span>
+                            <span class="text-xs text-txt-muted mt-1 block">Ayer</span>
                         </div>
                     </div>
                 </div>

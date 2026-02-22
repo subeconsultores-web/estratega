@@ -1,56 +1,55 @@
-export interface CatalogoServicio {
-    id?: string;
-    tenantId: string;
-    nombre: string;
-    descripcion: string;
-    categoria: string;
-    precioBase: number;
-    unidad: 'hora' | 'sesion' | 'mes' | 'proyecto' | 'unidad';
-    impuestosIncluidos: boolean;
-    activo: boolean;
-    versionPrecios?: {
-        precio: number;
-        fecha: any; // Timestamp o Date
-        motivo: string;
-    }[];
-    createdAt?: any;
+import { Timestamp } from '@angular/fire/firestore';
+
+export type CotizacionEstado = 'Borrador' | 'Enviada' | 'Revision_Solicitada' | 'Aceptada' | 'Rechazada';
+
+export interface CotizacionItemDetalle {
+    catalogoItemId: string; // Foreign key a CatalogoItem
+    nombre: string;         // Snapshot al momento de cotizar
+    descripcion?: string;
+    cantidad: number;
+    precioUnitario: number; // Snapshot del precio
+    subtotal: number;       // Calculado: cantidad * precioUnitario
 }
 
-export interface CotizacionItem {
-    servicioId?: string;
-    descripcion: string;
-    cantidad: number;
-    precioUnitario: number;
-    descuento: number;
-    total: number;
+export interface CotizacionHistorialEstado {
+    estado: CotizacionEstado;
+    fecha: Timestamp | Date;
+    actorId: string;       // El usuario (vendedor/admin) o cliente que generó el cambio
+    comentario?: string;
 }
 
 export interface Cotizacion {
     id?: string;
     tenantId: string;
-    clienteId: string;
-    correlativo: number;
-    codigoFormateado: string;
-    titulo: string;
-    items: CotizacionItem[];
+
+    // Metadatos y Participantes
+    correlativo: string;   // Ej: COT-0001 (Generado)
+    clienteId: string;     // FK a CRM Cliente
+    vendedorId: string;    // FK a Auth Usuario (quién la creó/vende)
+
+    // Tiempos
+    fechaEmision: Timestamp | Date;
+    fechaExpiracion: Timestamp | Date;
+
+    // Datos Comerciales
+    items: CotizacionItemDetalle[];
     subtotal: number;
-    descuentoGlobal: number;
-    impuestos: number;
-    total: number;
-    moneda: 'CLP' | 'UF' | 'USD';
-    estado: 'borrador' | 'enviada' | 'en_revision' | 'aprobada' | 'rechazada' | 'expirada';
-    validezDias: number;
-    fechaExpiracion?: any;
-    condiciones: string;
-    notas: string;
-    vendedorId?: string;
-    plantillaId?: string;
-    historialEstados?: {
-        estado: string;
-        fecha: any;
-        usuarioId?: string;
-        comentario?: string;
-    }[];
-    createdAt?: any;
-    updatedAt?: any;
+    descuento: {
+        tipo: 'porcentaje' | 'monto';
+        valor: number;
+        montoAplicado: number; // Resultado matemático
+    };
+    porcentajeImpuesto: number; // Default 19% en Chile (o según ONBOARDING)
+    montoImpuesto: number;
+    totalFinal: number;
+
+    // Condiciones Contractuales/Flexibles
+    condicionesAdicionales?: string; // HTML o Texto Libre
+
+    // Máquina de Estados y Trazabilidad
+    estadoActual: CotizacionEstado;
+    historialEstados: CotizacionHistorialEstado[];
+
+    createdAt: Timestamp | Date;
+    updatedAt: Timestamp | Date;
 }

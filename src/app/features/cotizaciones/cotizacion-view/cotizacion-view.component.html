@@ -1,0 +1,199 @@
+<div class="space-y-6 pt-2 pb-16 animate-fade-in max-w-5xl mx-auto">
+    <!-- Header Tools -->
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <h1 class="text-2xl font-bold text-txt-primary flex items-center">
+                <button type="button" (click)="goBack()"
+                    class="mr-3 p-2 hover:bg-surface-hover rounded-full transition-colors text-txt-muted hover:text-txt-primary">
+                    <lucide-icon name="arrow-left" class="w-5 h-5"></lucide-icon>
+                </button>
+                Resumen Propuesta
+            </h1>
+        </div>
+
+        <div class="flex gap-2" *ngIf="cotizacion">
+            <button routerLink="/cotizaciones/{{cotizacion.id}}/editar" *ngIf="cotizacion.estadoActual === 'Borrador'"
+                class="flex items-center px-4 py-2 bg-surface border border-border text-txt-primary rounded-lg hover:bg-surface-hover transition-colors font-medium shadow-sm">
+                <lucide-icon name="edit" class="w-4 h-4 mr-2"></lucide-icon>
+                Modificar Borrador
+            </button>
+            <button (click)="setEstado('Enviada')" [disabled]="isStatusChanging"
+                *ngIf="cotizacion.estadoActual === 'Borrador' || cotizacion.estadoActual === 'Revision_Solicitada'"
+                class="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium shadow-sm disabled:opacity-50">
+                <lucide-icon name="send" class="w-4 h-4 mr-2"></lucide-icon>
+                Marcar Enviada
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div *ngIf="isLoading"
+        class="p-12 flex flex-col items-center justify-center bg-surface rounded-xl border border-border">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+        <p class="text-txt-muted">Cargando propuesta y cruzando datos...</p>
+    </div>
+
+    <ng-container *ngIf="!isLoading && cotizacion">
+
+        <!-- Status Banner -->
+        <div
+            class="bg-surface rounded-xl border border-border shadow-sm p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <p class="text-sm font-semibold text-txt-muted uppercase tracking-wider mb-1">CÓDIGO OPERACIÓN</p>
+                <h2 class="text-2xl font-bold text-txt-primary">{{ cotizacion.correlativo }}</h2>
+            </div>
+
+            <div class="flex flex-col items-end">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                    [class.bg-yellow-500/10]="cotizacion.estadoActual==='Borrador'"
+                    [class.text-yellow-600]=" cotizacion.estadoActual==='Borrador'"
+                    [class.bg-blue-500/10]=" cotizacion.estadoActual==='Enviada'"
+                    [class.text-blue-600]=" cotizacion.estadoActual==='Enviada'"
+                    [class.bg-purple-500/10]=" cotizacion.estadoActual==='Revision_Solicitada'"
+                    [class.text-purple-600]=" cotizacion.estadoActual==='Revision_Solicitada'"
+                    [class.bg-green-500/10]=" cotizacion.estadoActual==='Aceptada'"
+                    [class.text-green-600]=" cotizacion.estadoActual==='Aceptada'"
+                    [class.bg-red-500/10]=" cotizacion.estadoActual==='Rechazada'"
+                    [class.text-red-600]=" cotizacion.estadoActual==='Rechazada'">
+                    {{ cotizacion.estadoActual }}
+                </span>
+                <p class=" text-xs text-txt-muted mt-2">Válida hasta: {{ getExpirationDateStr() }}</p>
+            </div>
+        </div>
+
+        <!-- 2 Columns Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <!-- Client Info Block -->
+            <div class="bg-surface rounded-xl border border-border shadow-sm p-6 space-y-4">
+                <div class="flex items-center text-txt-muted mb-2">
+                    <lucide-icon name="user" class="w-5 h-5 mr-2"></lucide-icon>
+                    <h3 class="font-semibold text-txt-primary">Receptor Principal</h3>
+                </div>
+                <div *ngIf="clienteAso">
+                    <p class="text-lg font-bold text-txt-primary">{{ clienteAso.contactoPrincipal.nombre ||
+                        clienteAso.nombreEmpresa }}</p>
+                    <p class="text-sm text-txt-secondary">{{ clienteAso.nombreEmpresa || 'N/A' }}</p>
+                    <div class="mt-4 pt-4 border-t border-border/50 text-sm text-txt-muted space-y-2">
+                        <p><strong>RUT:</strong> {{ clienteAso.rut }}</p>
+                        <p><strong>Email:</strong> {{ clienteAso.contactoPrincipal.email || 'No registrado' }}</p>
+                    </div>
+                </div>
+                <div *ngIf="!clienteAso" class="text-red-500 text-sm">
+                    Receptor desconectado o eliminado del CRM.
+                </div>
+            </div>
+
+            <!-- Dates and Logic -->
+            <div class="bg-surface rounded-xl border border-border shadow-sm p-6 space-y-4">
+                <div class="flex items-center text-txt-muted mb-2">
+                    <lucide-icon name="calendar-clock" class="w-5 h-5 mr-2"></lucide-icon>
+                    <h3 class="font-semibold text-txt-primary">Tiempos</h3>
+                </div>
+                <div class="text-sm text-txt-secondary space-y-3">
+                    <div class="flex justify-between"><span>Emisión Base:</span> <span
+                            class="text-txt-primary font-medium">{{ getEmisionDateStr() }}</span></div>
+                    <div class="flex justify-between"><span>Caducidad:</span> <span
+                            class="text-txt-primary font-medium">{{ getExpirationDateStr() }}</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Breakdown -->
+        <div class="bg-surface rounded-xl border border-border shadow-sm overflow-hidden mt-6">
+            <div class="p-4 border-b border-border bg-surface-hover/30">
+                <h3 class="font-semibold text-txt-primary flex items-center">
+                    <lucide-icon name="layers" class="w-5 h-5 mr-2 text-txt-muted"></lucide-icon>
+                    Desglose de Servicios Contractuales
+                </h3>
+            </div>
+
+            <!-- Table Header -->
+            <div
+                class="grid grid-cols-12 gap-4 px-6 py-3 bg-surface-hover border-b border-border text-xs font-semibold text-txt-muted uppercase tracking-wider">
+                <div class="col-span-6 md:col-span-7">Descripción Concepto</div>
+                <div class="col-span-2 text-right">Cant.</div>
+                <div class="col-span-2 md:col-span-1 text-right">P.U.</div>
+                <div class="col-span-2 text-right">Monto Línea</div>
+            </div>
+
+            <!-- Table Body -->
+            <div class="divide-y divide-border/50">
+                <div *ngFor="let item of cotizacion.items" class="grid grid-cols-12 gap-4 px-6 py-4 items-center">
+                    <div class="col-span-6 md:col-span-7">
+                        <p class="font-medium text-txt-primary text-sm">{{ item.nombre }}</p>
+                        <p class="text-xs text-txt-muted mt-1" *ngIf="item.descripcion">{{ item.descripcion }}</p>
+                    </div>
+                    <div class="col-span-2 text-right text-sm text-txt-secondary">{{ item.cantidad }}</div>
+                    <div class="col-span-2 md:col-span-1 text-right text-sm text-txt-secondary">{{ item.precioUnitario |
+                        currency:'CLP':'symbol-narrow':'1.0-0' }}</div>
+                    <div class="col-span-2 text-right text-sm font-semibold text-txt-primary">{{ item.subtotal |
+                        currency:'CLP':'symbol-narrow':'1.0-0' }}</div>
+                </div>
+            </div>
+
+            <!-- Footer Math -->
+            <div class="p-6 bg-surface-hover/30 border-t border-border flex justify-end">
+                <div class="w-full md:w-1/3 min-w-[250px] space-y-3">
+                    <div class="flex justify-between text-sm text-txt-secondary">
+                        <span>Subtotal Neto</span>
+                        <span>{{ cotizacion.subtotal | currency:'CLP':'symbol-narrow':'1.0-0' }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-red-500 font-medium"
+                        *ngIf="cotizacion.descuento && cotizacion.descuento.montoAplicado! > 0">
+                        <span>Ahorro ({{ cotizacion.descuento.tipo === 'porcentaje' ? cotizacion.descuento.valor + '%'
+                            : 'Manual' }})</span>
+                        <span>- {{ cotizacion.descuento.montoAplicado | currency:'CLP':'symbol-narrow':'1.0-0'
+                            }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-txt-secondary border-t border-border/50 pt-2">
+                        <span>Impuestos ({{ cotizacion.porcentajeImpuesto }}%)</span>
+                        <span>+ {{ cotizacion.montoImpuesto | currency:'CLP':'symbol-narrow':'1.0-0' }}</span>
+                    </div>
+                    <div class="flex justify-between items-center border-t-2 border-border pt-3">
+                        <span class="font-bold text-txt-primary uppercase">Total Operación</span>
+                        <span class="text-xl font-bold text-primary">{{ cotizacion.totalFinal |
+                            currency:'CLP':'symbol-narrow':'1.0-0' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Extra Conditions Box -->
+        <div class="bg-surface rounded-xl border border-border shadow-sm p-6 mt-6"
+            *ngIf="cotizacion.condicionesAdicionales">
+            <h3 class="font-semibold text-txt-primary mb-3 text-sm uppercase tracking-wider text-txt-muted">Cláusulas
+                Addendum</h3>
+            <p class="text-sm text-txt-secondary leading-relaxed whitespace-pre-wrap">{{
+                cotizacion.condicionesAdicionales }}</p>
+        </div>
+
+        <!-- Log Traceability Actions -->
+        <div class="bg-surface rounded-xl border border-border shadow-sm p-6 mt-6">
+            <h3 class="font-semibold text-txt-primary mb-4 text-sm uppercase tracking-wider text-txt-muted">Trazabilidad
+                Contractual</h3>
+
+            <div
+                class="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent">
+                <div *ngFor="let trace of cotizacion.historialEstados"
+                    class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <!-- Log Dot -->
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-surface bg-background shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                        <lucide-icon name="history" class="w-4 h-4 text-txt-muted"></lucide-icon>
+                    </div>
+
+                    <div
+                        class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-surface-hover/50 p-4 rounded-xl border border-border/50 shadow-sm">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-semibold text-txt-primary text-sm">{{ trace.estado }}</span>
+                            <time class="text-xs text-txt-muted">{{ getTraceDateStr(trace.fecha) }}</time>
+                        </div>
+                        <p class="text-xs text-txt-secondary">{{ trace.comentario }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ng-container>
+
+</div>

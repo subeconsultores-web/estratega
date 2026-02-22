@@ -575,6 +575,12 @@ Cloud Function que recalcula el score cada vez que se registra una actividad o c
 *   Al crear factura desde contrato, hereda items y calcula cuotas según condicionesPago.
 *   Recordatorio automático: Cloud Function envía email al cliente 3 días antes del vencimiento y el día del vencimiento.
 
+#### Arquitectura de Pagos (Stripe Integration V1)
+En vez de incrustar **Stripe Elements** directos en el DOM que obligaría a mantener métricas estrictas de PCI compliance, optamos escalar mediante **Stripe Checkout Sessions**:
+1. El usuario cliente pulsa **Pagar con Stripe** y dispara la Callable Firebase local `@angular/fire/functions`: `createCheckoutSession`.
+2. Esta función pura de NodeJS constata credenciales transaccionales e instancia un ticket asíncrono sobre la API de Stripe generando un portal Hosted.
+3. Aceptado el pago vía ApplePay/Cards, el servidor de Stripe ejecuta proactivamente nuestro webhook proxy: `stripeWebhook`. Este verifica criptográficamente evitar manipulaciones, actualizando atómicamente la Factura ligada hacia el estado `pagada` previniendo race conditions en cliente.
+
 ## 5.7 Timetracking y Rentabilidad
 ### Vistas
 *   **TimerComponent:** Widget persistente en la barra superior: botón Start/Stop, selector de proyecto/tarea, cronómetro visible. Al detener, abre modal para agregar descripción y confirmar.
@@ -651,6 +657,36 @@ El asistente utiliza Gemini 2.0 Flash via Cloud Functions como proxy. Antes de e
 | Starter | 200 | Medio (KPIs + cotizaciones) | Análisis + alertas |
 | Professional | 1000 | Completo | Todas las funciones |
 | Enterprise | Ilimitado | Completo + historial | Todas + personalización |
+
+## 5.5 Cotizaciones y Propuestas (Sprint 5)
+Módulo encargado del ciclo de vida comercial previo al contrato formal, permitiendo a los vendedores estructurar ofertas basadas en el catálogo de productos y servicios.
+
+**Modelos de Datos Principales (`cotizacion.model.ts`):**
+*   `Cotizacion`: Entidad principal que almacena `tenantId`, `clienteId`, `vendedorId`, y un `correlativo` legible e incrementable automáticamente.
+*   `CotizacionItemDetalle`: Líneas de ítems incrustadas vinculadas a `CatalogoItem` con subtotal integrado.
+*   **Gestor Económico:** Cálculo en tiempo real de `subtotal`, `descuento` (monto o Módulo), `impuestos` aplicables y `totalFinal`.
+*   **Trazabilidad:** Máquina de estados con historial en array (`Borrador`, `Enviada`, `Revision_Solicitada`, `Aceptada`, `Rechazada`).
+
+**Componentes Principales:**
+*   `CotizacionesListComponent`: Datatable de gestión multi-tenant para supervisar, filtrar y administrar propuestas, listando correlativos y estados con badges.
+*   `CotizacionFormComponent`: Generador de cotizaciones con interfaz reactiva y FormArrays. Relaciona ítems del catálogo en tiempo real con matemática integrada. Autocompleta clientes activos del CRM e inserta Condiciones Adicionales.
+*   `CotizacionViewComponent`: Vista de lectura estructurada del desglose económico y la línea temporal de trazabilidad de estados. Prepara el entorno para firma de contratos y notificaciones asíncronas.
+
+---
+
+## 5.6 Contratos y Firmas Electrónicas (Sprint 6)
+Módulo encargado de formalizar las cotizaciones mediante acuerdos legales strictos soportando 3 métodos distintos de validación de identidad para el cliente.
+
+**Modelos de Datos Principales (`contrato.model.ts`):**
+*   `Contrato`: Entidad principal alojando `tenantId`, `cotizacionOrigenId`, `cuerpoLegal` detallado y `itemsArray` anexando la matemática transaccional subyacente de los servicios.
+*   `FirmaData`: Sub-Objeto almacenado tras la firma del cliente, definiendo el `metodo` (dibujo, upload, digital), el `urlFirmaStorage` (si aplica) y la huella `auditTrail` (con timestamp y user-agent para Firmas Electrónicas Simples sin imagen).
+*   **Trazabilidad de Estados:** Máquina controlada `Borrador -> Enviado -> Firmado -> Cancelado`.
+
+**Componentes Principales:**
+*   `ContratosListComponent`: Reutilización estructural de `app-data-table` controlando la vista global de los acuerdos.
+*   `ContratoFormComponent`: Creador de contratos. Diseñado para inyectar información pre-existente desde una propuesta (`patchFromCotizacion`) o generarse de 0. Administra un Textarea puro para la inyección de las Cláusulas de Acuerdo.
+*   `SignaturePadComponent`: Componente reusable y agnóstico que gestiona 3 pestañas (Render de Canvas dinámico capturando punteros/touch para PNGs, Lector de archivos para carga gráfica corporativa y Formulario estricto de captura Audit-Trail). Sube binarios a Storage e informa al Parent.
+*   `ContratoViewComponent`: La vista "Pública" expuesta a Clientes. Condiciona dinámicamente el despliegue del texto legal, activando el *SignaturePad* o mostrando un escudo criptográfico de validación si el contrato ya ha mutado a `Firmado`.
 
 ---
 
@@ -1656,7 +1692,7 @@ Plan actualizado que incorpora todas las brechas identificadas. 12 sprints de 2 
 * Error Interceptor global.
 * Configurar CI: GitHub Actions lint + test + build.
 
-### Sprint 2 — Layout, Dashboard y Shared Components (Sem 3-4)
+### Sprint 2 — Layout, Dashboard y Shared Components (Sem 3-4) **[IMPLEMENTADO]**
 **Entregable:** app shell completa con dashboard, componentes compartidos listos.
 * Sidebar colapsable con íconos Lucide y secciones agrupadas.
 * Navbar: logo tenant, búsqueda global (UI sin lógica aún), timer placeholder, notificaciones, avatar.
@@ -1667,28 +1703,15 @@ Plan actualizado que incorpora todas las brechas identificadas. 12 sprints de 2 
 * Shared validators: RUT, Email.
 * NotificationService (toasts con ngx-toastr).
 * DashboardComponent con 6 KPI cards (mockeados).
-* Integración chart.js: embudo, barras, donut, scatter.
-* Widgets: tareas urgentes, cotizaciones pendientes, feed de actividad.
-* Responsividad completa del layout.
-* CSS variables para theming dinámico.
-
-### Sprint 3 — CRM, Clientes y Pipeline (Sem 5-6)
-**Entregable:** gestión completa de clientes con pipeline Kanban funcional.
-* ClientesService con CRUD Firestore + inyección automática de tenantId.
-* ClientesListComponent con DataTable: búsqueda, filtros, paginación cursor-based.
-* ClienteFormComponent con validación de RUT chileno.
-* ClienteDetalleComponent: vista 360° con tabs (datos, actividades, cotizaciones, contratos, facturas).
-* ActividadFormComponent: modal para registrar llamadas, reuniones, emails, notas.
-* ActividadesService con CRUD.
-* PipelineKanbanComponent con @angular/cdk drag-drop.
-* Etapas configurables del pipeline almacenadas en `tenant.config.pipelineEtapas`.
 * Cloud Function `onActividadCreated`: recalcular lead score.
 * Cloud Function para generar `searchKeywords` en clientes.
 * Importación de clientes desde CSV (upload + preview + confirm).
 
 ### Sprint 4 — Catálogo y Cotizaciones (Sem 7-8)
-**Entregable:** catálogo de servicios y flujo completo de cotizaciones con PDF.
-* CatalogoService + CRUD completo con historial de precios.
+**Entregable:** Catálogo de Productos y Servicios **[IMPLEMENTADO]**, y flujo completo de cotizaciones con PDF.
+* CatalogoService + CRUD completo unificando productos y servicios bajo `CatalogoItem` con `tenantId` base.
+* Componentes funcionales: `catalogo-list.component` interactivo y reactivo con DataTable.
+* Componente `catalogo-form.component` unificando creación mediante ReactiveForms.
 * CotizacionesService con CRUD + lógica de estados.
 * CotizacionFormComponent: selección cliente (autocomplete), ítems dinámicos desde catálogo, cálculos en tiempo real.
 * Cloud Function `generarCorrelativo`: transacción atómica con `FieldValue.increment`.

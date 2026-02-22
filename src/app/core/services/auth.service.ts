@@ -59,6 +59,10 @@ export class AuthService {
         return token.claims['tenantId'] as string || null;
     }
 
+    async getCurrentUser() {
+        return this.auth.currentUser;
+    }
+
     async getUserRole(): Promise<string | null> {
         const user = this.auth.currentUser;
         if (!user) return null;

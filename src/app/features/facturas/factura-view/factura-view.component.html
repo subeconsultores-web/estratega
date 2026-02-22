@@ -1,0 +1,174 @@
+<div class="space-y-6 pt-2 pb-16 animate-fade-in max-w-5xl mx-auto">
+
+    <!-- Navigation Layer -->
+    <div class="flex items-center justify-between">
+        <button (click)="goBack()"
+            class="px-4 py-2 border border-border rounded-lg text-txt-secondary hover:bg-surface-hover hover:text-txt-primary transition-colors flex items-center font-medium shadow-sm">
+            <lucide-icon name="arrow-left" class="w-4 h-4 mr-2"></lucide-icon>
+            Volver
+        </button>
+
+        <div class="flex space-x-3" *ngIf="factura">
+            <button *ngIf="factura.estado === 'emitida' || factura.estado === 'borrador'" (click)="anularFactura()"
+                class="px-4 py-2 border border-red-200 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors font-medium flex items-center shadow-sm">
+                <lucide-icon name="ban" class="w-4 h-4 mr-2"></lucide-icon>
+                Anular Factura
+            </button>
+        </div>
+    </div>
+
+    <!-- Spinner -->
+    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+        <lucide-icon name="loader-2" class="w-8 h-8 text-primary animate-spin"></lucide-icon>
+    </div>
+
+    <!-- Main Container Document -->
+    <div *ngIf="!isLoading && factura"
+        class="bg-surface border border-border rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row">
+
+        <!-- Document Content (70%) -->
+        <div class="w-full md:w-2/3 p-8 border-r border-border">
+
+            <div class="flex items-center justify-between mb-8 pb-8 border-b border-border">
+                <div>
+                    <h1 class="text-3xl font-bold text-txt-primary">INVOICE {{ factura.codigoFormateado }}</h1>
+                    <p class="text-txt-secondary mt-1">Factura Comercial</p>
+                </div>
+
+                <div class="text-right">
+                    <span
+                        class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold border uppercase"
+                        [ngClass]="{
+                            'bg-yellow-50 text-yellow-700 border-yellow-200': factura.estado === 'emitida',
+                            'bg-green-50 text-green-700 border-green-200': factura.estado === 'pagada',
+                            'bg-gray-50 text-gray-700 border-gray-200': factura.estado === 'borrador',
+                            'bg-red-50 text-red-700 border-red-200': factura.estado === 'vencida' || factura.estado === 'anulada'
+                          }">
+                        {{ factura.estado }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Entities Grid -->
+            <div class="grid grid-cols-2 gap-8 mb-8 pb-8 border-b border-border">
+                <div>
+                    <h3 class="text-xs font-bold text-txt-muted uppercase tracking-wider mb-3">Facturado a:</h3>
+                    <div class="text-sm space-y-1 text-txt-primary" *ngIf="cliente">
+                        <p class="font-bold text-base">{{ cliente.razonSocial || cliente.nombreFantasia }}</p>
+                        <p>{{ cliente.rut }}</p>
+                        <p>{{ cliente.email }}</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-txt-muted uppercase tracking-wider mb-3">Detalle Fecha:</h3>
+                    <div class="text-sm space-y-3">
+                        <div class="flex items-center text-txt-primary">
+                            <lucide-icon name="calendar" class="w-4 h-4 mr-2 text-txt-secondary"></lucide-icon>
+                            Emisión: <strong class="ml-1">{{ factura.fechaEmision | date:'longDate'
+                                }}</strong>
+                        </div>
+                        <div class="flex items-center text-txt-primary">
+                            <lucide-icon name="clock" class="w-4 h-4 mr-2 text-info"></lucide-icon>
+                            Vence: <strong class="ml-1 text-info">{{ factura.fechaVencimiento |
+                                date:'longDate' }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Loop -->
+            <div class="mb-8">
+                <table class="w-full text-left text-sm text-txt-primary">
+                    <thead class="text-xs text-txt-muted uppercase border-b border-border">
+                        <tr>
+                            <th class="pb-3 font-semibold">Descripción</th>
+                            <th class="pb-3 font-semibold text-right">Cant.</th>
+                            <th class="pb-3 font-semibold text-right">Precio Un.</th>
+                            <th class="pb-3 font-semibold text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border/50">
+                        <tr *ngFor="let item of factura.items" class="hover:bg-surface-hover/30 transition-colors">
+                            <td class="py-4">{{ item.descripcion }}</td>
+                            <td class="py-4 text-right">{{ item.cantidad }}</td>
+                            <td class="py-4 text-right text-txt-secondary">{{ item.precioUnitario |
+                                currency:factura.moneda }}</td>
+                            <td class="py-4 text-right font-medium">{{ item.total | currency:factura.moneda }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- Sidebar Actions (30%) -->
+        <div class="w-full md:w-1/3 bg-body p-8 space-y-6 flex flex-col justify-between">
+
+            <div class="space-y-4">
+                <h3 class="text-sm font-semibold text-txt-primary border-b border-border pb-2">Resumen Financiero</h3>
+
+                <div class="space-y-3 pt-2 text-sm text-txt-secondary">
+                    <div class="flex justify-between">
+                        <span>Subtotal Base</span>
+                        <span>{{ factura.subtotal | currency:factura.moneda }}</span>
+                    </div>
+
+                    <div class="flex justify-between text-info" *ngIf="($any(factura).porcentajeDescuento || 0) > 0">
+                        <span>Descuento Aplicado</span>
+                        <span>{{ $any(factura).porcentajeDescuento }}%</span>
+                    </div>
+
+                    <div class="flex justify-between" *ngIf="factura.impuestos > 0">
+                        <span>IVA (Impuestos)</span>
+                        <span>{{ factura.impuestos | currency:factura.moneda }}</span>
+                    </div>
+
+                    <div class="pt-4 mt-2 border-t border-border flex justify-between items-end">
+                        <span class="font-bold text-txt-primary">Total a Pagar</span>
+                        <span class="font-bold text-2xl text-primary">{{ factura.total | currency:factura.moneda
+                            }}</span>
+                    </div>
+                </div>
+
+                <!-- STRIPE SECURE CHECKOUT BUTTON MODULE -->
+                <div class="pt-8">
+                    <button *ngIf="factura.estado === 'emitida'" (click)="pagarConStripe()" type="button"
+                        class="w-full relative group overflow-hidden px-4 py-3 bg-[#635BFF] text-white rounded-xl shadow-lg hover:shadow-xl transition-all font-semibold flex items-center justify-center transform hover:-translate-y-0.5">
+                        <div
+                            class="absolute inset-0 w-full h-full bg-white opacity-0 group-hover:opacity-10 transition-opacity">
+                        </div>
+                        <lucide-icon name="credit-card" class="w-5 h-5 mr-3"></lucide-icon>
+                        <span class="tracking-wide">Pagar con Stripe</span>
+                    </button>
+
+                    <div *ngIf="factura.estado === 'pagada'"
+                        class="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+                        <div class="inline-flex bg-green-100 p-2 rounded-full mb-3 shadow-inner">
+                            <lucide-icon name="check-circle-2" class="w-6 h-6 text-green-600"></lucide-icon>
+                        </div>
+                        <h4 class="font-bold text-green-800 tracking-tight">Factura Pagada</h4>
+                        <p class="text-xs text-green-700 mt-1" *ngIf="factura.stripePaymentIntentId">Gracias. El pago
+                            fue aprobado por Stripe.</p>
+                    </div>
+
+                    <div *ngIf="factura.estado === 'anulada'"
+                        class="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+                        <div class="inline-flex bg-red-100 p-2 rounded-full mb-3 shadow-inner">
+                            <lucide-icon name="ban" class="w-6 h-6 text-red-600"></lucide-icon>
+                        </div>
+                        <h4 class="font-bold text-red-800 tracking-tight">Factura Anulada</h4>
+                        <p class="text-xs text-red-700 mt-1">Este documento carece de validez legal ni amerita pago.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footnote Secure Log -->
+            <div class="text-center pt-8 border-t border-border mt-auto">
+                <lucide-icon name="shield-check" class="w-6 h-6 mx-auto mb-2 text-txt-muted"></lucide-icon>
+                <p class="text-xs font-medium text-txt-muted uppercase tracking-wider">Checkout Seguro</p>
+                <p class="text-[10px] text-txt-muted/70 mt-1 leading-tight">Procesado criptográficamente por Stripe
+                    Checkout.</p>
+            </div>
+        </div>
+    </div>
+</div>

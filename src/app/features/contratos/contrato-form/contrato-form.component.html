@@ -1,0 +1,155 @@
+<div class="space-y-6 pt-2 pb-16 animate-fade-in max-w-5xl mx-auto">
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <h1 class="text-2xl font-bold text-txt-primary flex items-center">
+                <button type="button" (click)="goBack()"
+                    class="mr-3 p-2 hover:bg-surface-hover rounded-full transition-colors text-txt-muted hover:text-txt-primary">
+                    <lucide-icon name="arrow-left" class="w-5 h-5"></lucide-icon>
+                </button>
+                {{ isEditMode ? 'Editar Contrato' : 'Nuevo Contrato' }}
+            </h1>
+            <p class="text-sm text-txt-secondary mt-1 ml-12">Redacta los términos y condiciones formales de venta</p>
+        </div>
+        <div class="flex space-x-3">
+            <button type="button" (click)="goBack()"
+                class="px-4 py-2 border border-border rounded-lg text-txt-secondary hover:bg-surface-hover transition-colors font-medium">
+                Cancelar
+            </button>
+            <button (click)="onSubmit()" [disabled]="isSaving || isLoading"
+                class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium flex items-center shadow-sm shadow-primary/20 disabled:opacity-50">
+                <lucide-icon *ngIf="isSaving" name="loader-2" class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
+                <lucide-icon *ngIf="!isSaving" name="save" class="w-4 h-4 mr-2"></lucide-icon>
+                {{ isSaving ? 'Guardando...' : (isEditMode ? 'Actualizar Contrato' : 'Crear en Borrador') }}
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN FORM -->
+    <form [formGroup]="contratoForm" class="space-y-6">
+
+        <!-- Info Basic -->
+        <div class="bg-surface border border-border rounded-xl shadow-sm p-6">
+            <h2 class="text-lg font-semibold text-txt-primary mb-4 pb-2 border-b border-border flex items-center">
+                <lucide-icon name="file-signature" class="w-5 h-5 mr-2 text-txt-muted"></lucide-icon>
+                Detalles del Acuerdo
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-txt-secondary mb-1">Título del Contrato <span
+                            class="text-red-500">*</span></label>
+                    <input type="text" formControlName="titulo" placeholder="Ej: Contrato Prestación de Servicios"
+                        class="w-full px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-txt-secondary mb-1">Coti. Origen (Opcional)</label>
+                    <input type="text" formControlName="cotizacionOrigenId" placeholder="Ej: COT-XXX" readonly
+                        class="w-full px-3 py-2 bg-background border border-border rounded-lg text-txt-muted focus:ring-2 focus:ring-primary/50 outline-none transition-all cursor-not-allowed">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-txt-secondary mb-1">Cliente Firmante <span
+                            class="text-red-500">*</span></label>
+                    <select formControlName="clienteId"
+                        class="w-full px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all">
+                        <option value="">-- Seleccionar cliente --</option>
+                        <option *ngFor="let c of clientesActivos" [value]="c.id">{{ c.rut }} - {{
+                            c.contactoPrincipal.nombre || c.nombreEmpresa }}</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-txt-secondary mb-1">Plazo Límite de Firma <span
+                            class="text-red-500">*</span></label>
+                    <input type="date" formControlName="fechaValidez"
+                        class="w-full px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all cursor-pointer">
+                </div>
+            </div>
+        </div>
+
+        <!-- CLAUSULAS -->
+        <div class="bg-surface border border-border rounded-xl shadow-sm p-6">
+            <h2 class="text-lg font-semibold text-txt-primary mb-4 pb-2 border-b border-border flex items-center">
+                <lucide-icon name="scroll-text" class="w-5 h-5 mr-2 text-txt-muted"></lucide-icon>
+                Cláusulas y Cuerpo Legal
+            </h2>
+            <div>
+                <textarea formControlName="cuerpoLegal" rows="12"
+                    placeholder="Escriba o pegue aquí los términos legales..."
+                    class="w-full px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all font-mono text-sm resize-y"></textarea>
+            </div>
+        </div>
+
+        <!-- ITEMS MATEMÁTICOS -->
+        <div class="bg-surface border border-border rounded-xl shadow-sm p-6 overflow-hidden">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-border">
+                <h2 class="text-lg font-semibold text-txt-primary flex items-center">
+                    <lucide-icon name="list" class="w-5 h-5 mr-2 text-txt-muted"></lucide-icon>
+                    Anexo de Cobros (Opcional)
+                </h2>
+                <button type="button" (click)="crearItemVacio()"
+                    class="text-sm px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary/20 rounded-md transition-colors font-medium flex items-center">
+                    <lucide-icon name="plus" class="w-4 h-4 mr-1"></lucide-icon>
+                    Agregar Fila
+                </button>
+            </div>
+
+            <div formArrayName="items" class="space-y-3">
+                <div *ngFor="let it of itemsArray.controls; let i=index" [formGroupName]="i"
+                    class="grid grid-cols-12 gap-3 items-start bg-background p-3 rounded-lg border border-border/50">
+
+                    <div class="col-span-12 md:col-span-5">
+                        <label class="block text-xs font-medium text-txt-secondary mb-1">Descripción</label>
+                        <input type="text" formControlName="descripcion"
+                            class="w-full px-2 py-1.5 bg-surface border border-border rounded text-sm text-txt-primary focus:ring-1 focus:ring-primary/50 outline-none">
+                    </div>
+
+                    <div class="col-span-4 md:col-span-2">
+                        <label class="block text-xs font-medium text-txt-secondary mb-1">Cant.</label>
+                        <input type="number" formControlName="cantidad" (input)="recalcularTotalVacio()"
+                            class="w-full px-2 py-1.5 bg-surface border border-border rounded text-sm text-txt-primary focus:ring-1 focus:ring-primary/50 outline-none">
+                    </div>
+
+                    <div class="col-span-8 md:col-span-2">
+                        <label class="block text-xs font-medium text-txt-secondary mb-1">P. Unit</label>
+                        <input type="number" formControlName="precioUnitario" (input)="recalcularTotalVacio()"
+                            class="w-full px-2 py-1.5 bg-surface border border-border rounded text-sm text-txt-primary focus:ring-1 focus:ring-primary/50 outline-none">
+                    </div>
+
+                    <div class="col-span-10 md:col-span-2">
+                        <label class="block text-xs font-medium text-txt-secondary mb-1">Total</label>
+                        <input type="number" formControlName="total" readonly
+                            class="w-full px-2 py-1.5 bg-surface border border-border rounded text-sm text-txt-primary focus:ring-1 focus:ring-primary/50 outline-none bg-surface-hover cursor-not-allowed">
+                    </div>
+
+                    <div class="col-span-2 md:col-span-1 flex items-end justify-center pt-6">
+                        <button type="button" (click)="removerItem(i)"
+                            class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded transition-colors group">
+                            <lucide-icon name="trash-2"
+                                class="w-4 h-4 group-hover:scale-110 transition-transform"></lucide-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <div *ngIf="itemsArray.controls.length === 0"
+                    class="text-center py-6 text-txt-muted text-sm border border-dashed border-border rounded-lg">
+                    Sin cobros anexados. Haz clic en "Agregar Fila".
+                </div>
+            </div>
+
+            <!-- Total General -->
+            <div class="mt-6 flex justify-end">
+                <div class="bg-background rounded-xl border border-border max-w-sm w-full p-4">
+                    <div class="flex justify-between items-center text-lg font-bold text-txt-primary">
+                        <span>Gran Total Acuerdo</span>
+                        <span>$ {{ contratoForm.get('total')?.value | number:'1.0-0' }}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+</div>

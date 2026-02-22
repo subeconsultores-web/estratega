@@ -1,14 +1,25 @@
 import { Routes } from '@angular/router';
-import { ClientesList } from './clientes-list/clientes-list';
-import { ClienteForm } from './cliente-form/cliente-form';
-import { ClienteDetalle } from './cliente-detalle/cliente-detalle';
-import { PipelineKanban } from './pipeline-kanban/pipeline-kanban';
 
 export const CRM_ROUTES: Routes = [
-    { path: '', redirectTo: 'clientes', pathMatch: 'full' },
-    { path: 'clientes', component: ClientesList },
-    { path: 'clientes/nuevo', component: ClienteForm },
-    { path: 'clientes/:id/editar', component: ClienteForm },
-    { path: 'clientes/:id', component: ClienteDetalle },
-    { path: 'pipeline', component: PipelineKanban }
+    {
+        path: '',
+        redirectTo: 'clientes',
+        pathMatch: 'full'
+    },
+    {
+        path: 'clientes',
+        loadComponent: () => import('./clientes-list/clientes-list.component').then(m => m.ClientesListComponent)
+    },
+    {
+        path: 'clientes/nuevo',
+        loadComponent: () => import('./cliente-form/cliente-form.component').then(m => m.ClienteFormComponent)
+    },
+    {
+        path: 'clientes/:id/editar',
+        loadComponent: () => import('./cliente-form/cliente-form.component').then(m => m.ClienteFormComponent)
+    },
+    {
+        path: 'pipeline',
+        loadComponent: () => import('./pipeline-kanban/pipeline-kanban.component').then(m => m.PipelineKanbanComponent)
+    }
 ];

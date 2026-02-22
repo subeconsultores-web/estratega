@@ -4,10 +4,10 @@ import { RouterModule } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
-    selector: 'app-sidebar',
-    standalone: true,
-    imports: [CommonModule, RouterModule, LucideAngularModule],
-    template: `
+  selector: 'app-sidebar',
+  standalone: true,
+  imports: [CommonModule, RouterModule, LucideAngularModule],
+  template: `
     <aside class="flex flex-col w-64 h-screen bg-surface border-r border-border transition-all duration-300 z-20">
       <!-- Logo Area -->
       <div class="h-16 flex items-center px-6 border-b border-border">
@@ -31,10 +31,30 @@ import { LucideAngularModule } from 'lucide-angular';
           <span>Clientes & CRM</span>
         </a>
 
+        <a routerLink="/catalogo/lista" routerLinkActive="bg-primary/10 text-primary font-medium"
+           class="flex items-center px-3 py-2.5 rounded-lg text-txt-secondary hover:bg-surface-hover hover:text-txt-primary transition-colors cursor-pointer">
+          <lucide-icon name="packages" class="w-5 h-5 mr-3"></lucide-icon>
+          <span>Catálogo</span>
+        </a>
+
         <a routerLink="/cotizaciones" routerLinkActive="bg-primary/10 text-primary font-medium"
            class="flex items-center px-3 py-2.5 rounded-lg text-txt-secondary hover:bg-surface-hover hover:text-txt-primary transition-colors cursor-pointer">
           <lucide-icon name="file-text" class="w-5 h-5 mr-3"></lucide-icon>
           <span>Cotizaciones</span>
+        </a>
+
+        <a routerLink="/contratos" routerLinkActive="bg-primary/10 text-primary font-medium"
+           class="flex items-center px-3 py-2.5 rounded-lg text-txt-secondary hover:bg-surface-hover hover:text-txt-primary transition-colors cursor-pointer">
+          <lucide-icon name="file-signature" class="w-5 h-5 mr-3"></lucide-icon>
+          <span>Contratos</span>
+        </a>
+
+        <div class="pt-4 pb-2 px-3 text-xs font-semibold text-txt-muted uppercase tracking-wider">Finanzas</div>
+
+        <a routerLink="/facturas" routerLinkActive="bg-primary/10 text-primary font-medium"
+           class="flex items-center px-3 py-2.5 rounded-lg text-txt-secondary hover:bg-surface-hover hover:text-txt-primary transition-colors cursor-pointer">
+          <lucide-icon name="receipt" class="w-5 h-5 mr-3"></lucide-icon>
+          <span>Facturas</span>
         </a>
 
         <div class="pt-4 pb-2 px-3 text-xs font-semibold text-txt-muted uppercase tracking-wider">Gestión</div>

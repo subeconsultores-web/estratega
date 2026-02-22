@@ -1,23 +1,35 @@
 import { Routes } from '@angular/router';
-import { CotizacionesListComponent } from './cotizaciones-list/cotizaciones-list';
-import { CotizacionFormComponent } from './cotizacion-form/cotizacion-form';
-import { CotizacionDetalleComponent } from './cotizacion-detalle/cotizacion-detalle';
 
-export const COTIZACIONES_ROUTES: Routes = [
+export default [
     {
         path: '',
-        component: CotizacionesListComponent
+        redirectTo: 'lista',
+        pathMatch: 'full'
     },
     {
-        path: 'nuevo',
-        component: CotizacionFormComponent
+        path: 'lista',
+        loadComponent: () => import('./cotizaciones-list/cotizaciones-list.component').then(m => m.CotizacionesListComponent)
     },
     {
-        path: 'editar/:id',
-        component: CotizacionFormComponent
+        path: 'nueva',
+        loadComponent: () => import('./cotizacion-form/cotizacion-form.component').then(m => m.CotizacionFormComponent)
     },
     {
         path: ':id',
-        component: CotizacionDetalleComponent
+        children: [
+            {
+                path: '',
+                redirectTo: 'editar',
+                pathMatch: 'full'
+            },
+            {
+                path: 'editar', // Admin/Seller Edit Mode
+                loadComponent: () => import('./cotizacion-form/cotizacion-form.component').then(m => m.CotizacionFormComponent)
+            },
+            {
+                path: 'ver', // Resumen general
+                loadComponent: () => import('./cotizacion-view/cotizacion-view.component').then(m => m.CotizacionViewComponent)
+            }
+        ]
     }
-];
+] as Routes;

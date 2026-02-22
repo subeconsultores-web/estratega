@@ -1,0 +1,224 @@
+<div class="space-y-6 pt-2 pb-16 animate-fade-in max-w-6xl mx-auto">
+
+    <!-- Encabezado Sticky -->
+    <div class="flex items-center justify-between mb-2">
+        <div>
+            <h1 class="text-2xl font-bold text-txt-primary flex items-center">
+                <button type="button" (click)="goBack()"
+                    class="mr-3 p-2 hover:bg-surface-hover rounded-full transition-colors text-txt-muted hover:text-txt-primary">
+                    <lucide-icon name="arrow-left" class="w-5 h-5"></lucide-icon>
+                </button>
+                {{ isEditMode ? 'Editar Cotización' : 'Nueva Cotización' }}
+                <span *ngIf="isEditMode"
+                    class="ml-4 text-xs bg-surface-hover border border-border px-2 py-1 rounded-md text-txt-muted uppercase font-medium">Borrador
+                    Edit</span>
+            </h1>
+            <p class="text-sm text-txt-muted mt-1 ml-12">Construye una propuesta comercial vinculando CRM a tu flujo de
+                caja.</p>
+        </div>
+
+        <div class="hidden sm:block">
+            <button type="button" (click)="onSubmit()" [disabled]="isSaving || cotiForm.invalid"
+                class="flex items-center px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                <lucide-icon *ngIf="isSaving" name="loader-2" class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
+                <lucide-icon *ngIf="!isSaving" name="save" class="w-4 h-4 mr-2"></lucide-icon>
+                {{ isSaving ? 'Guardando...' : (isEditMode ? 'Actualizar' : 'Guardar y Ver') }}
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading UI -->
+    <div *ngIf="isLoading"
+        class="flex flex-col items-center justify-center p-12 bg-surface rounded-xl border border-border mt-8">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <p class="mt-4 text-sm text-txt-muted font-medium">Cargando módulos maestros...</p>
+    </div>
+
+    <form *ngIf="!isLoading" [formGroup]="cotiForm" (ngSubmit)="onSubmit()"
+        class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-8">
+
+        <!-- Columna Central: Configuración de Productos -->
+        <div class="lg:col-span-8 space-y-6">
+
+            <!-- Contexto Base: Destinataro y Emisión -->
+            <div class="bg-surface rounded-xl border border-border p-6 shadow-sm">
+                <h2 class="text-lg font-semibold text-txt-primary mb-4 pb-2 border-b border-border flex items-center">
+                    <lucide-icon name="user" class="w-5 h-5 mr-2 text-txt-muted"></lucide-icon>
+                    Destinatario
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-txt-secondary mb-1">Cliente Solicitante <span
+                                class="text-red-500">*</span></label>
+                        <select formControlName="clienteId"
+                            class="w-full px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all">
+                            <option value="">-- Seleccionar cliente CRM --</option>
+                            <option *ngFor="let c of clientesActivos" [value]="c.id">{{ c.rut }} - {{
+                                c.contactoPrincipal.nombre || c.nombreEmpresa }}</option>
+                        </select>
+                        <span *ngIf="cotiForm.get('clienteId')?.invalid && cotiForm.get('clienteId')?.touched"
+                            class="text-xs text-red-500 mt-1 block">Obligatorio</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-txt-secondary mb-1">Validez Hasta <span
+                                class="text-red-500">*</span></label>
+                        <input type="date" formControlName="fechaExpiracion"
+                            class="w-full px-4 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Servicios dinámicos Form Array Builder -->
+            <div class="bg-surface rounded-xl border border-border shadow-sm flex flex-col">
+                <div
+                    class="p-4 border-b border-border flex justify-between items-center bg-surface-hover/30 rounded-t-xl">
+                    <h2 class="text-base font-semibold text-txt-primary flex items-center">
+                        <lucide-icon name="layers" class="w-5 h-5 mr-2 text-txt-muted"></lucide-icon>
+                        Servicios a Cotizar
+                    </h2>
+                </div>
+
+                <div class="p-6" formArrayName="items">
+
+                    <div *ngFor="let line of itemsArray.controls; let i=index" [formGroupName]="i"
+                        class="mb-4 pb-4 border-b border-border/50 flex flex-col sm:flex-row gap-4 items-start sm:items-center relative group">
+
+                        <!-- Columna: Item Seleccionado del Catalogo (Ocupa la Mayoría) -->
+                        <div class="w-full sm:w-1/3">
+                            <select formControlName="catalogoItemId"
+                                class="w-full text-sm px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none">
+                                <option value="">-- Catálogo --</option>
+                                <option *ngFor="let prod of catalogoActivo" [value]="prod.id">{{ prod.tipo | uppercase
+                                    }}: {{ prod.nombre }}</option>
+                            </select>
+                        </div>
+
+                        <!-- Columna: Nombre Override -->
+                        <div class="w-full sm:w-1/4">
+                            <input type="text" formControlName="nombre" placeholder="Nombre en Propuesta"
+                                class="w-full text-sm px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none">
+                        </div>
+
+                        <!-- Columna: QTY -->
+                        <div class="w-24 shrink-0 relative">
+                            <input type="number" formControlName="cantidad" min="1" step="0.5"
+                                class="w-full text-sm px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none text-center">
+                        </div>
+
+                        <!-- Columna: Precio Unitario -->
+                        <div class="w-32 shrink-0 relative">
+                            <input type="number" formControlName="precioUnitario" placeholder="Valor Ud."
+                                class="w-full text-sm font-medium px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none text-right">
+                        </div>
+
+                        <!-- Subtotal Live Feedback-->
+                        <div class="w-32 text-right pr-6 shrink-0">
+                            <span class="text-sm font-semibold text-txt-primary">{{ line.get('subtotal')?.value |
+                                currency:'CLP':'symbol-narrow':'1.0-0' }}</span>
+                        </div>
+
+                        <button type="button" (click)="removerLineaItem(i)"
+                            class="absolute right-0 text-txt-muted hover:text-red-500 transition-colors bg-surface-hover rounded-md p-1 opacity-0 group-hover:opacity-100">
+                            <lucide-icon name="x" class="w-4 h-4"></lucide-icon>
+                        </button>
+                    </div>
+
+                    <button type="button" (click)="agregarLineaItem()"
+                        class="flex items-center text-sm font-medium text-primary hover:text-primary-hover transition-colors px-2 py-2 mt-2">
+                        <lucide-icon name="plus" class="w-4 h-4 mr-1"></lucide-icon>
+                        Añadir otra línea base
+                    </button>
+                </div>
+            </div>
+
+            <!-- Condiciones Extra -->
+            <div class="bg-surface rounded-xl border border-border p-6 shadow-sm">
+                <h2
+                    class="text-sm font-semibold text-txt-primary mb-3 text-txt-muted uppercase tracking-wider flex justify-between items-center">
+                    Términos y Condiciones Contractuales Adicionales
+                </h2>
+                <textarea formControlName="condicionesAdicionales" rows="4"
+                    class="w-full px-4 py-3 bg-background border border-border rounded-lg text-txt-primary text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all custom-scrollbar"
+                    placeholder="Escriba condiciones específicas, notas aclaratorias o compromisos SLA para esta cotización comercial en particular."></textarea>
+            </div>
+
+        </div>
+
+        <!-- Columna Derecha: Sidebar Sticky para Matemáticas de Dinero -->
+        <div class="lg:col-span-4 space-y-6">
+            <div class="bg-surface rounded-xl border border-border shadow-sm overflow-hidden sticky top-6">
+                <div class="p-4 border-b border-border bg-surface-hover/30">
+                    <h2 class="text-base font-semibold text-txt-primary flex items-center">
+                        <lucide-icon name="calculator" class="w-5 h-5 mr-2 text-txt-muted"></lucide-icon>
+                        Resumen Monetario
+                    </h2>
+                </div>
+
+                <div class="p-5 space-y-4 text-sm">
+                    <!-- Base Subtotal -->
+                    <div class="flex justify-between items-center text-txt-secondary">
+                        <span>Subtotal Servicios</span>
+                        <span class="font-medium text-txt-primary">{{ subtotal | currency:'CLP':'symbol-narrow':'1.0-0'
+                            }}</span>
+                    </div>
+
+                    <!-- Descuentos Controller -->
+                    <div class="pt-3 border-t border-border border-dashed">
+                        <label class="block text-xs font-semibold text-txt-muted uppercase mb-2">Bonificación
+                            Descuento</label>
+                        <div class="flex gap-2">
+                            <select formControlName="descuentoTipo"
+                                class="w-1/3 px-2 py-1.5 bg-background border border-border rounded-lg text-sm text-txt-primary outline-none">
+                                <option value="monto">$ Total</option>
+                                <option value="porcentaje">% Base</option>
+                            </select>
+                            <input type="number" formControlName="descuentoValor" min="0" placeholder="0"
+                                class="w-2/3 px-3 py-1.5 bg-background border border-border rounded-lg text-sm text-txt-primary text-right outline-none">
+                        </div>
+                        <div
+                            class="flex justify-between items-center text-txt-secondary mt-2 text-red-500 font-medium text-xs">
+                            <span *ngIf="cotiForm.get('descuentoValor')?.value > 0">Aplicado:</span>
+                            <span *ngIf="cotiForm.get('descuentoValor')?.value > 0">- {{ montoDescuento |
+                                currency:'CLP':'symbol-narrow':'1.0-0' }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Impuestos Controller -->
+                    <div class="pt-3 border-t border-border border-dashed">
+                        <label class="block text-xs font-semibold text-txt-muted uppercase mb-2">Tasa Impuestos</label>
+                        <div class="flex items-center gap-2 mb-2">
+                            <input type="number" formControlName="porcentajeImpuesto" min="0" max="100"
+                                class="w-20 px-3 py-1.5 bg-background border border-border rounded-lg text-sm text-txt-primary text-right outline-none">
+                            <span class="text-txt-muted font-medium">% IVA</span>
+                        </div>
+                        <div class="flex justify-between items-center text-txt-secondary text-xs">
+                            <span>Impuesto Base</span>
+                            <span>+ {{ montoImpuesto | currency:'CLP':'symbol-narrow':'1.0-0' }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Gran Total Result -->
+                    <div class="pt-4 mt-4 border-t-2 border-border flex justify-between items-center">
+                        <span class="text-base font-bold text-txt-primary">Total Propuesta</span>
+                        <span class="text-xl font-bold text-primary">{{ totalFinal |
+                            currency:'CLP':'symbol-narrow':'1.0-0' }}</span>
+                    </div>
+
+                    <div class="pt-4 text-xs text-center text-txt-muted w-full">
+                        Moneda Operativa de Referencia: Base Local.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boton Mobile Save (Oculto en desktop) -->
+            <button type="submit" [disabled]="isSaving || cotiForm.invalid"
+                class="w-full sm:hidden flex items-center justify-center px-6 py-4 bg-primary text-white rounded-xl hover:bg-primary-hover transition-colors font-medium shadow-sm disabled:opacity-50">
+                <lucide-icon *ngIf="isSaving" name="loader-2" class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
+                Guardar Cotización
+            </button>
+        </div>
+
+    </form>
+</div>

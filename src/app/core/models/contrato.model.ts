@@ -1,3 +1,19 @@
+export type MetodoFirma = 'dibujo' | 'upload' | 'digital';
+export type EstadoContrato = 'Borrador' | 'Enviado' | 'Firmado' | 'Cancelado';
+
+export interface AuditTrail {
+    nombreTipeado: string;
+    timestamp: Date | any; // Any supports Firestore Timestamp
+    userAgent: string;
+    ipBase?: string;
+}
+
+export interface FirmaData {
+    metodo: MetodoFirma;
+    urlFirmaStorage?: string; // Para dibujo y upload
+    auditTrail?: AuditTrail; // Para firma digital
+}
+
 export interface ContratoItem {
     descripcion: string;
     cantidad: number;
@@ -6,36 +22,39 @@ export interface ContratoItem {
 }
 
 export interface Contrato {
-    id: string;
+    id?: string;
+    correlativo: string; // ej: CNT-0001
     tenantId: string;
     clienteId: string;
-    cotizacionId?: string;
-    correlativo: number;
-    codigoFormateado: string;
+    vendedorId: string;
+    cotizacionOrigenId?: string; // Link a sprint 5
+
     titulo: string;
-    items: ContratoItem[];
-    total: number;
-    moneda: 'CLP' | 'UF' | 'USD';
-    estado: 'borrador' | 'enviado' | 'firmado_interno' | 'firmado_cliente' | 'finalizado' | 'cancelado';
-    fechaInicio: Date;
-    fechaFin: Date;
-    tokenFirmaPublica: string;
-    tokenExpiracion: Date;
-    firmaRepresentante?: {
-        url: string;
-        fecha: Date;
-        nombre: string;
-    };
-    firmaCliente?: {
-        url: string;
-        fecha: Date;
-        nombre: string;
-        ip: string;
-    };
-    clausulas: string[];
-    condicionesPago: string;
-    historialEventos: { estado: string; fecha: Date; usuarioId: string; comentario: string }[];
+    cuerpoLegal: string; // HTML o Texto con las clausulas
+    items?: ContratoItem[]; // Optional if we inherit from Cotizacion
+    total?: number;
+    moneda?: 'CLP' | 'UF' | 'USD';
+
+    fechaEmision: Date | any;
+    fechaValidez: Date | any;
+    fechaFirma?: Date | any;
+
+    estadoActual: EstadoContrato;
+
+    firmaData?: FirmaData;
+
+    tokenFirmaPublica?: string;
+    tokenExpiracion?: Date | any;
+
+    historialEstados?: {
+        estado: EstadoContrato;
+        fecha: Date | any;
+        comentario?: string;
+        actorId?: string;
+    }[];
+
     pdfUrl?: string;
-    createdAt: Date;
-    updatedAt: Date;
+
+    createdAt?: Date | any;
+    updatedAt?: Date | any;
 }
