@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getTenantId() {
+      return request.auth.token.tenantId;
+    }
+    
+    function hasRole(role) {
+      return request.auth.token.role == role;
+    }
+    
+    function isAdmin() {
+      return hasRole('super-admin') || hasRole('admin');
+    }
+    
+    // Tenants collection
+    match /tenants/{tenantId} {
+      allow read: if isAuthenticated() && getTenantId() == tenantId;
+      allow update: if isAuthenticated() && getTenantId() == tenantId && isAdmin();
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated() && getTenantId() == resource.data.tenantId;
+      allow create: if isAuthenticated() && getTenantId() == request.resource.data.tenantId;
+      allow update: if isAuthenticated() && getTenantId() == resource.data.tenantId 
+        && (userId == request.auth.uid || isAdmin());
+    }
+    
+    // Generic pattern for tenant-scoped collections
+    match /{collection}/{docId} {
+      allow read: if isAuthenticated() 
+        && getTenantId() == resource.data.tenantId;
+      
+      allow create: if isAuthenticated() 
+        && getTenantId() == request.resource.data.tenantId;
+      
+      allow update: if isAuthenticated() 
+        && getTenantId() == resource.data.tenantId
+        && getTenantId() == request.resource.data.tenantId;
+      
+      allow delete: if isAuthenticated() 
+        && getTenantId() == resource.data.tenantId
+        && isAdmin();
+    }
+  }
+}

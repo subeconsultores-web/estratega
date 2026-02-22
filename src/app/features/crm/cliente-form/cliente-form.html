@@ -1,0 +1,152 @@
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <a routerLink="/crm/clientes"
+                class="p-2 bg-white rounded-lg shadow-sm border border-gray-200 text-gray-500 hover:text-primary transition-colors">
+                <lucide-icon name="chevron-left" [size]="20"></lucide-icon>
+            </a>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">{{ isEditMode ? 'Editar' : 'Nuevo' }} Cliente</h2>
+                <p class="text-sm text-gray-500 mt-1">Completa la información corporativa y de contacto.</p>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="isLoadingData" class="flex justify-center p-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!isLoadingData" [formGroup]="clienteForm" (ngSubmit)="onSubmit()"
+        class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-8">
+
+        <!-- Sección: Datos Empresa -->
+        <div>
+            <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-4">Datos de la Empresa</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Razón Social o Nombre <span
+                            class="text-red-500">*</span></label>
+                    <input type="text" formControlName="nombreEmpresa"
+                        class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        [ngClass]="{'border-red-500': f['nombreEmpresa'].invalid && f['nombreEmpresa'].touched}">
+                    <p *ngIf="f['nombreEmpresa'].invalid && f['nombreEmpresa'].touched"
+                        class="text-xs text-red-500 mt-1">El nombre es requerido.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">RUT <span
+                            class="text-red-500">*</span></label>
+                    <input type="text" formControlName="rut" placeholder="Ej: 76.123.456-K"
+                        class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        [ngClass]="{'border-red-500': f['rut'].invalid && f['rut'].touched}">
+                    <p *ngIf="f['rut'].hasError('required') && f['rut'].touched" class="text-xs text-red-500 mt-1">El
+                        RUT es requerido.</p>
+                    <p *ngIf="f['rut'].hasError('rutInvalido') && f['rut'].touched && !f['rut'].hasError('required')"
+                        class="text-xs text-red-500 mt-1">El RUT ingresado no es válido.</p>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                    <input type="text" formControlName="direccion"
+                        class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Giro Comercial</label>
+                    <input type="text" formControlName="giro"
+                        class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección: Contacto Principal -->
+        <div formGroupName="contactoPrincipal">
+            <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-4">Contacto Principal</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo <span
+                            class="text-red-500">*</span></label>
+                    <input type="text" formControlName="nombre"
+                        class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        [ngClass]="{'border-red-500': contactoF['nombre'].invalid && contactoF['nombre'].touched}">
+                    <p *ngIf="contactoF['nombre'].invalid && contactoF['nombre'].touched"
+                        class="text-xs text-red-500 mt-1">Nombre requerido.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico <span
+                            class="text-red-500">*</span></label>
+                    <input type="email" formControlName="email"
+                        class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        [ngClass]="{'border-red-500': contactoF['email'].invalid && contactoF['email'].touched}">
+                    <p *ngIf="contactoF['email'].invalid && contactoF['email'].touched"
+                        class="text-xs text-red-500 mt-1">Email válido requerido.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                    <input type="text" formControlName="telefono"
+                        class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Cargo</label>
+                    <input type="text" formControlName="cargo"
+                        class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección: Segmentación y Configuración -->
+        <div>
+            <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-4">Segmentación CRM</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Estado de Cuenta <span
+                            class="text-red-500">*</span></label>
+                    <select formControlName="estado"
+                        class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        <option value="lead">Lead (Reciente)</option>
+                        <option value="prospecto">Prospecto (En Negociación)</option>
+                        <option value="activo">Activo (Portafolio)</option>
+                        <option value="inactivo">Inactivo / Antiguo</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fuente de Adquisición</label>
+                    <select formControlName="fuenteAdquisicion"
+                        class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        <option value="web">Sitio Web / Orgánico</option>
+                        <option value="redes">Redes Sociales (Ads)</option>
+                        <option value="referido">Referencia Interna o Externa</option>
+                        <option value="evento">Eventos / B2B</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Notas Internas</label>
+                    <textarea formControlName="notas" rows="3"
+                        class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="pt-6 border-t border-gray-100 flex items-center justify-end space-x-3">
+            <a routerLink="/crm/clientes"
+                class="px-5 py-2 hover:bg-gray-100 text-gray-700 text-sm font-medium rounded-lg transition-colors">
+                Cancelar
+            </a>
+            <button type="submit" [disabled]="isSaving"
+                class="flex items-center justify-center bg-primary text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
+                <div *ngIf="isSaving" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                {{ isEditMode ? 'Guardar Cambios' : 'Crear Registro' }}
+            </button>
+        </div>
+
+    </form>
+</div>

@@ -1,0 +1,13 @@
+{
+  "status": "success",
+  "result": {
+    "sites": [
+      {
+        "name": "projects/aulavirtual-dfb37/sites/aulavirtual-dfb37",
+        "defaultUrl": "https://aulavirtual-dfb37.web.app",
+        "appId": "1:593010355388:web:1c37f1c4138d1f5943f4b9",
+        "type": "DEFAULT_SITE"
+      }
+    ]
+  }
+}

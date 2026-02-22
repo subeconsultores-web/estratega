@@ -1,0 +1,119 @@
+<div class="space-y-6">
+    <!-- Header & Actions -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">Directorio de Clientes</h2>
+            <p class="text-sm text-gray-500 mt-1">Gestiona el ciclo de vida de tus leads y clientes comerciales.</p>
+        </div>
+        <div class="flex space-x-3 w-full sm:w-auto">
+            <button routerLink="/crm/clientes/nuevo"
+                class="flex items-center justify-center bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors w-full sm:w-auto">
+                <lucide-icon name="plus" [size]="18" class="mr-2"></lucide-icon>
+                Nuevo Cliente
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4">
+        <div class="relative flex-1">
+            <lucide-icon name="search" [size]="18" class="absolute left-3 top-2.5 text-gray-400"></lucide-icon>
+            <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="filtrarClientes()"
+                placeholder="Buscar por nombre o RUT..."
+                class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+        </div>
+        <div class="w-full md:w-64">
+            <select [(ngModel)]="filtroEstado" (ngModelChange)="filtrarClientes()"
+                class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white">
+                <option value="todos">Todos los Estados</option>
+                <option value="lead">Leads / Nuevos</option>
+                <option value="prospecto">Prospectos</option>
+                <option value="activo">Activos</option>
+                <option value="inactivo">Inactivos</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <app-loading-skeleton *ngIf="isLoading" type="table"></app-loading-skeleton>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredClientes.length === 0">
+        <app-empty-state title="No se encontraron clientes"
+            message="Parece que no hay clientes que coincidan con tus criterios de búsqueda." iconName="users"
+            actionLink="/crm/clientes/nuevo" actionText="Crear Cliente">
+        </app-empty-state>
+    </div>
+
+    <!-- Data Table -->
+    <div *ngIf="!isLoading && filteredClientes.length > 0"
+        class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">Cliente
+                        </th>
+                        <th scope="col" class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">Contacto
+                        </th>
+                        <th scope="col" class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                        <th scope="col" class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">Origen</th>
+                        <th scope="col" class="px-6 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">
+                            Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                    <tr *ngFor="let cliente of filteredClientes" class="hover:bg-gray-50 transition-colors">
+
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 flex-shrink-0">
+                                    <div
+                                        class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                                        {{ cliente.nombreEmpresa.charAt(0).toUpperCase() }}
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium text-gray-900">{{ cliente.nombreEmpresa }}</div>
+                                    <div class="text-xs text-gray-500">RUT: {{ cliente.rut || 'N/A' }}</div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-gray-900 text-sm font-medium">{{ cliente.contactoPrincipal.nombre }}</div>
+                            <div class="text-xs text-gray-500">{{ cliente.contactoPrincipal.email }}</div>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2.5 py-1 text-xs font-medium rounded-full"
+                                [ngClass]="getBadgeColor(cliente.estado)">
+                                {{ cliente.estado | titlecase }}
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">
+                            {{ (cliente.fuenteAdquisicion | titlecase) || 'No definido' }}
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap text-right font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a [routerLink]="['/crm/clientes', cliente.id]"
+                                    class="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors cursor-pointer"
+                                    title="Ver Detalle">
+                                    <lucide-icon name="eye" [size]="18"></lucide-icon>
+                                </a>
+                                <a [routerLink]="['/crm/clientes', cliente.id, 'editar']"
+                                    class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                                    title="Editar">
+                                    <lucide-icon name="edit-2" [size]="18"></lucide-icon>
+                                </a>
+                            </div>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,186 @@
+<div class="max-w-5xl mx-auto pb-12">
+
+    <!-- Header de Controles -->
+    <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hidden-print">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">Detalle de Cotizaci&oacute;n</h2>
+            <p class="text-sm text-gray-500 mt-1">
+                <a routerLink="/cotizaciones" class="text-primary hover:underline">Volver a Cotizaciones</a>
+                <span class="mx-2">&bull;</span> {{ cotizacion?.codigoFormateado || 'Cargando...' }}
+            </p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <!-- Selector de cambio de estado rápido -->
+            <select *ngIf="cotizacion" #estadoSelect [value]="cotizacion.estado"
+                (change)="cambiarEstado($any(estadoSelect.value))"
+                class="px-4 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-primary shadow-sm">
+                <option value="borrador">Borrador</option>
+                <option value="enviada">Marcar Enviada</option>
+                <option value="en_revision">En Revisión</option>
+                <option value="aprobada">Aprobar</option>
+                <option value="rechazada">Rechazar</option>
+            </select>
+
+            <button *ngIf="cotizacion" (click)="generarPDF()"
+                class="inline-flex items-center px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-lg hover:bg-gray-900 transition-colors shadow-sm focus:ring-2 focus:ring-gray-800 focus:ring-offset-2">
+                <lucide-icon name="printer" class="w-4 h-4 mr-2"></lucide-icon> Imprimir / PDF
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="isLoading" class="p-6">
+        <app-loading-skeleton type="table"></app-loading-skeleton>
+    </div>
+
+    <!-- Vista Documento "Mock PDF" -->
+    <div *ngIf="!isLoading && cotizacion" class="bg-white mx-auto shadow-sm border border-gray-200"
+        style="max-w: 800px;">
+
+        <div class="p-10 md:p-14">
+            <!-- Encabezado Documento -->
+            <div class="flex justify-between items-start mb-12 border-b pb-8">
+                <div>
+                    <img src="/assets/images/logo-sube-academy.png" alt="Logo" class="h-12 mb-4 opacity-80"
+                        onerror="this.src='https://placehold.co/150x50/3b82f6/white?text=Logo+Empresa'">
+                    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Propuesta Comercial</h1>
+                    <p class="text-gray-500 mt-1">{{ cotizacion.titulo }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xl font-semibold text-gray-800">{{ cotizacion.codigoFormateado || 'S/N' }}</p>
+                    <div class="mt-2 text-sm text-gray-500">
+                        <p>Fecha de Emisi&oacute;n: <strong>{{ cotizacion.createdAt?.toDate() | date:'dd/MM/yyyy'
+                                }}</strong></p>
+                        <p>Válido hasta: <strong>{{ cotizacion.validezDias }} días</strong></p>
+                    </div>
+                    <div class="mt-4">
+                        <span
+                            class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full uppercase tracking-wider bg-gray-100 text-gray-800">
+                            {{ cotizacion.estado }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Cliente & Vendedor -->
+            <div class="grid grid-cols-2 gap-8 mb-12">
+                <div>
+                    <h3 class="text-sm font-bold text-gray-900 uppercase tracking-widest mb-3">Preparado Para:</h3>
+                    <div *ngIf="cliente" class="text-sm text-gray-700 leading-relaxed">
+                        <p class="font-bold text-lg text-gray-900">{{ cliente.nombreEmpresa }}</p>
+                        <p>Atte: {{ cliente.contactoPrincipal.nombre }}</p>
+                        <p>{{ cliente.contactoPrincipal.email }}</p>
+                        <p>{{ cliente.contactoPrincipal.telefono }}</p>
+                        <p>{{ cliente.rut }}</p>
+                    </div>
+                    <div *ngIf="!cliente" class="text-sm text-gray-500 italic">Cargando datos del cliente...</div>
+                </div>
+
+                <div class="text-right">
+                    <h3 class="text-sm font-bold text-gray-900 uppercase tracking-widest mb-3">Emitido Por:</h3>
+                    <div class="text-sm text-gray-700 leading-relaxed">
+                        <!-- Aquí irán datos del Tenant, se inyectan hardcoded por ahora -->
+                        <p class="font-bold text-lg text-gray-900">SUBE IA SpA</p>
+                        <p>contacto&#64;subeia.com</p>
+                        <p>www.subeia.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Requerimientos -->
+            <div class="mb-10">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-gray-900 text-sm">
+                            <th class="py-3 font-semibold text-gray-900 w-1/2">Descripci&oacute;n del Servicio</th>
+                            <th class="py-3 font-semibold text-gray-900 text-center">Cant.</th>
+                            <th class="py-3 font-semibold text-gray-900 text-right">Precio Unit.</th>
+                            <th class="py-3 font-semibold text-gray-900 text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm text-gray-700 divide-y divide-gray-100">
+                        <tr *ngFor="let item of cotizacion.items" class="hover:bg-gray-50/50">
+                            <td class="py-4 pr-4">
+                                <p class="font-medium text-gray-900">{{ item.descripcion }}</p>
+                                <p *ngIf="item.descuento > 0" class="text-xs text-red-500 mt-1">Incluye descuento de {{
+                                    cotizacion.moneda }} {{ item.descuento | number:'1.0-0' }}</p>
+                            </td>
+                            <td class="py-4 text-center">{{ item.cantidad }}</td>
+                            <td class="py-4 text-right align-top whitespace-nowrap">{{ cotizacion.moneda }} {{
+                                item.precioUnitario | number:'1.0-0' }}</td>
+                            <td class="py-4 text-right align-top font-medium text-gray-900 whitespace-nowrap">{{
+                                cotizacion.moneda }} {{ item.total | number:'1.0-0' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Totales FINANCIEROS -->
+            <div class="flex justify-end mb-16">
+                <div class="w-full sm:w-1/2 md:w-1/3 space-y-3 text-sm">
+                    <div class="flex justify-between py-2 border-b border-gray-100">
+                        <span class="text-gray-600">Subtotal</span>
+                        <span class="font-medium text-gray-900">{{ cotizacion.moneda }} {{ cotizacion.subtotal |
+                            number:'1.0-0' }}</span>
+                    </div>
+                    <div *ngIf="cotizacion.descuentoGlobal > 0"
+                        class="flex justify-between py-2 border-b border-gray-100 text-red-600">
+                        <span>Descuento</span>
+                        <span>- {{ cotizacion.moneda }} {{ cotizacion.descuentoGlobal | number:'1.0-0' }}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-gray-100">
+                        <span class="text-gray-600">IVA (19%)</span>
+                        <span class="font-medium text-gray-900">{{ cotizacion.moneda }} {{ cotizacion.impuestos |
+                            number:'1.0-0' }}</span>
+                    </div>
+                    <!-- TOTAL FINAL -->
+                    <div class="flex justify-between py-4 text-lg font-bold text-gray-900">
+                        <span>Total General</span>
+                        <span class="text-primary">{{ cotizacion.moneda }} {{ cotizacion.total | number:'1.0-0'
+                            }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Condiciones Legales -->
+            <div class="mt-8 border-t pt-8">
+                <h4 class="text-sm font-bold text-gray-900 tracking-wide uppercase mb-2">Términos y Condiciones</h4>
+                <div class="text-xs text-gray-500 whitespace-pre-wrap leading-relaxed">
+                    {{ cotizacion.condiciones }}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Píe de Documento -->
+        <div class="bg-gray-50 px-10 py-6 text-center border-t border-gray-200">
+            <p class="text-xs text-gray-400">
+                Documento generado automáticamente por Gestor SUBE IA.
+                <br> Gracias por confiar en nuestros servicios.
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Estilos para impresión (Opcional, se delega al navegador) -->
+<style>
+    @media print {
+        .hidden-print {
+            display: none !important;
+        }
+
+        body {
+            background-color: white !important;
+        }
+
+        .shadow-sm {
+            box-shadow: none !important;
+        }
+
+        .border {
+            border: none !important;
+        }
+    }
+</style>

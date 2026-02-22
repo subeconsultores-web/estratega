@@ -1,0 +1,186 @@
+<div class="max-w-6xl mx-auto pb-12">
+    <!-- Encabezado de la página -->
+    <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Transacciones e Historial</h2>
+            <p class="text-sm text-gray-500 mt-1">Registra, visualiza y filtra los movimientos de caja y cobros
+                vinculados a Sube IA.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button
+                class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm transition-colors cursor-not-allowed opacity-50">
+                <lucide-icon name="download" class="w-4 h-4 mr-2"></lucide-icon> Exportar Excel
+            </button>
+            <button
+                class="inline-flex items-center px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-blue-700 shadow-sm transition-colors cursor-not-allowed opacity-50">
+                <lucide-icon name="plus" class="w-4 h-4 mr-2"></lucide-icon> Nuevo Ingreso
+            </button>
+        </div>
+    </div>
+
+    <!-- Contenedor Principal de la Tabla -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+
+        <!-- Barra de Búsqueda y Filtros -->
+        <div
+            class="p-4 border-b border-gray-100 flex flex-col sm:flex-row gap-4 justify-between items-center bg-gray-50/50">
+            <div class="relative w-full sm:w-96">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <lucide-icon name="search" class="h-5 w-5 text-gray-400"></lucide-icon>
+                </div>
+                <input type="text"
+                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm transition-shadow"
+                    placeholder="Buscar por código, cliente o monto...">
+            </div>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+                <select
+                    class="block w-full sm:w-auto pl-3 pr-10 py-2 text-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary rounded-lg bg-white">
+                    <option value="">Cualquier Tipo</option>
+                    <option value="ingreso">Ingresos</option>
+                    <option value="egreso">Egresos</option>
+                </select>
+                <select
+                    class="block w-full sm:w-auto pl-3 pr-10 py-2 text-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary rounded-lg bg-white">
+                    <option value="">Cualquier Estado</option>
+                    <option value="completado">Completados</option>
+                    <option value="pendiente">Pendientes</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="overflow-x-auto min-h-[400px]">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                            Categoría / Tipo
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                            Fecha y Hora
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                            Monto
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                            Método Pago
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                            Estado
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-100">
+                    <!-- Loading State -->
+                    <tr *ngIf="!(transacciones$ | async)" class="animate-pulse">
+                        <td colspan="5" class="px-6 py-8">
+                            <app-loading-skeleton type="table"></app-loading-skeleton>
+                        </td>
+                    </tr>
+
+                    <!-- Empty State -->
+                    <tr *ngIf="(transacciones$ | async)?.length === 0">
+                        <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                            <lucide-icon name="piggy-bank" class="mx-auto h-12 w-12 text-gray-300 mb-3"></lucide-icon>
+                            <p class="text-sm font-medium">No hay registros financieros.</p>
+                            <p class="text-xs text-gray-400 mt-1">Acá se reflejará el tracking de pagos y cobros
+                                generados.</p>
+                        </td>
+                    </tr>
+
+                    <!-- Data Rows -->
+                    <tr *ngFor="let item of transacciones$ | async" class="hover:bg-gray-50 transition-colors group">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center bg-gray-100"
+                                    [ngClass]="{
+                                        'bg-green-100 text-green-600': item.tipo === 'ingreso',
+                                        'bg-red-100 text-red-600': item.tipo === 'egreso'
+                                     }">
+                                    <lucide-icon
+                                        [name]="item.tipo === 'ingreso' ? 'arrow-down-to-line' : 'arrow-up-from-line'"
+                                        class="h-5 w-5"></lucide-icon>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 capitalize">{{ item.categoria }}</div>
+                                    <div class="text-sm text-gray-500">
+                                        {{ item.tipo === 'ingreso' ? 'Recepción de caja' : 'Salida de caja' }}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ item.fecha.toDate() | date:'dd MMM yyyy' }}</div>
+                            <div class="text-xs text-gray-500">{{ item.fecha.toDate() | date:'HH:mm' }}</div>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-bold"
+                                [ngClass]="item.tipo === 'ingreso' ? 'text-green-600' : 'text-gray-900'">
+                                {{ item.tipo === 'ingreso' ? '+' : '-' }}{{ item.moneda }} {{ item.monto |
+                                number:'1.0-0' }}
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
+                            <div class="flex items-center gap-1.5">
+                                <lucide-icon name="credit-card" class="w-4 h-4 text-gray-400"
+                                    *ngIf="item.metodoPago === 'stripe' || item.metodoPago === 'tarjeta_credito'"></lucide-icon>
+                                <lucide-icon name="landmark" class="w-4 h-4 text-gray-400"
+                                    *ngIf="item.metodoPago === 'transferencia'"></lucide-icon>
+                                <lucide-icon name="banknote" class="w-4 h-4 text-gray-400"
+                                    *ngIf="item.metodoPago === 'efectivo'"></lucide-icon>
+                                <span>{{ item.metodoPago.replace('_', ' ') }}</span>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span
+                                class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize"
+                                [ngClass]="{
+                                    'bg-green-100 text-green-800': item.estado === 'completado',
+                                    'bg-yellow-100 text-yellow-800': item.estado === 'pendiente',
+                                    'bg-red-100 text-red-800': item.estado === 'fallido' || item.estado === 'reembolsado'
+                                }">
+                                {{ item.estado }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación Simple -->
+        <div class="bg-gray-50 px-6 py-3 border-t border-gray-200 flex items-center justify-between sm:px-6">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Mostrando transacciones históricas recientes
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <button
+                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-not-allowed opacity-50">
+                            <span class="sr-only">Anterior</span>
+                            <lucide-icon name="chevron-left" class="h-5 w-5"></lucide-icon>
+                        </button>
+                        <button
+                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-not-allowed opacity-50">
+                            <span class="sr-only">Siguiente</span>
+                            <lucide-icon name="chevron-right" class="h-5 w-5"></lucide-icon>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

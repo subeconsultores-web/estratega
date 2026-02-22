@@ -1,0 +1,60 @@
+<div class="h-[calc(100vh-120px)] flex flex-col">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold text-gray-900">Pipeline Comercial</h2>
+        <p class="text-sm text-gray-500 mt-1">Gestiona el progreso corporativo arrastrando las tarjetas de clientes.</p>
+    </div>
+
+    <app-loading-skeleton *ngIf="isLoading" type="card"></app-loading-skeleton>
+
+    <div *ngIf="!isLoading" class="flex-1 overflow-x-auto pb-4">
+        <div class="flex space-x-4 min-w-max h-full items-start" cdkDropListGroup>
+
+            <!-- Columns -->
+            <div *ngFor="let col of columns"
+                class="bg-gray-50/50 rounded-xl w-80 flex flex-col flex-shrink-0 border border-gray-200 h-full max-h-full">
+                <!-- Column Header -->
+                <div class="p-3 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-xl">
+                    <h3 class="font-semibold text-gray-700 text-sm uppercase tracking-wide">{{ col.title }}</h3>
+                    <span class="bg-gray-200 text-gray-600 text-xs font-bold px-2 py-0.5 rounded-full">{{
+                        col.clientes.length }}</span>
+                </div>
+
+                <!-- Drop List -->
+                <div cdkDropList [id]="col.id" [cdkDropListData]="col.clientes" (cdkDropListDropped)="drop($event)"
+                    class="flex-1 p-3 overflow-y-auto min-h-[200px] space-y-3 custom-scrollbar list-container">
+
+                    <!-- Cards -->
+                    <div *ngFor="let cliente of col.clientes" cdkDrag
+                        class="bg-white rounded-lg p-4 shadow-sm border border-gray-200 cursor-move hover:border-primary hover:shadow-md transition-all group">
+
+                        <div class="flex justify-between items-start mb-1">
+                            <h4 class="font-semibold text-gray-900 text-sm truncate pr-2">{{ cliente.nombreEmpresa }}
+                            </h4>
+                        </div>
+
+                        <p class="text-xs text-gray-500 mb-3 truncate">{{ cliente.contactoPrincipal.nombre }}</p>
+
+                        <div class="flex items-center justify-between mt-3">
+                            <span
+                                class="text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded bg-gray-100 text-gray-600">
+                                {{ cliente.estado }}
+                            </span>
+                            <div
+                                class="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
+                                {{ getInitials(cliente.nombreEmpresa) }}
+                            </div>
+                        </div>
+
+                        <!-- Custom Drag Preview -->
+                        <div *cdkDragPreview
+                            class="bg-white rounded-lg p-4 shadow-xl border border-primary w-80 opacity-95">
+                            <h4 class="font-semibold text-gray-900 text-sm">{{ cliente.nombreEmpresa }}</h4>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

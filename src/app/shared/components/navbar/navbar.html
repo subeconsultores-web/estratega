@@ -1,0 +1,77 @@
+<header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-6 z-10 w-full">
+    <!-- Left Side: Global Search / Title -->
+    <div class="flex items-center flex-1">
+        <div class="hidden md:flex items-center w-full max-w-md relative">
+            <lucide-icon name="search" [size]="18" class="absolute left-3 text-gray-400"></lucide-icon>
+            <input type="text" placeholder="Buscar clientes, cotizaciones, tareas..."
+                class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+        </div>
+
+        <!-- Mobile specific search icon -->
+        <button class="md:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">
+            <lucide-icon name="search" [size]="20"></lucide-icon>
+        </button>
+    </div>
+
+    <!-- Right Side: Actions & Profile -->
+    <div class="flex items-center space-x-2 md:space-x-4">
+        <!-- Notifications -->
+        <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors relative">
+            <lucide-icon name="bell" [size]="20"></lucide-icon>
+            <!-- Optional notification badge -->
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+        </button>
+
+        <div class="h-6 w-px bg-gray-200 hidden md:block"></div>
+
+        <!-- User Profile Dropdown -->
+        <div class="relative">
+            <button (click)="toggleProfileMenu()"
+                class="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none">
+                <ng-container *ngIf="currentUser$ | async as user; else fallbackAvatar">
+                    <div
+                        class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium overflow-hidden">
+                        <img *ngIf="user.photoURL" [src]="user.photoURL" alt="Avatar"
+                            class="w-full h-full object-cover">
+                        <span *ngIf="!user.photoURL">{{ user.displayName ? user.displayName.charAt(0).toUpperCase() :
+                            (user.email ? user.email.charAt(0).toUpperCase() : 'U') }}</span>
+                    </div>
+                    <span class="text-sm font-medium text-gray-700 hidden md:block">{{ user.displayName || user.email
+                        }}</span>
+                </ng-container>
+                <ng-template #fallbackAvatar>
+                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                        <lucide-icon name="user" [size]="16"></lucide-icon>
+                    </div>
+                </ng-template>
+                <lucide-icon name="chevron-down" [size]="16" class="text-gray-400 hidden md:block"></lucide-icon>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div *ngIf="isProfileMenuOpen"
+                class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
+                <div class="px-4 py-2 border-b border-gray-100" *ngIf="currentUser$ | async as user">
+                    <p class="text-sm font-medium text-gray-900 truncate">{{ user.displayName || 'Usuario' }}</p>
+                    <p class="text-xs text-gray-500 truncate">{{ user.email }}</p>
+                </div>
+                <a routerLink="/settings/profile" (click)="toggleProfileMenu()"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    Configuración Personal
+                </a>
+                <a routerLink="/settings/tenant" (click)="toggleProfileMenu()"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    Configuración Empresa
+                </a>
+                <div class="h-px bg-gray-100 my-1"></div>
+                <button (click)="logout(); toggleProfileMenu()"
+                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center">
+                    <lucide-icon name="log-out" [size]="16" class="mr-2"></lucide-icon>
+                    Cerrar sesión
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Background Overlay when mobile menu is open (if needed) -->
+<div *ngIf="isProfileMenuOpen" (click)="toggleProfileMenu()" class="fixed inset-0 z-40"></div>

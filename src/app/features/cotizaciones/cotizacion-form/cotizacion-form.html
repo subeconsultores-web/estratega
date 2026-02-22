@@ -1,0 +1,223 @@
+<div class="max-w-4xl mx-auto">
+    <div class="mb-6 flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">{{ isEditMode ? 'Editar Cotización' : 'Nueva Cotización' }}
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">Completa los detalles de la propuesta comercial</p>
+        </div>
+        <a routerLink="/cotizaciones" class="text-gray-500 hover:text-gray-700 transition-colors">Volver</a>
+    </div>
+
+    <div *ngIf="isLoadingData" class="flex justify-center p-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
+
+    <form *ngIf="!isLoadingData" [formGroup]="cotizacionForm" (ngSubmit)="onSubmit()" class="space-y-6 pb-24">
+
+        <!-- Configuración Básica -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Datos Generales</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Título de la Propuesta *</label>
+                    <input type="text" formControlName="titulo"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <p *ngIf="cotizacionForm.get('titulo')?.invalid && cotizacionForm.get('titulo')?.touched"
+                        class="text-red-500 text-xs mt-1">Requerido</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Cliente *</label>
+                    <select formControlName="clienteId"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="" disabled>Seleccione un cliente</option>
+                        <option *ngFor="let cliente of clientes" [value]="cliente.id">{{ cliente.nombreEmpresa }}
+                        </option>
+                    </select>
+                    <p *ngIf="cotizacionForm.get('clienteId')?.invalid && cotizacionForm.get('clienteId')?.touched"
+                        class="text-red-500 text-xs mt-1">Requerido</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                    <select formControlName="estado"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="borrador">Borrador</option>
+                        <option value="enviada">Enviada</option>
+                        <option value="en_revision">En Revisión</option>
+                        <option value="aprobada" *ngIf="isEditMode">Aprobada</option>
+                        <option value="rechazada" *ngIf="isEditMode">Rechazada</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Moneda</label>
+                        <select formControlName="moneda"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="CLP">CLP ($)</option>
+                            <option value="UF">UF</option>
+                            <option value="USD">USD ($)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Validez (Días)</label>
+                        <input type="number" formControlName="validezDias"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gestión de Items (FormArray) -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-lg font-semibold text-gray-900">Ítems Cotizados</h3>
+                <button type="button" (click)="addItem()"
+                    class="text-primary hover:bg-blue-50 px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center">
+                    <lucide-icon name="plus" class="w-4 h-4 mr-1"></lucide-icon> Agregar Línea
+                </button>
+            </div>
+
+            <div formArrayName="items" class="space-y-4">
+                <!-- Encabezados Desktop -->
+                <div
+                    class="hidden md:grid grid-cols-12 gap-4 text-xs font-semibold text-gray-500 uppercase tracking-wide px-2">
+                    <div class="col-span-3">Servicio de Catálogo</div>
+                    <div class="col-span-3">Descripción / Detalle</div>
+                    <div class="col-span-1 text-center">Cant.</div>
+                    <div class="col-span-2 text-right">P. Unitario</div>
+                    <div class="col-span-2 text-right">Desc. Lín.</div>
+                    <div class="col-span-1 text-center"></div>
+                </div>
+
+                <div *ngFor="let itemForm of itemsFormArray.controls; let i = index" [formGroupName]="i"
+                    class="relative group bg-gray-50 md:bg-transparent p-4 md:p-0 rounded-lg md:rounded-none border md:border-transparent border-gray-200">
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+                        <!-- Servicio -->
+                        <div class="col-span-1 md:col-span-3">
+                            <label class="block text-xs font-medium text-gray-500 md:hidden mb-1">Catálogo</label>
+                            <select formControlName="servicioId" (change)="onServicioSelect(i)"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary">
+                                <option value="">Servicio Personalizado</option>
+                                <option *ngFor="let s of servicios" [value]="s.id">{{ s.nombre }}</option>
+                            </select>
+                        </div>
+
+                        <!-- Descripcion -->
+                        <div class="col-span-1 md:col-span-3">
+                            <label class="block text-xs font-medium text-gray-500 md:hidden mb-1">Descripción</label>
+                            <textarea rows="1" formControlName="descripcion"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary resize-y"
+                                placeholder="Detalle del servicio..."></textarea>
+                        </div>
+
+                        <!-- Cantidad -->
+                        <div class="col-span-1 md:col-span-1">
+                            <label class="block text-xs font-medium text-gray-500 md:hidden mb-1">Cant.</label>
+                            <input type="number" formControlName="cantidad"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-center focus:ring-2 focus:ring-primary">
+                        </div>
+
+                        <!-- Precio -->
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="block text-xs font-medium text-gray-500 md:hidden mb-1">Precio Unit.</label>
+                            <input type="number" formControlName="precioUnitario"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-right focus:ring-2 focus:ring-primary">
+                        </div>
+
+                        <!-- Descuento Línea -->
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="block text-xs font-medium text-gray-500 md:hidden mb-1">Descuento</label>
+                            <input type="number" formControlName="descuento"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-right focus:ring-2 focus:ring-primary text-red-600">
+                        </div>
+
+                        <!-- Accion Borrar -->
+                        <div
+                            class="col-span-1 md:col-span-1 flex justify-end md:justify-center items-center mt-2 md:mt-0">
+                            <button type="button" (click)="removeItem(i)"
+                                class="text-gray-400 hover:text-red-500 w-8 h-8 flex justify-center items-center rounded-full hover:bg-red-50 transition-colors"
+                                title="Quitar ítem">
+                                <lucide-icon name="trash-2" class="w-4 h-4"></lucide-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Calculo individual Linea (Neto) -->
+                    <div class="text-right text-xs text-gray-500 font-medium mt-1 md:absolute md:right-12 md:-bottom-4">
+                        Subtotal línea: ${{ itemForm.get('total')?.value | number:'1.0-0' }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Totales -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+
+            <!-- Notas y Condiciones -->
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Notas Internas</label>
+                    <textarea rows="2" formControlName="notas"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary"
+                        placeholder="No visibles para el cliente..."></textarea>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Condiciones Comerciales
+                        (Visibles)</label>
+                    <textarea rows="4" formControlName="condiciones"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary"
+                        placeholder="Términos y condiciones..."></textarea>
+                </div>
+            </div>
+
+            <!-- Cuadro Resumen Matemático -->
+            <div class="bg-blue-50/50 p-6 rounded-xl border border-blue-100 shadow-sm">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Resumen</h3>
+
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between items-center text-gray-600">
+                        <span>Subtotal Items</span>
+                        <span class="font-medium">${{ cotizacionForm.get('subtotal')?.value | number:'1.0-0' }}</span>
+                    </div>
+
+                    <div class="flex justify-between items-center text-gray-600">
+                        <span class="flex items-center">
+                            Descuento Global extra
+                        </span>
+                        <div class="w-32">
+                            <input type="number" formControlName="descuentoGlobal"
+                                class="w-full px-2 py-1 text-right border-gray-300 border rounded text-red-600 focus:ring-1 focus:ring-primary shadow-sm">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center text-gray-600 border-b border-gray-200 pb-3">
+                        <span>Impuestos (IVA 19%)</span>
+                        <span class="font-medium">${{ cotizacionForm.get('impuestos')?.value | number:'1.0-0' }}</span>
+                    </div>
+
+                    <div class="flex justify-between items-center text-xl font-bold text-gray-900 pt-2">
+                        <span>Total a Pagar</span>
+                        <span class="text-primary">${{ cotizacionForm.get('total')?.value | number:'1.0-0' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div
+            class="fixed bottom-0 left-0 lg:left-64 right-0 p-4 bg-white border-t border-gray-200 z-10 flex justify-end space-x-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <button type="button" routerLink="/cotizaciones"
+                class="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                Cancelar
+            </button>
+            <button type="submit" [disabled]="isSaving || cotizacionForm.invalid"
+                class="px-6 py-2 bg-primary text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                <lucide-icon *ngIf="isSaving" name="loader-2" class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
+                {{ isSaving ? 'Guardando...' : 'Guardar Cotización' }}
+            </button>
+        </div>
+
+    </form>
+</div>

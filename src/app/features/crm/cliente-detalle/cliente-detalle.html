@@ -1,0 +1,152 @@
+<div *ngIf="isLoading" class="mb-6">
+    <app-loading-skeleton type="card"></app-loading-skeleton>
+</div>
+
+<div *ngIf="!isLoading && cliente" class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <a routerLink="/crm/clientes"
+                class="p-2 bg-white rounded-lg shadow-sm border border-gray-200 text-gray-500 hover:text-primary transition-colors">
+                <lucide-icon name="chevron-left" [size]="20"></lucide-icon>
+            </a>
+            <div class="flex items-center space-x-4">
+                <div
+                    class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl uppercase">
+                    {{ getInitials(cliente.nombreEmpresa) }}
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">{{ cliente.nombreEmpresa }}</h2>
+                    <div class="flex items-center space-x-2 mt-1">
+                        <span class="text-sm text-gray-500">RUT: {{ cliente.rut || 'N/A' }}</span>
+                        <span class="px-2.5 py-0.5 text-xs font-medium rounded-full"
+                            [ngClass]="getBadgeColor(cliente.estado)">
+                            {{ cliente.estado | titlecase }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex space-x-3">
+            <a [routerLink]="['/crm/clientes', cliente.id, 'editar']"
+                class="flex items-center justify-center bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+                <lucide-icon name="edit-2" [size]="18" class="mr-2"></lucide-icon>
+                Editar Cliente
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Panel Izquierdo: Info -->
+        <div class="space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <lucide-icon name="users" [size]="18" class="mr-2 text-primary"></lucide-icon>
+                    Contacto Principal
+                </h3>
+                <div class="space-y-3">
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Nombre</p>
+                        <p class="text-sm font-medium text-gray-900">{{ cliente.contactoPrincipal.nombre }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Email</p>
+                        <p class="text-sm font-medium text-gray-900">
+                            <a [href]="'mailto:' + cliente.contactoPrincipal.email"
+                                class="text-primary hover:underline">{{ cliente.contactoPrincipal.email }}</a>
+                        </p>
+                    </div>
+                    <div *ngIf="cliente.contactoPrincipal.telefono">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Teléfono</p>
+                        <p class="text-sm font-medium text-gray-900">{{ cliente.contactoPrincipal.telefono }}</p>
+                    </div>
+                    <div *ngIf="cliente.contactoPrincipal.cargo">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Cargo</p>
+                        <p class="text-sm font-medium text-gray-900">{{ cliente.contactoPrincipal.cargo }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <lucide-icon name="briefcase" [size]="18" class="mr-2 text-primary"></lucide-icon>
+                    Datos Comerciales
+                </h3>
+                <div class="space-y-3">
+                    <div *ngIf="cliente.giro">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Giro</p>
+                        <p class="text-sm font-medium text-gray-900">{{ cliente.giro }}</p>
+                    </div>
+                    <div *ngIf="cliente.direccion">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Dirección</p>
+                        <p class="text-sm font-medium text-gray-900">{{ cliente.direccion }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Origen</p>
+                        <p class="text-sm font-medium text-gray-900">{{ (cliente.fuenteAdquisicion | titlecase) || 'No
+                            definido' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Derecho: Actividades -->
+        <div class="col-span-1 lg:col-span-2 space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <lucide-icon name="clock" [size]="18" class="mr-2 text-primary"></lucide-icon>
+                        Timeline de Actividades
+                    </h3>
+                    <button
+                        class="flex items-center justify-center bg-primary/10 text-primary px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors">
+                        <lucide-icon name="plus" [size]="16" class="mr-1"></lucide-icon>
+                        Registrar
+                    </button>
+                </div>
+
+                <div *ngIf="isLoadingActividades" class="flex justify-center p-6">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+
+                <div *ngIf="!isLoadingActividades && actividades.length === 0" class="text-center py-8">
+                    <div
+                        class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 text-gray-400 mb-3">
+                        <lucide-icon name="file-text" [size]="24"></lucide-icon>
+                    </div>
+                    <p class="text-sm font-medium text-gray-900">Sin actividades</p>
+                    <p class="text-xs text-gray-500 mt-1">Aún no hay interacciones registradas con este cliente.</p>
+                </div>
+
+                <div *ngIf="!isLoadingActividades && actividades.length > 0"
+                    class="relative pl-4 border-l-2 border-gray-100 space-y-6">
+                    <div *ngFor="let actividad of actividades" class="relative">
+                        <!-- Icono Timeline -->
+                        <div class="absolute -left-[25px] top-1 h-3 w-3 rounded-full border-2 border-white ring-2 ring-white"
+                            [ngClass]="actividad.completada ? 'bg-emerald-500' : 'bg-primary'"></div>
+
+                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100 hover:shadow-sm transition-shadow">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <div class="flex items-center space-x-2">
+                                        <span
+                                            class="text-xs font-semibold px-2 py-0.5 rounded bg-white border border-gray-200 text-gray-600">
+                                            {{ actividad.tipo | titlecase }}
+                                        </span>
+                                        <h4 class="text-sm font-bold text-gray-900">{{ actividad.titulo }}</h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-2 whitespace-pre-line">{{ actividad.descripcion
+                                        }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <!-- Pipe for date formatting handled via Date object or Timestamp -->
+                                    <!-- Will just use normal date pipe, handling Timestamp requires custom pipe, but angular fire converts it or we do it -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
