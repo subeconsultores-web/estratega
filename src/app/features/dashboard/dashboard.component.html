@@ -44,12 +44,19 @@
     </div>
 
     <!-- KPIs Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div *ngIf="isLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div *ngFor="let _ of [1,2,3,4]" class="bg-surface rounded-xl border border-border h-32 animate-pulse"></div>
+    </div>
+
+    <div *ngIf="!isLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <app-stat-card *ngFor="let kpi of kpis" [title]="kpi.label" [value]="kpi.value" [type]="kpi.type"
             [trend]="kpi.trend" [trendText]="kpi.trendText" [trendDesc]="kpi.trendDesc" [icon]="kpi.icon"
             [color]="kpi.color">
         </app-stat-card>
     </div>
+
+    <!-- Forecast AI Dashboard -->
+    <app-forecast-dashboard></app-forecast-dashboard>
 
     <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

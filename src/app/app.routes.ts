@@ -8,7 +8,12 @@ export const routes: Routes = [
         loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
     },
     {
+        path: 'superadmin',
+        loadChildren: () => import('./features/superadmin/superadmin.routes').then(m => m.SUPERADMIN_ROUTES)
+    },
+    {
         path: 'portal',
+        canActivate: [authGuard],
         loadChildren: () => import('./features/portal-cliente/portal.routes').then(m => m.PORTAL_ROUTES)
     },
     {
@@ -45,11 +50,15 @@ export const routes: Routes = [
             {
                 path: 'finanzas',
                 loadChildren: () => import('./features/finanzas/finanzas.routes').then(m => m.FINANZAS_ROUTES)
+            },
+            {
+                path: 'proyectos',
+                loadChildren: () => import('./features/proyectos/proyectos.routes').then(m => m.PROYECTOS_ROUTES)
             }
         ]
     },
     {
         path: '**',
-        redirectTo: '/dashboard'
+        redirectTo: ''
     }
 ];

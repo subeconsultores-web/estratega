@@ -15,13 +15,23 @@ export class FacturaService {
     // Obtención
     // ---------------------------------------------------------
 
-    getFacturas(tenantId: string): Observable<Factura[]> {
+    getFacturas(tenantId?: string): Observable<Factura[]> {
         const facturasRef = collection(this.firestore, 'facturas');
-        const q = query(
-            facturasRef,
-            where('tenantId', '==', tenantId),
-            orderBy('createdAt', 'desc')
-        );
+        let q;
+        if (tenantId) {
+            q = query(
+                facturasRef,
+                where('tenantId', '==', tenantId),
+                orderBy('createdAt', 'desc')
+            );
+        } else {
+            // Client Portal instances resolve by Firebase Rules natively based on Auth UID
+            q = query(
+                facturasRef,
+                orderBy('createdAt', 'desc')
+            );
+        }
+
         return collectionData(q, { idField: 'id' }).pipe(
             map(data => data as Factura[])
         );
@@ -114,5 +124,17 @@ export class FacturaService {
     async deleteFactura(id: string): Promise<void> {
         const facturaRef = doc(this.firestore, 'facturas', id);
         await deleteDoc(facturaRef);
+    }
+
+    // --- Stripe Integration Stub ---
+    async getCheckoutUrl(facturaId: string): Promise<string | null> {
+        // This typically calls a Firebase Cloud function to generate a Stripe Checkout Session
+        // For now, return a placeholder or read the url if saved in DB directly
+        const docSnap = await getDocs(query(collection(this.firestore, 'facturas'), where('id', '==', facturaId)));
+        if (!docSnap.empty) {
+            const data = docSnap.docs[0].data() as Factura;
+            return data.urlStripeCheckout || null;
+        }
+        return null;
     }
 }

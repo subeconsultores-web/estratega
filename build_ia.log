@@ -1,0 +1,52 @@
+[33m❯[39m Building...
+[32m✔[39m Building...
+[1mInitial chunk files[22m[2m | [22m[1mNames[22m                         [2m | [22m [1mRaw size[22m[2m | [22m[1mEstimated transfer size[22m
+[32mchunk-2I6PUSS2.js[39m  [2m | [22m[2m-[22m                             [2m | [22m[36m785.97 kB[39m[2m | [22m              [36m154.92 kB[39m
+[32mchunk-76NVHGLY.js[39m  [2m | [22m[2m-[22m                             [2m | [22m[36m219.72 kB[39m[2m | [22m               [36m66.02 kB[39m
+[32mchunk-ICBNLXG7.js[39m  [2m | [22m[2m-[22m                             [2m | [22m[36m161.85 kB[39m[2m | [22m               [36m47.74 kB[39m
+[32mstyles-YVBO7FCD.css[39m[2m | [22m[2mstyles[22m                        [2m | [22m [36m72.21 kB[39m[2m | [22m                [36m9.87 kB[39m
+[32mchunk-YDJB7ZFS.js[39m  [2m | [22m[2m-[22m                             [2m | [22m [36m48.48 kB[39m[2m | [22m                [36m9.59 kB[39m
+[32mmain-QKAYE5RH.js[39m   [2m | [22m[2mmain[22m                          [2m | [22m [36m23.79 kB[39m[2m | [22m                [36m6.82 kB[39m
+[32mchunk-S746GAOU.js[39m  [2m | [22m[2m-[22m                             [2m | [22m [36m23.17 kB[39m[2m | [22m                [36m7.57 kB[39m
+[32mchunk-KFXQOJ6M.js[39m  [2m | [22m[2m-[22m                             [2m | [22m [36m17.14 kB[39m[2m | [22m                [36m4.19 kB[39m
+[32mchunk-DLQKFKO7.js[39m  [2m | [22m[2m-[22m                             [2m | [22m  [36m9.63 kB[39m[2m | [22m                [36m3.24 kB[39m
+[32mchunk-PBBYCPTR.js[39m  [2m | [22m[2m-[22m                             [2m | [22m  [36m8.84 kB[39m[2m | [22m                [36m3.19 kB[39m
+[32mchunk-7CGTOI24.js[39m  [2m | [22m[2m-[22m                             [2m | [22m[36m618 bytes[39m[2m | [22m              [36m618 bytes[39m
+
+[1m [22m                  [2m | [22m[1mInitial total[22m                 [2m | [22m  [1m1.37 MB[22m[2m | [22m              [1m313.77 kB[22m
+
+[1mLazy chunk files[22m   [2m | [22m[1mNames[22m                         [2m | [22m [1mRaw size[22m[2m | [22m[1mEstimated transfer size[22m
+[32mchunk-VB4DFJCC.js[39m  [2m | [22m[2mproyectos-routes[22m              [2m | [22m [36m81.54 kB[39m[2m | [22m               [36m20.15 kB[39m
+[32mchunk-PB7VXRNG.js[39m  [2m | [22m[2mbrowser[22m                       [2m | [22m [36m67.78 kB[39m[2m | [22m               [36m17.82 kB[39m
+[32mchunk-KLQUN6FU.js[39m  [2m | [22m[2mcontratos-routes[22m              [2m | [22m [36m36.06 kB[39m[2m | [22m                [36m8.89 kB[39m
+[32mchunk-26ZTF5OZ.js[39m  [2m | [22m[2mcotizacion-form-component[22m     [2m | [22m [36m19.85 kB[39m[2m | [22m                [36m5.44 kB[39m
+[32mchunk-AN7IC4BX.js[39m  [2m | [22m[2mdashboard-routes[22m              [2m | [22m [36m14.71 kB[39m[2m | [22m                [36m4.52 kB[39m
+[32mchunk-4LFHZAO2.js[39m  [2m | [22m[2mfactura-form-component[22m        [2m | [22m [36m14.17 kB[39m[2m | [22m                [36m3.92 kB[39m
+[32mchunk-XPTZ6GED.js[39m  [2m | [22m[2mcotizacion-view-component[22m     [2m | [22m [36m14.09 kB[39m[2m | [22m                [36m3.85 kB[39m
+[32mchunk-4SDUICX7.js[39m  [2m | [22m[2mtransaccion-form[22m              [2m | [22m [36m12.43 kB[39m[2m | [22m                [36m4.11 kB[39m
+[32mchunk-KKMN6IYJ.js[39m  [2m | [22m[2mfactura-view-component[22m        [2m | [22m [36m11.52 kB[39m[2m | [22m                [36m3.50 kB[39m
+[32mchunk-X6ZLG5QY.js[39m  [2m | [22m[2mportal-routes[22m                 [2m | [22m [36m11.24 kB[39m[2m | [22m                [36m3.00 kB[39m
+[32mchunk-33Q2ENJ7.js[39m  [2m | [22m[2mcliente-form-component[22m        [2m | [22m [36m10.30 kB[39m[2m | [22m                [36m2.72 kB[39m
+[32mchunk-VRC7EOG7.js[39m  [2m | [22m[2mpipeline-kanban-component[22m     [2m | [22m  [36m9.34 kB[39m[2m | [22m                [36m2.52 kB[39m
+[32mchunk-AL2HG6VO.js[39m  [2m | [22m[2m-[22m                             [2m | [22m  [36m6.89 kB[39m[2m | [22m                [36m2.20 kB[39m
+[32mchunk-TVCK5KD7.js[39m  [2m | [22m[2mdashboard-financiero-component[22m[2m | [22m  [36m6.78 kB[39m[2m | [22m                [36m2.15 kB[39m
+[32mchunk-XO5TH5GI.js[39m  [2m | [22m[2mlogin[22m                         [2m | [22m  [36m6.76 kB[39m[2m | [22m                [36m2.37 kB[39m
+[2m...and 18 more lazy chunks files. Use "--verbose" to show all the files.[22m
+
+Application bundle generation complete. [20.877 seconds] - 2026-02-22T22:53:18.187Z
+
+[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/kanban-board/kanban-board.html:11:33:
+[37m      11 │                     {{ proyecto?.[32mnombre[37m || 'Cargando Proyecto...' }}
+         ╵                                  [32m~~~~~~[0m
+
+  Warning occurs in the template of component KanbanBoard.
+
+    src/app/features/proyectos/kanban-board/kanban-board.ts:39:17:
+[37m      39 │     templateUrl: [32m'./kanban-board.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+Output location: C:\AppsIA\repogit\Estratega-subeia\sube-gestion\dist\sube-gestion
+

@@ -5,6 +5,7 @@ import { CrmService } from '../../../core/services/crm.service';
 import { Cliente } from '../../../core/models/crm.model';
 import { ToastrService } from 'ngx-toastr';
 import { RouterModule } from '@angular/router';
+import { ScoringService } from '../../../core/services/scoring.service';
 
 @Component({
     selector: 'app-pipeline-kanban',
@@ -14,6 +15,7 @@ import { RouterModule } from '@angular/router';
 })
 export class PipelineKanbanComponent implements OnInit {
     private crmService = inject(CrmService);
+    public scoringService = inject(ScoringService);
     private toastr = inject(ToastrService);
 
     isLoading = true;

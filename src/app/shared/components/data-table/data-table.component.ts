@@ -1,19 +1,20 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
+import { ScoringService } from '../../../core/services/scoring.service';
 
 export interface ColumnDef {
-    key: string;
-    label: string;
-    type?: 'text' | 'currency' | 'date' | 'badge' | 'action';
-    sortable?: boolean;
+  key: string;
+  label: string;
+  type?: 'text' | 'currency' | 'date' | 'badge' | 'action' | 'score';
+  sortable?: boolean;
 }
 
 @Component({
-    selector: 'app-data-table',
-    standalone: true,
-    imports: [CommonModule, LucideAngularModule],
-    template: `
+  selector: 'app-data-table',
+  standalone: true,
+  imports: [CommonModule, LucideAngularModule],
+  template: `
     <div class="bg-surface border border-border rounded-xl shadow-sm overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm text-txt-secondary">
@@ -61,6 +62,18 @@ export interface ColumnDef {
                     </button>
                 </ng-container>
 
+                <!-- Score -->
+                <ng-container *ngIf="col.type === 'score'">
+                  <div class="flex items-center space-x-2" *ngIf="item[col.key] !== undefined && item[col.key] !== null; else noScore">
+                    <div class="px-2 py-0.5 rounded text-xs font-bold text-white shadow-sm" [style.backgroundColor]="getScoreColor(item[col.key])">
+                        {{ item[col.key] }}
+                    </div>
+                  </div>
+                  <ng-template #noScore>
+                    <span class="text-xs text-txt-muted">-</span>
+                  </ng-template>
+                </ng-container>
+
                 <!-- Default Text -->
                 <ng-container *ngIf="!col.type || col.type === 'text'">
                   <span [class.font-medium]="i === 0" [class.text-txt-primary]="i === 0">{{ item[col.key] || '-' }}</span>
@@ -96,93 +109,99 @@ export interface ColumnDef {
   `
 })
 export class DataTableComponent {
-    @Input() columns: ColumnDef[] = [];
-    @Input() data: any[] = [];
-    @Input() pageSize: number = 10;
+  private scoringService = inject(ScoringService);
 
-    @Output() actionClick = new EventEmitter<{ item: any, action: string }>();
+  @Input() columns: ColumnDef[] = [];
+  @Input() data: any[] = [];
+  @Input() pageSize: number = 10;
 
-    currentPage: number = 1;
-    sortColumn: string | null = null;
-    sortDirection: 'asc' | 'desc' = 'asc';
+  @Output() actionClick = new EventEmitter<{ item: any, action: string }>();
 
-    get totalPages(): number {
-        return Math.ceil(this.data.length / this.pageSize);
+  currentPage: number = 1;
+  sortColumn: string | null = null;
+  sortDirection: 'asc' | 'desc' = 'asc';
+
+  get totalPages(): number {
+    return Math.ceil(this.data.length / this.pageSize);
+  }
+
+  get startIndex(): number {
+    return (this.currentPage - 1) * this.pageSize;
+  }
+
+  get endIndex(): number {
+    return Math.min(this.startIndex + this.pageSize, this.data.length);
+  }
+
+  get paginatedData(): any[] {
+    let processData = [...this.data];
+
+    // Simple sorting
+    if (this.sortColumn) {
+      processData.sort((a, b) => {
+        const valA = a[this.sortColumn!];
+        const valB = b[this.sortColumn!];
+
+        if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
+        if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
     }
 
-    get startIndex(): number {
-        return (this.currentPage - 1) * this.pageSize;
+    return processData.slice(this.startIndex, this.endIndex);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
     }
+  }
 
-    get endIndex(): number {
-        return Math.min(this.startIndex + this.pageSize, this.data.length);
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
     }
+  }
 
-    get paginatedData(): any[] {
-        let processData = [...this.data];
-
-        // Simple sorting
-        if (this.sortColumn) {
-            processData.sort((a, b) => {
-                const valA = a[this.sortColumn!];
-                const valB = b[this.sortColumn!];
-
-                if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
-                if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
-                return 0;
-            });
-        }
-
-        return processData.slice(this.startIndex, this.endIndex);
+  sort(key: string) {
+    if (this.sortColumn === key) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = key;
+      this.sortDirection = 'asc';
     }
+  }
 
-    nextPage() {
-        if (this.currentPage < this.totalPages) {
-            this.currentPage++;
-        }
-    }
+  formatCurrency(value: any): string {
+    if (value == null || isNaN(value)) return '$0';
+    return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(value);
+  }
 
-    prevPage() {
-        if (this.currentPage > 1) {
-            this.currentPage--;
-        }
+  formatDate(val: any): string {
+    if (!val) return '-';
+    // Handle Firestore Timestamp
+    if (val.seconds) {
+      return new Date(val.seconds * 1000).toLocaleDateString('es-CL');
     }
+    return new Date(val).toLocaleDateString('es-CL');
+  }
 
-    sort(key: string) {
-        if (this.sortColumn === key) {
-            this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            this.sortColumn = key;
-            this.sortDirection = 'asc';
-        }
+  getBadgeClass(status: string): string {
+    const s = (status || '').toLowerCase();
+    switch (s) {
+      case 'activo':
+      case 'prospecto':
+        return 'bg-green-500/10 text-green-600 border-green-500/20';
+      case 'lead':
+        return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
+      case 'inactivo':
+        return 'bg-gray-500/10 text-gray-600 border-gray-500/20';
+      default:
+        return 'bg-primary/10 text-primary border-primary/20';
     }
+  }
 
-    formatCurrency(value: any): string {
-        if (value == null || isNaN(value)) return '$0';
-        return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(value);
-    }
-
-    formatDate(val: any): string {
-        if (!val) return '-';
-        // Handle Firestore Timestamp
-        if (val.seconds) {
-            return new Date(val.seconds * 1000).toLocaleDateString('es-CL');
-        }
-        return new Date(val).toLocaleDateString('es-CL');
-    }
-
-    getBadgeClass(status: string): string {
-        const s = (status || '').toLowerCase();
-        switch (s) {
-            case 'activo':
-            case 'prospecto':
-                return 'bg-green-500/10 text-green-600 border-green-500/20';
-            case 'lead':
-                return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
-            case 'inactivo':
-                return 'bg-gray-500/10 text-gray-600 border-gray-500/20';
-            default:
-                return 'bg-primary/10 text-primary border-primary/20';
-        }
-    }
+  getScoreColor(score: number): string {
+    return this.scoringService.getScoreColor(score);
+  }
 }

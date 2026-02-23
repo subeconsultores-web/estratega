@@ -5,11 +5,12 @@ import { LucideAngularModule } from 'lucide-angular';
 import { CrmService } from '../../../core/services/crm.service';
 import { Cliente, Actividad } from '../../../core/models/crm.model';
 import { LoadingSkeleton } from '../../../shared/components/loading-skeleton/loading-skeleton.component';
+import { PropuestaModalComponent } from '../components/propuesta-modal/propuesta-modal.component';
 
 @Component({
   selector: 'app-cliente-detalle',
   standalone: true,
-  imports: [CommonModule, RouterLink, LucideAngularModule, LoadingSkeleton],
+  imports: [CommonModule, RouterLink, LucideAngularModule, LoadingSkeleton, PropuestaModalComponent],
   templateUrl: './cliente-detalle.html',
   styleUrl: './cliente-detalle.scss',
 })
@@ -23,6 +24,7 @@ export class ClienteDetalle implements OnInit {
 
   isLoading = true;
   isLoadingActividades = true;
+  isPropuestaModalOpen = false;
 
   ngOnInit() {
     this.clienteId = this.route.snapshot.paramMap.get('id');
@@ -71,5 +73,9 @@ export class ClienteDetalle implements OnInit {
   getInitials(name: string): string {
     if (!name) return 'U';
     return name.charAt(0).toUpperCase();
+  }
+
+  openPropuestaModal() {
+    this.isPropuestaModalOpen = true;
   }
 }

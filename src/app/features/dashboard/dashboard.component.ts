@@ -1,27 +1,43 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { EmptyState } from '../../shared/components/empty-state/empty-state.component';
 import { StatCardComponent } from '../../shared/components/stat-card/stat-card.component';
+import { FinanzasService } from '../../core/services/finanzas.service';
+import { ForecastDashboardComponent } from './forecast/forecast.component';
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, BaseChartDirective, EmptyState, StatCardComponent],
+    imports: [CommonModule, LucideAngularModule, BaseChartDirective, EmptyState, StatCardComponent, ForecastDashboardComponent],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent {
-    // KPIs Mock Data mapped to StatCard component inputs
-    kpis = [
-        { label: 'Cotizado del Mes', value: 12500000, type: 'currency', trend: 'up', trendText: '+15%', trendDesc: 'vs mes anterior', icon: 'file-badge', color: 'primary' },
-        { label: 'Facturado del Mes', value: 8200000, type: 'currency', trend: 'up', trendText: '+8%', trendDesc: 'vs mes anterior', icon: 'check-square', color: 'accent' },
-        { label: 'Tasa de Conversión', value: '42%', type: 'text', trend: 'down', trendText: '-2%', trendDesc: 'vs mes anterior', icon: 'users', color: 'secondary' },
-        { label: 'Horas (Semana)', value: '164h', type: 'text', trend: 'up', trendText: '+5h', trendDesc: 'vs semana anterior', icon: 'clock', color: 'primary' },
-        { label: 'Por Cobrar Vencido', value: 1100000, type: 'currency', trend: 'down', trendText: 'Urgente', trendDesc: '3 facturas', icon: 'dollar-sign', color: 'danger' }
-    ] as any[];
+export class DashboardComponent implements OnInit {
+    private finanzas = inject(FinanzasService);
+
+    // KPIs mapped to StatCard component inputs
+    kpis = [] as any[];
+    isLoading = true;
+
+    async ngOnInit() {
+        this.isLoading = true;
+        try {
+            const m = await this.finanzas.getMetricasResumen();
+            this.kpis = [
+                { label: 'Ingresos Operativos', value: m.ingresosMesActual, type: 'currency', trend: 'up', trendText: '30 días', trendDesc: 'recaudado', icon: 'check-square', color: 'accent' },
+                { label: 'MRR / Recurrente', value: m.mrr, type: 'currency', trend: 'up', trendText: `+${m.crecimientoMRR}%`, trendDesc: 'vs mes anterior', icon: 'trending-up', color: 'primary' },
+                { label: 'Egresos Caja', value: m.egresosMesActual, type: 'currency', trend: 'down', trendText: 'Operativo', trendDesc: 'salidas', icon: 'arrow-up-from-line', color: 'secondary' },
+                { label: 'Facturado Pendiente', value: m.porCobrar, type: 'currency', trend: 'down', trendText: 'Urgente', trendDesc: 'AR general', icon: 'dollar-sign', color: 'danger' }
+            ];
+        } catch (e) {
+            console.error('Core Dashboard KPI Error', e);
+        } finally {
+            this.isLoading = false;
+        }
+    }
 
     // Estratega IA insight mock
     estrategaInsights = [

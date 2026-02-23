@@ -117,34 +117,62 @@ export class FinanzasService {
     async getMetricasResumen(): Promise<MetricasFinancieras> {
         const tenantId = await this.getTenantIdOrThrow();
 
-        // Prototipo: Leer transacciones de los ultimos 30 dias (Mock logic)
         const ahora = new Date();
         const haceUnMes = new Date();
         haceUnMes.setMonth(ahora.getMonth() - 1);
 
-        const ref = collection(this.firestore, 'transacciones');
-        const q = query(
-            ref,
+        // 1. Fetch Transacciones for current month (Ingresos, Egresos, MRR)
+        const refTransacciones = collection(this.firestore, 'transacciones');
+        const qTrans = query(
+            refTransacciones,
             where('tenantId', '==', tenantId),
             where('fecha', '>=', Timestamp.fromDate(haceUnMes))
         );
 
-        const snapshot = await getDocs(q);
+        // 2. Fetch Facturas for 'porCobrar' (Pending accounts receivable)
+        const refFacturas = collection(this.firestore, 'facturas');
+        const qFact = query(
+            refFacturas,
+            where('tenantId', '==', tenantId),
+            where('estado', 'in', ['borrador', 'enviada', 'vencida', 'parcial'])
+        );
+
+        const [snapshotTrans, snapshotFact] = await Promise.all([
+            getDocs(qTrans),
+            getDocs(qFact)
+        ]);
+
         let ingresosMesActual = 0;
         let egresosMesActual = 0;
+        let mrrSimulado = 0; // Sum of recurring subscriptions this month
 
-        snapshot.forEach(doc => {
+        snapshotTrans.forEach(doc => {
             const t = doc.data() as Transaccion;
-            if (t.tipo === 'ingreso' && t.estado === 'completado') ingresosMesActual += t.monto;
-            if (t.tipo === 'egreso' && t.estado === 'completado') egresosMesActual += t.monto;
+            if (t.estado === 'completado') {
+                if (t.tipo === 'ingreso') {
+                    ingresosMesActual += t.monto;
+                    if (t.categoria === 'suscripcion') {
+                        mrrSimulado += t.monto;
+                    }
+                }
+                if (t.tipo === 'egreso') {
+                    egresosMesActual += t.monto;
+                }
+            }
+        });
+
+        let porCobrar = 0;
+        snapshotFact.forEach(doc => {
+            const f = doc.data() as Factura;
+            porCobrar += (f.saldoPendiente || f.total || 0);
         });
 
         return {
-            mrr: ingresosMesActual * 0.4, // Simulado
+            mrr: mrrSimulado,
             ingresosMesActual,
             egresosMesActual,
-            porCobrar: 154000, // Simulado
-            crecimientoMRR: 12.5
-        }
+            porCobrar,
+            crecimientoMRR: mrrSimulado > 0 ? 5.2 : 0 // Still mocked growth metric for now
+        };
     }
 }

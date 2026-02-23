@@ -4,12 +4,11 @@ import { FinanzasService } from '../../../core/services/finanzas.service';
 import { MetricasFinancieras } from '../../../core/models/finanzas.model';
 import { RouterModule } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
-import { LoadingSkeleton } from '../../../shared/components/loading-skeleton/loading-skeleton.component';
 
 @Component({
     selector: 'app-dashboard-financiero',
     standalone: true,
-    imports: [CommonModule, RouterModule, LucideAngularModule, LoadingSkeleton],
+    imports: [CommonModule, RouterModule, LucideAngularModule],
     templateUrl: './dashboard-financiero.component.html'
 })
 export class DashboardFinancieroComponent implements OnInit {

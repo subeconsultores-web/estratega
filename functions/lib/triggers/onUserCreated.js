@@ -61,7 +61,7 @@ exports.onUserCreated = functions.auth.user().onCreate(async (user) => {
         tenantId,
         email: email,
         nombre: displayName || registroData.nombre,
-        role: 'super-admin',
+        role: 'tenant_admin',
         activo: true,
         config: {
             idioma: 'es',
@@ -77,7 +77,7 @@ exports.onUserCreated = functions.auth.user().onCreate(async (user) => {
     // 4. Asignar Custom Claims
     await admin.auth().setCustomUserClaims(uid, {
         tenantId,
-        role: 'super-admin',
+        role: 'tenant_admin',
         plan: 'free'
     });
     // 5. Limpiar registro temporal

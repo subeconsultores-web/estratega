@@ -1,4 +1,5 @@
 import { Timestamp } from '@angular/fire/firestore';
+import { ScoreIA } from './cliente.model';
 
 export interface Cliente {
     id?: string;
@@ -18,6 +19,7 @@ export interface Cliente {
     estado: 'lead' | 'prospecto' | 'activo' | 'inactivo' | string;
     pipelineEtapa?: string;
     score?: number;
+    scoringIA?: ScoreIA;
     vendedorAsignado?: string;
     notas?: string;
     totalHistorico?: number;

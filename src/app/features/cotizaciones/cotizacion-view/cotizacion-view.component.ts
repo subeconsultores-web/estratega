@@ -14,7 +14,7 @@ import { Timestamp } from '@angular/fire/firestore';
 @Component({
     selector: 'app-cotizacion-view',
     standalone: true,
-    imports: [CommonModule, RouterModule, LucideAngularModule, CurrencyPipe, SlicePipe],
+    imports: [CommonModule, RouterModule, LucideAngularModule, CurrencyPipe],
     templateUrl: './cotizacion-view.component.html'
 })
 export class CotizacionViewComponent implements OnInit {

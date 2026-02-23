@@ -23,6 +23,7 @@ export class ClientesListComponent implements OnInit {
 
     columns: ColumnDef[] = [
         { key: 'nombreEmpresa', label: 'Empresa', sortable: true },
+        { key: 'score', label: 'Score IA', type: 'score', sortable: true },
         { key: 'rut', label: 'RUT' },
         { key: 'estado', label: 'Estado', type: 'badge', sortable: true },
         { key: 'pipelineEtapa', label: 'Etapa', sortable: true },

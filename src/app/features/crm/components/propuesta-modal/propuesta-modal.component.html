@@ -1,0 +1,133 @@
+<div *ngIf="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-fade-in">
+    <!-- Backdrop -->
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" (click)="close()"></div>
+
+    <!-- Modal Panel -->
+    <div
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col relative z-10 transform scale-100 transition-all duration-300">
+
+        <!-- Header -->
+        <div
+            class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+            <div class="flex items-center space-x-3">
+                <div
+                    class="p-2 bg-primary-100 dark:bg-primary-900/40 rounded-lg text-primary-600 dark:text-primary-400">
+                    <lucide-icon name="wand-2" [size]="20"></lucide-icon>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100">Generador Inteligente de Propuestas
+                    </h2>
+                    <p class="text-xs text-slate-500">Para: <span class="font-semibold">{{ nombreEmpresa }}</span></p>
+                </div>
+            </div>
+            <button (click)="close()"
+                class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+                <lucide-icon name="x" [size]="20"></lucide-icon>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="flex-1 overflow-y-auto p-6 flex flex-col md:flex-row gap-6 bg-white dark:bg-slate-800">
+
+            <!-- Configuración Form -->
+            <div class="w-full md:w-1/3 flex flex-col space-y-4">
+
+                <div class="space-y-1">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center">
+                        <lucide-icon name="list-checks" [size]="14" class="mr-1"></lucide-icon> Servicios Ofrecidos
+                    </label>
+                    <p class="text-[10px] text-slate-500 mb-1">P. ej: "Diseño Web: 500000"</p>
+                    <textarea [(ngModel)]="serviciosInput" [disabled]="isGenerating() || propuestaMarkdown() !== null"
+                        placeholder="Escribe un servicio y valor por línea..."
+                        class="w-full h-32 p-3 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-primary focus:border-primary resize-none disabled:bg-slate-100 dark:bg-slate-900 dark:border-slate-700"></textarea>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Tono de la
+                        Propuesta</label>
+                    <select [(ngModel)]="tono" [disabled]="isGenerating() || propuestaMarkdown() !== null"
+                        class="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-primary focus:border-primary disabled:bg-slate-100 dark:bg-slate-900 dark:border-slate-700">
+                        <option value="formal">👔 Profesional y Formal</option>
+                        <option value="agresivo">🎯 Persuasivo (Agresivo Comercial)</option>
+                        <option value="casual">🤝 Casual y Directo</option>
+                        <option value="breve">⏱ Breve (Resumen Ejecutivo)</option>
+                    </select>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Contexto Adicional
+                        (Opcional)</label>
+                    <textarea [(ngModel)]="contextoExtra" [disabled]="isGenerating() || propuestaMarkdown() !== null"
+                        placeholder="Reunión del martes, mencionar descuento del 10%..."
+                        class="w-full h-20 p-3 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-primary focus:border-primary resize-none disabled:bg-slate-100 dark:bg-slate-900 dark:border-slate-700"></textarea>
+                </div>
+
+                <!-- Botón de Generar -->
+                <button *ngIf="propuestaMarkdown() === null" (click)="generarPropuesta()" [disabled]="isGenerating()"
+                    class="w-full flex items-center justify-center py-3 px-4 bg-primary text-white rounded-xl font-bold hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all shadow-md disabled:bg-slate-300 disabled:cursor-not-allowed">
+                    <span *ngIf="isGenerating()" class="flex items-center">
+                        <lucide-icon name="loader-2" [size]="18" class="animate-spin mr-2"></lucide-icon> Redactando con
+                        IA...
+                    </span>
+                    <span *ngIf="!isGenerating()" class="flex items-center">
+                        <lucide-icon name="sparkles" [size]="18" class="mr-2"></lucide-icon> Generar Propuesta
+                    </span>
+                </button>
+
+                <!-- Reiniciar -->
+                <button *ngIf="propuestaMarkdown() !== null"
+                    (click)="propuestaMarkdown.set(null); propuestaHtml.set(null);"
+                    class="w-full py-2.5 px-4 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg font-medium text-sm transition-colors border border-slate-200 flex justify-center items-center">
+                    <lucide-icon name="rotate-ccw" [size]="16" class="mr-2"></lucide-icon> Crear nueva versión
+                </button>
+
+            </div>
+
+            <!-- Previsualización Documento -->
+            <div
+                class="w-full md:w-2/3 flex flex-col border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-900 relative">
+
+                <!-- Status/Empty State -->
+                <div *ngIf="!propuestaMarkdown() && !isGenerating()"
+                    class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 p-6 text-center">
+                    <lucide-icon name="file-search" [size]="48" class="mb-4 text-slate-300"></lucide-icon>
+                    <p class="font-medium text-slate-500">Completa la información y presiona generar.</p>
+                    <p class="text-sm mt-1">SUBE IA redactará el documento persuasivo automáticamente.</p>
+                </div>
+
+                <div *ngIf="isGenerating()"
+                    class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm z-10">
+                    <div class="relative w-16 h-16 mb-4">
+                        <div class="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
+                        <div
+                            class="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin">
+                        </div>
+                    </div>
+                    <p class="font-semibold text-primary animate-pulse">Estructurando argumentos comerciales...</p>
+                </div>
+
+                <!-- Markdown Visualizer -->
+                <div *ngIf="propuestaHtml()" class="flex-1 overflow-y-auto p-8 relative">
+                    <!-- Toolbox Top Right -->
+                    <div class="absolute top-4 right-4 flex space-x-2 z-10">
+                        <button (click)="copyToClipboard()"
+                            class="p-2 bg-white/80 backdrop-blur border border-slate-200 text-slate-600 rounded-md hover:text-primary shadow-sm tooltip"
+                            title="Copiar Markdown">
+                            <lucide-icon name="copy" [size]="16"></lucide-icon>
+                        </button>
+                        <button (click)="exportarPDF()"
+                            class="flex items-center space-x-1.5 px-3 py-2 bg-white/80 backdrop-blur border border-slate-200 text-slate-600 rounded-md hover:text-red-500 shadow-sm transition-colors font-medium text-sm">
+                            <lucide-icon name="file-down" [size]="16"></lucide-icon> <span>Exportar PDF</span>
+                        </button>
+                    </div>
+
+                    <!-- El contenido HTML parseado desde Markdown se inyecta aquí. ID para exportación PDF -->
+                    <div id="propuesta-pdf-content"
+                        class="prose prose-sm dark:prose-invert max-w-none prose-h1:text-primary prose-h1:border-b prose-h1:pb-2 prose-h2:text-slate-800 prose-a:text-primary bg-white p-8 rounded shadow-sm border border-slate-100 min-h-full">
+                        <div [innerHTML]="propuestaHtml()"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

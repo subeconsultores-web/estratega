@@ -1,0 +1,136 @@
+<div class="space-y-8">
+    <!-- Metrics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-slate-400 font-medium text-sm">Total Tenants</h3>
+                <lucide-icon name="briefcase" [size]="20" class="text-indigo-500"></lucide-icon>
+            </div>
+            <p class="text-3xl font-bold text-white">{{ metrics.total }}</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-slate-400 font-medium text-sm">Activos</h3>
+                <lucide-icon name="check-square" [size]="20" class="text-emerald-500"></lucide-icon>
+            </div>
+            <p class="text-3xl font-bold text-white">{{ metrics.active }}</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-slate-400 font-medium text-sm">En Prueba (Trial)</h3>
+                <lucide-icon name="clock" [size]="20" class="text-amber-500"></lucide-icon>
+            </div>
+            <p class="text-3xl font-bold text-white">{{ metrics.trial }}</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-slate-400 font-medium text-sm">MRR Estimado</h3>
+                <lucide-icon name="dollar-sign" [size]="20" class="text-emerald-500"></lucide-icon>
+            </div>
+            <p class="text-3xl font-bold text-emerald-400">${{ metrics.mrr }}</p>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+        <lucide-icon name="loader-2" [size]="32" class="text-indigo-500 animate-spin"></lucide-icon>
+    </div>
+
+    <!-- Table -->
+    <div *ngIf="!isLoading" class="bg-slate-900 border border-slate-800 rounded-xl shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-800 flex justify-between items-center">
+            <h2 class="text-lg font-bold text-white">Agencias (Tenants)</h2>
+            <div class="relative">
+                <lucide-icon name="search" [size]="20"
+                    class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></lucide-icon>
+                <input type="text" placeholder="Buscar agencia..."
+                    class="pl-10 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-950 border-b border-slate-800 text-xs uppercase text-slate-400">
+                        <th class="px-6 py-4 font-semibold">Agencia / ID</th>
+                        <th class="px-6 py-4 font-semibold">Contacto</th>
+                        <th class="px-6 py-4 font-semibold">Estado</th>
+                        <th class="px-6 py-4 font-semibold">Plan Suscripción</th>
+                        <th class="px-6 py-4 font-semibold">Fecha Registro</th>
+                        <th class="px-6 py-4 font-semibold text-right">Controles Globales</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/50">
+                    <tr *ngFor="let tenant of tenants" class="hover:bg-slate-800/20 transition-colors">
+                        <!-- Agencia -->
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 font-bold shrink-0">
+                                    {{ tenant.nombre.charAt(0) | uppercase }}
+                                </div>
+                                <div>
+                                    <p class="font-medium text-slate-200">{{ tenant.nombre }}</p>
+                                    <p class="text-xs text-slate-500 font-mono">{{ tenant.id | slice:0:8 }}...</p>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Contacto -->
+                        <td class="px-6 py-4">
+                            <p class="text-sm text-slate-300">{{ tenant.emailContacto || 'Sin correo' }}</p>
+                            <p class="text-xs text-slate-500">RUT: {{ tenant.rut || 'N/A' }}</p>
+                        </td>
+
+                        <!-- Estado -->
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+                                [ngClass]="tenant.isActive ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'">
+                                <span class="w-1.5 h-1.5 rounded-full"
+                                    [ngClass]="tenant.isActive ? 'bg-emerald-400' : 'bg-red-400'"></span>
+                                {{ tenant.isActive ? 'Activa' : 'Suspendida' }}
+                            </span>
+                        </td>
+
+                        <!-- Plan -->
+                        <td class="px-6 py-4">
+                            <select
+                                class="bg-slate-950 border border-slate-800 text-slate-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2"
+                                [ngModel]="tenant.plan" (ngModelChange)="changePlan(tenant, $event)">
+                                <option value="trial">Trial (14 días)</option>
+                                <option value="pro">Pro ($50/mo)</option>
+                                <option value="enterprise">Enterprise ($150/mo)</option>
+                            </select>
+                        </td>
+
+                        <!-- Fecha -->
+                        <td class="px-6 py-4 text-sm text-slate-400">
+                            {{ getDate(tenant.createdAt) | date:'dd MMM, yyyy' }}
+                        </td>
+
+                        <!-- Acciones -->
+                        <td class="px-6 py-4 text-right">
+                            <button (click)="toggleStatus(tenant)"
+                                class="inline-flex items-center justify-center px-3 py-1.5 rounded text-xs font-medium transition-colors border"
+                                [ngClass]="tenant.isActive 
+                  ? 'bg-red-500/10 border-red-500/20 text-red-500 hover:bg-red-500/20' 
+                  : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/20'">
+                                <lucide-icon [name]="tenant.isActive ? 'panel-left-close' : 'check-square'" [size]="14"
+                                    class="mr-1.5"></lucide-icon>
+                                {{ tenant.isActive ? 'Bloquear Acceso' : 'Restaurar' }}
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div *ngIf="tenants.length === 0" class="p-8 text-center text-slate-500">
+                <lucide-icon name="bot" [size]="48" class="mx-auto mb-4 opacity-50"></lucide-icon>
+                <p>No hay tenants registrados en la plataforma.</p>
+            </div>
+        </div>
+    </div>
+</div>

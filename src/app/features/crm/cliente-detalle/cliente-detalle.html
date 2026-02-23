@@ -28,6 +28,11 @@
             </div>
         </div>
         <div class="flex space-x-3">
+            <button (click)="openPropuestaModal()"
+                class="flex items-center justify-center bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold hover:brightness-110 transition-colors shadow-sm">
+                <lucide-icon name="sparkles" [size]="18" class="mr-2"></lucide-icon>
+                Generar Propuesta IA
+            </button>
             <a [routerLink]="['/crm/clientes', cliente.id, 'editar']"
                 class="flex items-center justify-center bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
                 <lucide-icon name="edit-2" [size]="18" class="mr-2"></lucide-icon>
@@ -150,3 +155,8 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Propuesta IA -->
+<app-propuesta-modal *ngIf="cliente" [isOpen]="isPropuestaModalOpen" [clienteId]="cliente.id!"
+    [nombreEmpresa]="cliente.nombreEmpresa" (closeModal)="isPropuestaModalOpen = false">
+</app-propuesta-modal>

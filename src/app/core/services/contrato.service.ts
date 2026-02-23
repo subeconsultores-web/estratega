@@ -16,9 +16,15 @@ export class ContratoService {
 
     constructor() { }
 
-    getContratos(tenantId: string): Observable<Contrato[]> {
+    getContratos(tenantId?: string): Observable<Contrato[]> {
         const contratosRef = collection(this.firestore, this.collectionName);
-        const q = query(contratosRef, where('tenantId', '==', tenantId));
+        let q;
+        if (tenantId) {
+            q = query(contratosRef, where('tenantId', '==', tenantId));
+        } else {
+            // For Client Portal instances where the Firestore Rule limits the docs by their UID
+            q = query(contratosRef);
+        }
         return collectionData(q, { idField: 'id' }) as Observable<Contrato[]>;
     }
 

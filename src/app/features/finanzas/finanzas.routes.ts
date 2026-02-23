@@ -8,7 +8,17 @@ export const FINANZAS_ROUTES: Routes = [
     },
     {
         path: 'transacciones',
-        loadComponent: () => import('./finanzas-list/finanzas-list.component').then(c => c.FinanzasListComponent),
-        title: 'SUBE IA - Finanzas y Cobros'
+        loadComponent: () => import('./transacciones-list/transacciones-list').then(c => c.TransaccionesList),
+        title: 'SUBE IA - Transacciones'
+    },
+    {
+        path: 'transacciones/nueva',
+        loadComponent: () => import('./transaccion-form/transaccion-form').then(c => c.TransaccionForm),
+        title: 'SUBE IA - Nueva Transacción'
+    },
+    {
+        path: 'transacciones/editar/:id',
+        loadComponent: () => import('./transaccion-form/transaccion-form').then(c => c.TransaccionForm),
+        title: 'SUBE IA - Editar Transacción'
     }
 ];

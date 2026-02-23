@@ -19,7 +19,7 @@ export const createCheckoutSession = onCall(async (request) => {
     }
 
     const db = admin.firestore();
-    const facturaRef = db.doc(`tenants/${tenantId}/facturas/${facturaId}`);
+    const facturaRef = db.doc(`facturas/${facturaId}`);
     const facturaSnap = await facturaRef.get();
 
     if (!facturaSnap.exists) {

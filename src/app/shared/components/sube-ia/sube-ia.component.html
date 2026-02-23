@@ -1,0 +1,93 @@
+<!-- Floating Trigger Button -->
+<button (click)="toggleChat()"
+    class="fixed bottom-6 right-6 z-50 bg-primary-600 hover:bg-primary-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform outline-none"
+    [ngClass]="{'rotate-12 scale-110': isOpen}">
+    <lucide-icon [name]="isOpen ? 'x' : 'bot'" [size]="28"></lucide-icon>
+</button>
+
+<!-- Chat Window Panel -->
+<div *ngIf="isOpen"
+    class="fixed bottom-24 right-6 z-50 w-full max-w-sm sm:max-w-md h-[32rem] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 fade-in duration-300">
+
+    <!-- Header -->
+    <div
+        class="px-5 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white flex justify-between items-center shadow-md">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-white/20 rounded-lg">
+                <lucide-icon name="sparkles" [size]="20"></lucide-icon>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg leading-tight">SUBE IA</h3>
+                <p class="text-xs text-primary-100 opacity-90">Asistente Virtual con Gemini</p>
+            </div>
+        </div>
+        <button (click)="clearChat()" class="text-white/80 hover:text-white transition-colors"
+            title="Limpiar conversación">
+            <lucide-icon name="trash-2" [size]="18"></lucide-icon>
+        </button>
+    </div>
+
+    <!-- Messages Area -->
+    <div #chatScroll class="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50 dark:bg-slate-900 scroll-smooth">
+
+        <div *ngFor="let msg of history$ | async" class="flex"
+            [ngClass]="msg.role === 'user' ? 'justify-end' : 'justify-start'">
+
+            <div *ngIf="msg.role === 'assistant'"
+                class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center mr-2 flex-shrink-0 mt-1">
+                <lucide-icon name="bot" [size]="16" class="text-primary-600 dark:text-primary-400"></lucide-icon>
+            </div>
+
+            <div class="max-w-[80%] rounded-2xl px-4 py-3 text-sm"
+                [ngClass]="msg.role === 'user' ? 'bg-primary-600 text-white rounded-br-none shadow-md' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-bl-none shadow-sm'">
+                <div class="prose prose-sm dark:prose-invert max-w-none" [innerHTML]="formatMarkdown(msg.content)">
+                </div>
+
+                <!-- Chart Generativo (Innovación 7) -->
+                <div *ngIf="msg.chartConfig"
+                    class="mt-3 bg-slate-50 dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <div class="h-40 w-full relative">
+                        <canvas baseChart [data]="msg.chartConfig.data"
+                            [options]="msg.chartConfig.options || { responsive: true, maintainAspectRatio: false }"
+                            [type]="msg.chartConfig.type">
+                        </canvas>
+                    </div>
+                </div>
+                <div class="text-[10px] mt-1 text-right"
+                    [ngClass]="msg.role === 'user' ? 'text-primary-200' : 'text-slate-400'">
+                    {{ msg.timestamp | date:'shortTime' }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Typign Indicator -->
+        <div *ngIf="isProcessing$ | async" class="flex justify-start items-center gap-2 text-slate-500 p-2">
+            <div
+                class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center flex-shrink-0">
+                <lucide-icon name="bot" [size]="16" class="text-primary-600"></lucide-icon>
+            </div>
+            <div
+                class="flex space-x-1 items-center h-8 px-3 bg-white dark:bg-slate-800 rounded-2xl rounded-bl-none border border-slate-200 dark:border-slate-700">
+                <div class="w-1.5 h-1.5 bg-primary-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div class="w-1.5 h-1.5 bg-primary-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div class="w-1.5 h-1.5 bg-primary-500 rounded-full animate-bounce"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="p-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
+        <div class="relative flex items-end gap-2">
+            <textarea [(ngModel)]="userInput" (keydown)="handleKeyDown($event)"
+                placeholder="Pregúntale a Sube IA sobre tus clientes, métricas o tareas..."
+                class="w-full bg-slate-100 dark:bg-slate-900 border-transparent focus:border-primary-500 focus:ring-0 rounded-xl resize-none py-3 px-4 text-sm max-h-32 min-h-[44px]"
+                rows="1"></textarea>
+            <button (click)="sendMessage()" [disabled]="(isProcessing$ | async) || !userInput.trim()"
+                class="p-3 bg-primary-600 hover:bg-primary-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl transition-colors flex-shrink-0 mb-[2px]">
+                <lucide-icon name="send" [size]="18" class="translate-x-0.5"></lucide-icon>
+            </button>
+        </div>
+        <p class="text-center text-[10px] text-slate-400 mt-2 font-medium">Gemini puede cometer errores. Verifica la
+            información importante.</p>
+    </div>
+</div>

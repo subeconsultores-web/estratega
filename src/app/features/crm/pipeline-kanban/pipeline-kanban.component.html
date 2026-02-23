@@ -48,8 +48,16 @@
                     <div *ngFor="let client of leads"
                         class="bg-surface border border-border p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow group relative">
                         <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-semibold text-txt-primary text-sm truncate pr-4">{{ client.nombreEmpresa }}
-                            </h4>
+                            <div class="flex items-center space-x-2 w-full pr-4">
+                                <h4 class="font-semibold text-txt-primary text-sm truncate">{{ client.nombreEmpresa }}
+                                </h4>
+                                <div *ngIf="client.score !== undefined && client.score !== null"
+                                    [style.backgroundColor]="scoringService.getScoreColor(client.score)"
+                                    class="px-1.5 py-0.5 text-[10px] font-bold text-white rounded shadow-sm object-none"
+                                    [title]="'Score IA: ' + client.score + '\n' + (client.scoringIA?.recomendacion || '')">
+                                    {{ client.score }}
+                                </div>
+                            </div>
                             <div class="relative group/menu">
                                 <button class="text-txt-muted hover:text-txt-primary">
                                     <lucide-icon name="more-horizontal" class="w-4 h-4"></lucide-icon>
@@ -97,8 +105,16 @@
                     <div *ngFor="let client of prospectos"
                         class="bg-surface border border-border p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow group relative border-l-2 border-l-yellow-500">
                         <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-semibold text-txt-primary text-sm truncate pr-4">{{ client.nombreEmpresa }}
-                            </h4>
+                            <div class="flex items-center space-x-2 w-full pr-4">
+                                <h4 class="font-semibold text-txt-primary text-sm truncate">{{ client.nombreEmpresa }}
+                                </h4>
+                                <div *ngIf="client.score !== undefined && client.score !== null"
+                                    [style.backgroundColor]="scoringService.getScoreColor(client.score)"
+                                    class="px-1.5 py-0.5 text-[10px] font-bold text-white rounded shadow-sm object-none"
+                                    [title]="'Score IA: ' + client.score + '\n' + (client.scoringIA?.recomendacion || '')">
+                                    {{ client.score }}
+                                </div>
+                            </div>
                             <div class="relative group/menu">
                                 <button class="text-txt-muted hover:text-txt-primary">
                                     <lucide-icon name="more-horizontal" class="w-4 h-4"></lucide-icon>
@@ -151,8 +167,16 @@
                     <div *ngFor="let client of activos"
                         class="bg-surface border border-border p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow group relative border-l-2 border-l-green-500">
                         <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-semibold text-txt-primary text-sm truncate pr-4">{{ client.nombreEmpresa }}
-                            </h4>
+                            <div class="flex items-center space-x-2 w-full pr-4">
+                                <h4 class="font-semibold text-txt-primary text-sm truncate">{{ client.nombreEmpresa }}
+                                </h4>
+                                <div *ngIf="client.score !== undefined && client.score !== null"
+                                    [style.backgroundColor]="scoringService.getScoreColor(client.score)"
+                                    class="px-1.5 py-0.5 text-[10px] font-bold text-white rounded shadow-sm object-none"
+                                    [title]="'Score IA: ' + client.score + '\n' + (client.scoringIA?.recomendacion || '')">
+                                    {{ client.score }}
+                                </div>
+                            </div>
                             <div class="relative group/menu">
                                 <button class="text-txt-muted hover:text-txt-primary">
                                     <lucide-icon name="more-horizontal" class="w-4 h-4"></lucide-icon>

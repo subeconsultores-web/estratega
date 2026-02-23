@@ -1,0 +1,179 @@
+<div class="max-w-4xl mx-auto pb-12">
+    <!-- Header -->
+    <div class="mb-8 flex items-center gap-4">
+        <a routerLink="/finanzas/transacciones"
+            class="p-2 bg-white border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors">
+            <lucide-icon name="arrow-left" class="w-5 h-5"></lucide-icon>
+        </a>
+        <div>
+            <h2 class="text-3xl font-bold text-gray-900 tracking-tight">
+                {{ isEditMode ? 'Detalle de Transacción' : 'Nueva Transacción' }}
+            </h2>
+            <p class="text-gray-500 mt-1 text-sm">
+                Registra ingresos o egresos caja manual. Para recibos, prueba el Escáner IA.
+            </p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Form Box -->
+        <div class="lg:col-span-2">
+            <form [formGroup]="form" (ngSubmit)="onSubmit()"
+                class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 md:p-8 space-y-6">
+
+                    <!-- AI Header Banner -->
+                    <div
+                        class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-5 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 opacity-10 transform translate-x-4 -translate-y-4">
+                            <lucide-icon name="bot" class="w-32 h-32 text-primary"></lucide-icon>
+                        </div>
+                        <div class="relative z-10">
+                            <h3 class="font-bold text-indigo-900 flex items-center">
+                                <lucide-icon name="sparkles" class="w-5 h-5 mr-2 text-primary"></lucide-icon>
+                                Sube IA Auto-Llenado (LangExtract)
+                            </h3>
+                            <p class="text-sm text-indigo-700 mt-1 mb-4">Sube un comprobante, factura o recibo. La
+                                Inteligencia Artificial leerá el documento y completará los montos, fechas y conceptos
+                                por ti evitando errores de tipeo.</p>
+
+                            <button type="button" (click)="triggerFileInput()" [disabled]="isScanningWithIA"
+                                class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50">
+                                <lucide-icon [name]="isScanningWithIA ? 'loader-2' : 'scan-line'"
+                                    [class.animate-spin]="isScanningWithIA" class="w-4 h-4 mr-2"></lucide-icon>
+                                {{ isScanningWithIA ? 'Analizando Documento...' : 'Escanear Comprobante' }}
+                            </button>
+                            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*,.pdf"
+                                class="hidden" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100">
+                        <!-- Tipo -->
+                        <div class="form-group flex flex-col">
+                            <label class="text-sm font-semibold text-gray-700 mb-1">Tipo de Movimiento</label>
+                            <select formControlName="tipo"
+                                class="form-control rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary w-full p-2.5 border bg-gray-50">
+                                <option value="ingreso">Ingreso (Entrada de Dinero)</option>
+                                <option value="egreso">Egreso (Salida de Dinero)</option>
+                            </select>
+                        </div>
+
+                        <!-- Categoría -->
+                        <div class="form-group flex flex-col">
+                            <label class="text-sm font-semibold text-gray-700 mb-1">Categoría Operacional</label>
+                            <select formControlName="categoria"
+                                class="form-control rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary w-full p-2.5 border bg-white">
+                                <option value="venta">Venta Directa</option>
+                                <option value="suscripcion">Renovación Mensual</option>
+                                <option value="reembolso">Reembolso / Devolución</option>
+                                <option value="gasto_operativo">Gasto Operativo (Software, Insumos)</option>
+                                <option value="salarios">Nomina / Salarios</option>
+                                <option value="impuestos">Impuestos (IVA, Renta)</option>
+                                <option value="otros">Otros</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Monto -->
+                        <div class="form-group">
+                            <label class="text-sm font-semibold text-gray-700 mb-1 flex items-center">
+                                Monto Transado <span class="text-red-500 ml-1">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 font-medium">$</span>
+                                </div>
+                                <input type="number" formControlName="monto"
+                                    class="form-control pl-8 rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary w-full p-2.5 border text-lg font-semibold"
+                                    placeholder="0">
+                            </div>
+                        </div>
+
+                        <!-- Fecha -->
+                        <div class="form-group">
+                            <label class="text-sm font-semibold text-gray-700 mb-1 flex items-center">
+                                Fecha de Ejecución <span class="text-red-500 ml-1">*</span>
+                            </label>
+                            <input type="date" formControlName="fecha"
+                                class="form-control rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary w-full p-2.5 border">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Metodo -->
+                        <div class="form-group flex flex-col">
+                            <label class="text-sm font-semibold text-gray-700 mb-1">Método de Pago</label>
+                            <select formControlName="metodoPago"
+                                class="form-control rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary w-full p-2.5 border">
+                                <option value="transferencia">Transferencia Bancaria</option>
+                                <option value="tarjeta_credito">Tarjeta de Crédito</option>
+                                <option value="tarjeta_debito">Tarjeta de Débito</option>
+                                <option value="efectivo">Efectivo Físico</option>
+                                <option value="stripe">Pasarela (Stripe)</option>
+                            </select>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="form-group flex flex-col">
+                            <label class="text-sm font-semibold text-gray-700 mb-1">Estado de Compensación</label>
+                            <select formControlName="estado"
+                                class="form-control rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary w-full p-2.5 border">
+                                <option value="completado">Completado (Disponible en Banco)</option>
+                                <option value="pendiente">Pendiente (Tránsito)</option>
+                                <option value="fallido">Fallido / Rebotado</option>
+                                <option value="reembolsado">Reembolsado al origen</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <hr class="border-gray-100 my-4" />
+
+                    <!-- Notes -->
+                    <div class="form-group">
+                        <label class="text-sm font-semibold text-gray-700 mb-1">Notas u Observaciones (Opcional)</label>
+                        <textarea formControlName="notas" rows="3"
+                            class="form-control rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary w-full p-2.5 border text-sm"
+                            placeholder="Ej: Pago de suscripción mensual Adobe CC..."></textarea>
+                    </div>
+
+                </div>
+
+                <div class="bg-gray-50 p-6 border-t border-gray-100 flex justify-end gap-3">
+                    <a routerLink="/finanzas/transacciones"
+                        class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors">
+                        Cancelar
+                    </a>
+                    <button type="submit" [disabled]="form.invalid || isSubmitting"
+                        class="inline-flex items-center px-6 py-2.5 text-sm font-medium text-white bg-primary border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm">
+                        <lucide-icon *ngIf="isSubmitting" name="loader-2"
+                            class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
+                        {{ isEditMode ? 'Guardar Cambios' : 'Registrar Transacción' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Meta Sidebar -->
+        <div class="lg:col-span-1 space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h3 class="font-bold text-gray-900 mb-4 flex items-center">
+                    <lucide-icon name="info" class="w-5 h-5 mr-2 text-gray-400"></lucide-icon>
+                    Políticas de Caja
+                </h3>
+                <div class="space-y-4 text-sm text-gray-600">
+                    <p>Las transacciones manuales complementan las operaciones automatizadas de Facturación.</p>
+                    <p><strong>Edición Bloqueada:</strong> Por estrictas normativas contables, las transacciones
+                        registradas no son editables libremente tras su compensación (`Completado`).</p>
+                    <div class="bg-blue-50 text-blue-800 p-3 rounded-lg border border-blue-100 italic mt-4">
+                        💡 Usa el escáner de LangExtract para leer "Boletas de Honorarios" o Compras sin tener que
+                        tipear tú mismo los montos e impuestos asociados.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

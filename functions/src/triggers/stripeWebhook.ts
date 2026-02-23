@@ -41,15 +41,41 @@ export const stripeWebhook = onRequest(async (req, res) => {
         if (facturaId && tenantId) {
             const db = admin.firestore();
             try {
-                // Apply strict DB atomicity directly overwriting the associated Invoice lifecycle bounds indicating external 'pagada' trigger event
-                await db.doc(`tenants/${tenantId}/facturas/${facturaId}`).update({
+                const amountPagado = session.amount_total ? (session.currency === 'clp' ? session.amount_total : session.amount_total / 100) : 0;
+
+                // Write atomic batch update for both Factura and Transaccion
+                const batch = db.batch();
+
+                // 1. Update Factura
+                const facturaRef = db.doc(`facturas/${facturaId}`);
+                batch.update(facturaRef, {
                     estado: 'pagada',
                     stripePaymentIntentId: paymentIntentId,
-                    montoPagado: session.amount_total ? (session.currency === 'clp' ? session.amount_total : session.amount_total / 100) : 0,
-                    montoPendiente: 0,
+                    montoPagado: amountPagado,
+                    saldoPendiente: 0,
                     updatedAt: admin.firestore.FieldValue.serverTimestamp()
                 });
-                console.log(`[Success] Securing Factura: ${facturaId} marked automatically as fully pagada traversing mapped secure gateway. Data persistence confirmed.`);
+
+                // 2. Automate Transaccion (Ingreso)
+                const transaccionRef = db.collection('transacciones').doc();
+                batch.set(transaccionRef, {
+                    tenantId: tenantId,
+                    monto: amountPagado,
+                    moneda: session.currency?.toUpperCase() || 'CLP',
+                    tipo: 'ingreso',
+                    categoria: 'venta',
+                    metodoPago: 'stripe',
+                    estado: 'completado',
+                    fecha: admin.firestore.FieldValue.serverTimestamp(),
+                    referenciaExterna: paymentIntentId,
+                    notas: `Pago automático de Factura Ext. Ref: ${facturaId}`,
+                    creadoPor: 'SYSTEM_WEBHOOK',
+                    createdAt: admin.firestore.FieldValue.serverTimestamp()
+                });
+
+                await batch.commit();
+
+                console.log(`[Success] Factura ${facturaId} marked as pagada. Auto-Transaccion recorded via Stripe Webhook.`);
             } catch (error) {
                 console.error('Fatal execution hook while persisting database metadata on Webhook arrival!', error);
             }

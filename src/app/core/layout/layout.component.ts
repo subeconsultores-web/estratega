@@ -3,15 +3,17 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { NavbarComponent } from './navbar/navbar.component';
+import { SubeIAComponent } from '../../shared/components/sube-ia/sube-ia.component';
+import { GlobalSearchComponent } from '../../shared/components/global-search/global-search.component';
 
 @Component({
-    selector: 'app-layout',
-    standalone: true,
-    imports: [CommonModule, RouterModule, SidebarComponent, NavbarComponent],
-    template: `
-    <div class="flex h-screen bg-base overflow-hidden">
+  selector: 'app-layout',
+  standalone: true,
+  imports: [CommonModule, RouterModule, SidebarComponent, NavbarComponent, SubeIAComponent, GlobalSearchComponent],
+  template: `
+    <div class="flex h-screen bg-base overflow-hidden relative">
       <!-- Sidebar Desktop (hidden on mobile for now) -->
-      <div class="hidden lg:block h-full">
+      <div class="hidden lg:block h-full z-10">
         <app-sidebar></app-sidebar>
       </div>
 
@@ -26,6 +28,12 @@ import { NavbarComponent } from './navbar/navbar.component';
           </div>
         </main>
       </div>
+
+      <!-- SUBE IA Global Assistant -->
+      <app-sube-ia></app-sube-ia>
+
+      <!-- Global Cmd+K Search -->
+      <app-global-search></app-global-search>
     </div>
   `
 })

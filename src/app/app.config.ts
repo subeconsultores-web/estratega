@@ -17,14 +17,14 @@ import {
   LucideAngularModule,
   LayoutDashboard, Users, FileText, Briefcase,
   DollarSign, Clock, Bot, Settings, ChevronLeft,
-  ChevronRight, Sparkles, ChevronDown, Menu, PanelLeftClose, PanelLeft, LogOut, FileBadge, CheckSquare, Search, Bell, User, Plus, Eye, Edit2
+  ChevronRight, Sparkles, ChevronDown, Menu, PanelLeftClose, PanelLeft, LogOut, FileBadge, CheckSquare, Search, Bell, User, Plus, Eye, Edit2, X, Send, Trash2, Key
 } from 'lucide-angular';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     importProvidersFrom(
       LucideAngularModule.pick({
-        LayoutDashboard, Users, FileText, Briefcase, DollarSign, Clock, Bot, Settings, ChevronLeft, ChevronRight, Sparkles, ChevronDown, Menu, PanelLeftClose, PanelLeft, LogOut, FileBadge, CheckSquare, Search, Bell, User, Plus, Eye, Edit2
+        LayoutDashboard, Users, FileText, Briefcase, DollarSign, Clock, Bot, Settings, ChevronLeft, ChevronRight, Sparkles, ChevronDown, Menu, PanelLeftClose, PanelLeft, LogOut, FileBadge, CheckSquare, Search, Bell, User, Plus, Eye, Edit2, X, Send, Trash2, Key
       })
     ),
     provideBrowserGlobalErrorListeners(),

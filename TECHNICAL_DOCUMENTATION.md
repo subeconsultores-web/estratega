@@ -1801,33 +1801,24 @@ Plan actualizado que incorpora todas las brechas identificadas. 12 sprints de 2 
 * 100% responsive mobile-first.
 
 ### Sprint 11 — Asistente IA y Búsqueda Global (Sem 21-22)
-**Entregable:** chat IA funcional y búsqueda global.
-* AsistenteIAComponent: interfaz de chat tipo ChatGPT.
-* Cloud Function `chatIA`: consulta contexto del tenant + proxy a Gemini 2.0 Flash.
-* System prompts especializados para cada tipo de análisis.
-* Streaming de respuesta al frontend.
-* Historial de conversaciones almacenado en Firestore (por tenant).
-* Límites por plan enforced server-side.
-* SearchService: generar `searchKeywords` en Cloud Functions triggers.
-* Búsqueda global en navbar con resultados agrupados por tipo.
-* Fuse.js para fuzzy matching client-side.
+**Entregable:** chat IA funcional y búsqueda global **[IMPLEMENTADO]**.
+* AsistenteIAComponent: interfaz de chat tipo ChatGPT, accesible globalmente desde el Layout.
+* Búsqueda Global (Cmd+K) con pre-fetching (searchResults en memoria) para clientes, proyectos y facturas.
+* Cloud Function `askSubeIA`: consulta contexto del tenant + proxy a Gemini 1.5/2.0 Flash.
+* Integración segura de credenciales vía Google Cloud Secret Manager (`GEMINI_API_KEY`).
+* System prompts especializados para cada tipo de análisis (Gestión B2B).
+* Historial de conversaciones almacenado en UI (por sesión).
+* Auth context inyectado para multi-tenancy seguro.
 
 ### Sprint 12 — Admin SaaS, Billing, Polish y Deploy (Sem 23-24)
-**Entregable:** plataforma lista para producción.
-* Módulo admin-saas para `platform-admin` (SUBE IA Tech).
-* Integración pasarela de pago (Mercado Pago o Stripe).
-* Flujo de upgrade/downgrade de plan.
-* Webhooks de pasarela → Cloud Function → actualizar plan + Claims.
-* Módulo configuracion completo (todas las tabs).
-* Audit logging completo (Sección 27).
-* Dashboard con datos reales (conectar KPIs a queries Firestore onSnapshot).
-* Notificaciones in-app completas (colección + UI).
-* Cloud Function `calcularMetricasMensuales` + `alertasClientesSinContacto`.
-* Testing E2E de flujos críticos con Playwright.
-* Security Rules unit tests con Firebase Emulators.
-* Optimización: lazy loading, tree shaking, bundle analysis.
-* Deploy a Firebase Hosting + configurar dominio personalizado.
-* Documentación de API de Cloud Functions para referencia del equipo.
+**Entregable:** plataforma SaaS lista para producción **[IMPLEMENTADO]**.
+* Sistema Multi-Tenant: Aprovisionamiento automático mediante `RegisterAgencyComponent` y Cloud Function `registerAgency`.
+* Asignación de Claim Seguro: `role: 'admin'` y `tenantId` inyectados en el token JWT durante el registro automatizado.
+* Módulo SuperAdmin (God Mode): Dashboards cruzados globales (`SuperAdminDashboardComponent`) con RBAC estricto (`SuperAdminGuard` buscando `role: 'superadmin'`).
+* Herramienta CLI local (`setSuperAdmin.js`) para asignación de rol propietario.
+* Security Rules escaladas para FireStore: lecturas/escrituras aisladas por tenant, y privilegios globales para superadministradores.
+* Controles de Tenant Activo/Suspendido con propagación automática.
+* Despliegue en Firebase Hosting & Functions completados exitosamente.
 
 ## 31. Naming y Branding del Producto
 
@@ -1850,3 +1841,27 @@ El software se llama **Estratega Sube IA**. Se usa siempre en este formato:
 | `--brand-surface` | `#F8FAFC` | Fondo general de la app |
 
 > **Recordar:** estos son los colores del producto Estratega Sube IA. Cada tenant configura sus propios colores de branding que se aplican en sus documentos (PDFs, portal del cliente) via CSS variables dinámicas.
+
+---
+
+## 32. Seguridad y Arquitectura SaaS Multi-Escala
+
+Para soportar de manera resiliente el contexto SaaS B2B "God Mode", hemos adoptado una topología ultra-rígida:
+
+* **Custom Claims (JWT)**: Todo el peso de la seguridad descansará en Firebase Auth con dos custom claims inyectados backend-side (`tenantId` y `role`). El cliente no puede falsificar un role.
+* **GCP Secret Manager**: Para la incrustación de Kyes de IA (ej: `GEMINI_API_KEY`), se abolieron las Environment Variables inyectadas expuestas, canalizando las directivas vía secret management.
+* **Firestore Security Rules**: Todas las colecciones base están capadas condicionalmente a `request.auth.token.tenantId == resource.data.tenantId`. Salvo para los Super Admins (`role == 'superadmin'`) quienes pueden hacer queries cross-tenant para las métricas del Dashboard Global.
+* **Firebase App Check con reCAPTCHA Enterprise**: Activación recomendada para bloquear tráfico no-Angular a las APIs (Funciones Callable) de Sube IA y registro de Agencias, mitigando el abuso robótico en formularios públicos.
+
+---
+
+## 33. Visión Evolutiva: IA Estratégica & ESG Sostenibilidad (V4)
+
+La fase 2 del producto (post-MVP) pivota a la proposición de **Sube Estratega como un Ecosistema Operativo Proactivo** (Ver detalles completos en `ESTRATEGIA_FUTURO_SAAS.md`).
+
+Los focos arquitectónicos de esta futura evolución son:
+1. **Modelos Predictivos Financieros (AI)**: Dunning automático (emailing dinámico según morosidad) y AI Lead Scoring inyectados en la canalización del CRM.
+2. **Control por Voz AI (Voz a CRM)**: Integraciones de audio transcrito por Whisper/Gemini Flash redirigido como CRUD automatizado en Tareas, Notas y Lead Status.
+3. **Módulo Inteligente de Sostenibilidad Corporativa (ESG)**: 
+   * Cálculos algorítmicos normados (GHG Protocol) sobre la huella de Carbono del Tenant SaaS.
+   * Paneles "Sello Verde Sube" para que las Agencias generen y expongan un "ESG Compliance PDF" automatizado con Gemini a sus prospectos en las propuestas comerciales del portal (apuntando a diferenciación para mercado B2B maduro o licitaciones).
