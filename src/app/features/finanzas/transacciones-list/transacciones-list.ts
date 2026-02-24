@@ -3,7 +3,7 @@ import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { FinanzasService } from '../../../core/services/finanzas.service';
 import { Transaccion } from '../../../core/models/finanzas.model';
 import { Observable } from 'rxjs';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, LineChart, Plus  } from 'lucide-angular';
 import { RouterModule, Router } from '@angular/router';
 import { LoadingSkeleton } from '../../../shared/components/loading-skeleton/loading-skeleton.component';
 import { DataTableComponent, ColumnDef } from '../../../shared/components/data-table/data-table.component';
@@ -14,7 +14,8 @@ import { DataTableComponent, ColumnDef } from '../../../shared/components/data-t
   imports: [CommonModule, LucideAngularModule, RouterModule, LoadingSkeleton, DataTableComponent],
   templateUrl: './transacciones-list.html',
   styles: ``,
-  providers: [CurrencyPipe, DatePipe]
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ LineChart, Plus }) },CurrencyPipe, DatePipe]
 })
 export class TransaccionesList implements OnInit {
   private finanzasService = inject(FinanzasService);

@@ -1,8 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, Building2, Loader, Save, Sliders, User  } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 import { CrmService } from '../../../core/services/crm.service';
 import { Cliente } from '../../../core/models/crm.model';
@@ -11,7 +11,11 @@ import { Cliente } from '../../../core/models/crm.model';
     selector: 'app-cliente-form',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterModule, LucideAngularModule],
-    templateUrl: './cliente-form.component.html'
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Building2, Loader, Save, Sliders, User }) }
+  ],
+    templateUrl: './cliente-form.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClienteFormComponent implements OnInit {
     private fb = inject(FormBuilder);
@@ -19,6 +23,7 @@ export class ClienteFormComponent implements OnInit {
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     private toastr = inject(ToastrService);
+    private cdr = inject(ChangeDetectorRef);
 
     clienteForm!: FormGroup;
     isEditing = false;
@@ -37,13 +42,13 @@ export class ClienteFormComponent implements OnInit {
 
     initForm() {
         this.clienteForm = this.fb.group({
-            rut: ['', [Validators.required]],
+            rut: [''],
             nombreEmpresa: ['', [Validators.required, Validators.minLength(3)]],
             giro: ['', Validators.required],
             direccion: [''],
             contactoPrincipal: this.fb.group({
                 nombre: ['', Validators.required],
-                email: ['', [Validators.required, Validators.email]],
+                email: ['', [Validators.email]],
                 telefono: [''],
                 cargo: ['']
             }),
@@ -65,8 +70,12 @@ export class ClienteFormComponent implements OnInit {
                     this.toastr.error('Cliente no encontrado');
                     this.router.navigate(['/crm/clientes']);
                 }
+                this.cdr.markForCheck();
             },
-            error: () => this.toastr.error('Error al cargar datos del cliente')
+            error: () => {
+                this.toastr.error('Error al cargar datos del cliente');
+                this.cdr.markForCheck();
+            }
         });
     }
 
@@ -96,6 +105,7 @@ export class ClienteFormComponent implements OnInit {
             this.toastr.error('Ocurrió un error al guardar el cliente');
         } finally {
             this.isSaving = false;
+            this.cdr.markForCheck();
         }
     }
 }

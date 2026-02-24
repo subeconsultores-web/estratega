@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, Calculator, Layers, Loader2, Plus, Save, User, X  } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 import { CotizacionService } from '../../../core/services/cotizacion.service';
 import { CatalogoService } from '../../../core/services/catalogo.service';
@@ -18,6 +18,9 @@ import { Timestamp } from '@angular/fire/firestore';
     selector: 'app-cotizacion-form',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Calculator, Layers, Loader2, Plus, Save, User, X }) }
+  ],
     templateUrl: './cotizacion-form.component.html'
 })
 export class CotizacionFormComponent implements OnInit {

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location, CurrencyPipe, SlicePipe } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, CalendarClock, Edit, History, Layers, Send, User  } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 import { CotizacionService } from '../../../core/services/cotizacion.service';
 import { CrmService } from '../../../core/services/crm.service';
@@ -15,6 +15,9 @@ import { Timestamp } from '@angular/fire/firestore';
     selector: 'app-cotizacion-view',
     standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule, CurrencyPipe],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, CalendarClock, Edit, History, Layers, Send, User }) }
+  ],
     templateUrl: './cotizacion-view.component.html'
 })
 export class CotizacionViewComponent implements OnInit {

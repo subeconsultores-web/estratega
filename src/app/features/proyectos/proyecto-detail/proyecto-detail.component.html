@@ -1,0 +1,125 @@
+<div class="space-y-6 animate-in fade-in duration-500 min-h-[85vh] flex flex-col">
+
+    <ng-container *ngIf="proyecto$ | async as proyecto; else loading">
+
+        <!-- HEADER SHELL -->
+        <div
+            class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/60 dark:border-slate-800/60 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+
+            <!-- Fondo sutil de glow decorativo -->
+            <div
+                class="absolute -right-20 -top-20 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none">
+            </div>
+
+            <!-- Barra Superior Peticiones -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
+                <div class="flex items-center gap-4">
+                    <button (click)="goBack()"
+                        class="p-2.5 rounded-xl bg-slate-100/80 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">
+                        <lucide-icon name="chevron-left" class="w-5 h-5"></lucide-icon>
+                    </button>
+
+                    <div>
+                        <div class="flex items-center gap-3 mb-1">
+                            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{{
+                                proyecto.nombre }}</h1>
+
+                            <!-- Badge Estado -->
+                            <span [ngClass]="{
+                'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300': proyecto.estado === 'activo',
+                'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300': proyecto.estado === 'pausado',
+                'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300': proyecto.estado === 'completado'
+              }" class="px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize border ring-1 ring-inset ring-black/5">
+                                {{ proyecto.estado }}
+                            </span>
+                        </div>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm flex items-center gap-2">
+                            <lucide-icon name="building-2" class="w-4 h-4"></lucide-icon>
+                            ID Cliente Ref: {{ proyecto.clienteId }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <!-- Botón Editar -->
+                    <button (click)="abrirEditarProyecto()"
+                        class="p-2.5 rounded-xl text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                        <lucide-icon name="edit-2" class="w-5 h-5"></lucide-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Estadísticas Rápidas Integradas -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6 relative z-10">
+
+                <div
+                    class="px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1 font-medium">Horas Presupuestadas</p>
+                    <p class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <lucide-icon name="clock" class="w-4 h-4 text-blue-500"></lucide-icon>
+                        {{ proyecto.presupuestoHoras || 0 | number:'1.1-1' }}h
+                    </p>
+                </div>
+
+                <div
+                    class="px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1 font-medium">Horas Consumidas</p>
+                    <p class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <lucide-icon name="activity" class="w-4 h-4 text-rose-500"></lucide-icon>
+                        {{ proyecto.horasConsumidas || 0 | number:'1.1-1' }}h
+                    </p>
+                </div>
+
+                <!-- Barra de progreso de horas (Ocupa 2 columnas en pantallas medianas) -->
+                <div
+                    class="col-span-1 sm:col-span-2 px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col justify-center">
+                    <div class="flex justify-between items-end mb-1.5">
+                        <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Consumo Presupuesto</span>
+                        <span class="text-xs font-bold"
+                            [ngClass]="{'text-rose-500': porcentajeConsumo(proyecto.horasConsumidas, proyecto.presupuestoHoras) > 90, 'text-slate-700 dark:text-slate-300': porcentajeConsumo(proyecto.horasConsumidas, proyecto.presupuestoHoras) <= 90}">
+                            {{ porcentajeConsumo(proyecto.horasConsumidas, proyecto.presupuestoHoras) }}%
+                        </span>
+                    </div>
+
+                    <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                        <div class="h-2 rounded-full transition-all duration-500" [ngClass]="{
+                    'bg-emerald-500': porcentajeConsumo(proyecto.horasConsumidas, proyecto.presupuestoHoras) <= 70,
+                    'bg-amber-500': porcentajeConsumo(proyecto.horasConsumidas, proyecto.presupuestoHoras) > 70 && porcentajeConsumo(proyecto.horasConsumidas, proyecto.presupuestoHoras) <= 90,
+                    'bg-rose-500': porcentajeConsumo(proyecto.horasConsumidas, proyecto.presupuestoHoras) > 90
+                  }" [style.width.%]="porcentajeConsumo(proyecto.horasConsumidas, proyecto.presupuestoHoras)">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Pestañas (Tabs) Navigation -->
+        <div
+            class="flex space-x-2 border-b border-slate-200 dark:border-slate-800 px-2 mt-4 relative z-10 w-full overflow-x-auto custom-scrollbar">
+            <a *ngFor="let tab of tabs" [routerLink]="['./', tab.id]"
+                routerLinkActive="!text-blue-600 !dark:text-blue-400 !border-blue-600 !dark:border-blue-400"
+                class="px-5 py-3.5 border-b-2 border-transparent text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors flex items-center gap-2 whitespace-nowrap">
+                <lucide-icon [name]="tab.icon" class="w-4 h-4"></lucide-icon>
+                {{ tab.label }}
+            </a>
+        </div>
+
+        <!-- AREA DINÁMICA DE LA VISTA (Hijos) -->
+        <div class="flex-grow flex flex-col relative w-full pt-4">
+            <router-outlet></router-outlet>
+        </div>
+
+        <!-- Instancia Oculta de ProyectoFormComponent para Edición -->
+        <app-proyecto-form *ngIf="showEditModal" [proyectoSeleccionado]="proyecto"
+            (onSave)="guardarCambiosProyecto($event)" (onCancel)="cerrarEditarProyecto()">
+        </app-proyecto-form>
+
+    </ng-container>
+
+    <ng-template #loading>
+        <app-loading-skeleton class="mt-8"></app-loading-skeleton>
+    </ng-template>
+
+</div>

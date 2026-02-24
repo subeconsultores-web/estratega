@@ -10,12 +10,13 @@ import {
     moveItemInArray,
     transferArrayItem
 } from '@angular/cdk/drag-drop';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, Clock, Edit2, FolderKanban, MoreHorizontal, Pause, Play, Plus  } from 'lucide-angular';
+import { TareasService } from '../../../core/services/tareas.service';
 
 import { ProyectosService } from '../../../core/services/proyectos.service';
-import { TareasService } from '../../../core/services/tareas.service';
 import { TimetrackingService } from '../../../core/services/timetracking.service';
 import { Proyecto, Tarea, TareaEstado } from '../../../core/models/proyectos.model';
+import { TareaFormComponent } from '../tarea-form/tarea-form.component';
 
 interface KanbanColumn {
     id: TareaEstado;
@@ -34,10 +35,12 @@ interface KanbanColumn {
         CdkDropList,
         CdkDropListGroup,
         CdkDrag,
-        LucideAngularModule
+        LucideAngularModule,
+        TareaFormComponent
     ],
     templateUrl: './kanban-board.html',
-    providers: [DatePipe]
+    providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Clock, Edit2, FolderKanban, MoreHorizontal, Pause, Play, Plus }) },DatePipe]
 })
 export class KanbanBoard implements OnInit {
     private route = inject(ActivatedRoute);
@@ -47,10 +50,14 @@ export class KanbanBoard implements OnInit {
 
     proyecto!: Proyecto;
     proyectoId!: string;
-
     // Timer observables for auto UI detection
     activeTracker$ = this.timetrackingSvc.activeSession$;
     currentElapsed$ = this.timetrackingSvc.currentElapsed$;
+
+    // Modal States
+    showTareaModal = false;
+    columnaSeleccionada: TareaEstado = 'todo';
+    tareaEnEdicion?: Tarea;
 
     // The 4 columns mapped visually
     board: KanbanColumn[] = [
@@ -63,13 +70,14 @@ export class KanbanBoard implements OnInit {
     connectedLists = this.board.map(c => c.id);
 
     ngOnInit() {
-        this.proyectoId = this.route.snapshot.paramMap.get('id') || '';
+        // Soporta la modalidad anidada (children route) o standalone
+        this.proyectoId = this.route.parent?.snapshot.paramMap.get('id') || this.route.snapshot.paramMap.get('id') || '';
         if (this.proyectoId) {
-            this.proyectosSvc.getProyecto(this.proyectoId).subscribe(p => {
+            this.proyectosSvc.getProyecto(this.proyectoId).subscribe((p: any) => {
                 if (p) this.proyecto = p;
             });
 
-            this.tareasSvc.getTareasByProyecto(this.proyectoId).subscribe(tareas => {
+            this.tareasSvc.getTareasByProyecto(this.proyectoId).subscribe((tareas: any) => {
                 this.distributeTasks(tareas);
             });
         }
@@ -107,11 +115,11 @@ export class KanbanBoard implements OnInit {
             );
 
             // Determine what was moved
-            const movedTask = event.container.data[event.currentIndex];
+            const movedTask = event.container.data[event.currentIndex] as any;
             const newEstado = event.container.id as TareaEstado;
 
             // Background persist
-            this.tareasSvc.updateTareaEstado(movedTask.id!, newEstado, event.currentIndex).catch(e => console.error(e));
+            this.tareasSvc.updateTareaEstado(movedTask.id!, newEstado, event.currentIndex).catch((e: any) => console.error(e));
 
             // Re-sync order within the targeted array
             this.syncColumnOrder(newEstado, event.container.data);
@@ -120,20 +128,43 @@ export class KanbanBoard implements OnInit {
 
     private syncColumnOrder(estado: TareaEstado, list: Tarea[]) {
         const payload = list.map((t, idx) => ({ id: t.id!, orden: idx }));
-        this.tareasSvc.updateBatchOrder(payload).catch(e => console.error('Kanban Sync Error', e));
+        this.tareasSvc.updateBatchOrder(payload).catch((e: any) => console.error('Kanban Sync Error', e));
     }
 
-    // Quick Task generation Stub
-    crearTareaMock(colId: TareaEstado) {
-        const title = prompt('Crear Mock - Escribe un título para la tarea:');
-        if (title) {
-            this.tareasSvc.createTarea({
-                proyectoId: this.proyectoId,
-                titulo: title,
-                estado: colId,
-                orden: 0,
-                descripcion: 'Revisar detalles adjuntos...'
-            });
+    // Modal y Tareas Reales
+    abrirModalNuevaTarea(colId: TareaEstado) {
+        this.columnaSeleccionada = colId;
+        this.tareaEnEdicion = undefined;
+        this.showTareaModal = true;
+    }
+
+    abrirModalEditarTarea(tarea: Tarea) {
+        this.tareaEnEdicion = tarea;
+        this.columnaSeleccionada = tarea.estado;
+        this.showTareaModal = true;
+    }
+
+    cerrarModalTarea() {
+        this.showTareaModal = false;
+        this.tareaEnEdicion = undefined;
+    }
+
+    async guardarTarea(data: Partial<Tarea>) {
+        this.showTareaModal = false;
+        try {
+            if (this.tareaEnEdicion && this.tareaEnEdicion.id) {
+                await this.tareasSvc.updateTarea(this.tareaEnEdicion.id, data);
+            } else {
+                await this.tareasSvc.createTarea({
+                    ...data,
+                    proyectoId: this.proyectoId,
+                    orden: 0
+                } as Tarea);
+            }
+        } catch (e) {
+            console.error('Error guardando tarea', e);
+        } finally {
+            this.tareaEnEdicion = undefined;
         }
     }
 

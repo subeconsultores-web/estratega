@@ -1,0 +1,73 @@
+<div
+    class="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl border border-orange-200 shadow-sm overflow-hidden mt-6">
+    <div class="px-6 py-5 border-b border-orange-200 flex justify-between items-center bg-white/50 backdrop-blur-sm">
+        <div class="flex items-center">
+            <div class="bg-orange-100 p-2 rounded-lg text-orange-600 mr-3 hidden sm:block">
+                <lucide-icon name="trending-up" [size]="20"></lucide-icon>
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-gray-900 flex items-center">
+                    Cross-Selling & Upselling IA
+                    <span
+                        class="ml-2 text-[10px] font-bold px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full border border-orange-200">BETA</span>
+                </h3>
+                <p class="text-xs text-gray-500 mt-0.5">Oportunidades detectadas en tu cartera de clientes</p>
+            </div>
+        </div>
+        <button (click)="generarNuevas()" [disabled]="isGenerating"
+            class="flex items-center justify-center bg-orange-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-orange-700 transition-colors disabled:opacity-70">
+            <lucide-icon *ngIf="!isGenerating" name="refresh-cw" [size]="14" class="mr-1.5"></lucide-icon>
+            <lucide-icon *ngIf="isGenerating" name="loader-2" [size]="14" class="mr-1.5 animate-spin"></lucide-icon>
+            {{ isGenerating ? 'Analizando...' : 'Escanear Cartera' }}
+        </button>
+    </div>
+
+    <div class="p-6">
+        <div *ngIf="isLoading" class="space-y-3">
+            <div *ngFor="let _ of [1,2,3]"
+                class="h-16 bg-white/50 rounded-lg animate-pulse border border-orange-100/50"></div>
+        </div>
+
+        <div *ngIf="!isLoading && oportunidades.length === 0" class="text-center py-6">
+            <div class="mx-auto w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-3">
+                <lucide-icon name="check-circle" class="text-orange-500" [size]="24"></lucide-icon>
+            </div>
+            <p class="text-sm font-medium text-gray-900">No hay nuevas oportunidades</p>
+            <p class="text-xs text-gray-500 mt-1 max-w-sm mx-auto">Gemini no detectó oportunidades evidentes de venta
+                cruzada en base a los servicios actuales de tus clientes activos.</p>
+        </div>
+
+        <div *ngIf="!isLoading && oportunidades.length > 0"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div *ngFor="let op of oportunidades"
+                class="bg-white rounded-lg p-4 shadow-sm border border-orange-100 hover:border-orange-300 transition-colors relative group">
+                <!-- Probabilidad Badge -->
+                <div class="absolute right-3 top-3">
+                    <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded" [ngClass]="{
+                            'bg-green-100 text-green-700': op.probabilidadXito === 'Alta',
+                            'bg-yellow-100 text-yellow-700': op.probabilidadXito === 'Media',
+                            'bg-gray-100 text-gray-700': op.probabilidadXito === 'Baja'
+                        }">
+                        {{ op.probabilidadXito }}
+                    </span>
+                </div>
+
+                <div class="pr-16">
+                    <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Cliente ID: {{
+                        op.clienteId | slice:0:8 }}...</p>
+                    <h4 class="text-sm font-bold text-gray-900 mb-1 line-clamp-1" [title]="op.servicioSugerido">{{
+                        op.servicioSugerido }}</h4>
+                    <p class="text-xs text-gray-600 line-clamp-2" [title]="op.razonComercial">{{ op.razonComercial }}
+                    </p>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-gray-50 text-right">
+                    <a [routerLink]="['/crm/clientes', op.clienteId]"
+                        class="text-xs font-semibold text-orange-600 hover:text-orange-700 inline-flex items-center">
+                        Ver Cliente <lucide-icon name="arrow-right" [size]="12" class="ml-1"></lucide-icon>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

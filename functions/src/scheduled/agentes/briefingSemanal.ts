@@ -6,9 +6,11 @@ import { defineSecret } from "firebase-functions/params";
 const geminiApiKey = defineSecret("GEMINI_API_KEY");
 
 export const briefingSemanal = onSchedule({
-    schedule: "0 8 * * 1", // Todos los Lunes a las 08:00
+    schedule: "0 23 * * 0", // Todos los Domingos a las 23:00 hrs
     timeZone: "America/Santiago",
-    secrets: [geminiApiKey]
+    secrets: [geminiApiKey],
+    timeoutSeconds: 300, // Extendemos timeout por si hay muchos tenants
+    memory: "512MiB"
 }, async (event) => {
     try {
         const db = admin.firestore();
@@ -25,15 +27,16 @@ export const briefingSemanal = onSchedule({
             const tenantData = tenantDoc.data();
 
             // 1. Recopilar métricas clave del tenant
-            // a) Clientes nuevos esta semana
             const unaSemanaAtras = new Date();
             unaSemanaAtras.setDate(unaSemanaAtras.getDate() - 7);
 
+            // a) Clientes nuevos esta semana
             const nuevosClientesSnap = await db.collection('clientes')
                 .where('tenantId', '==', tenantId)
                 .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(unaSemanaAtras))
                 .get();
 
+            // b) Facturas Pagadas (Ingresos reales)
             const facturasCobradasSnap = await db.collection('facturas')
                 .where('tenantId', '==', tenantId)
                 .where('estado', '==', 'pagada')
@@ -43,6 +46,7 @@ export const briefingSemanal = onSchedule({
             let ingresosSemana = 0;
             facturasCobradasSnap.forEach(doc => ingresosSemana += (doc.data().total || 0));
 
+            // c) Cotizaciones Generadas (Pipeline futuro)
             const nuevasCotizacionesSnap = await db.collection('cotizaciones')
                 .where('tenantId', '==', tenantId)
                 .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(unaSemanaAtras))
@@ -56,44 +60,63 @@ export const briefingSemanal = onSchedule({
                 continue;
             }
 
-            // 2. Ejecutar análisis con IA
-            const systemPrompt = `Eres Estratega Sube IA. Escribe un Briefing Ejecutivo Semanal conciso y alentador para el gerente del CRM.
-Debe ser en formato Markdown o HTML (idealmente correo). Usa un tono profesional y optimista. Formula 2 recomendaciones accionables.`;
+            // 2. Ejecutar análisis con IA (Prompt CFO-AI)
+            const nombreAgencia = tenantData['nombre'] || 'la Agencia';
+            const systemPrompt = `Eres CFO-AI, el Director Financiero Autónomo de ${nombreAgencia} (integrado en el Ecosistema Estratega Sube).
+Tu objetivo es redactar un Resumen Ejecutivo Semanal asíncrono, que se enviará automáticamente por email al equipo dueño la noche del domingo.
+Debe ser escrito 100% en formato HTML limpio para ser incrustado en un email. Usa estilos CSS inline muy sutiles si consideras necesario. 
+Estructura obligatoria:
+1. Saludo breve y ejecutivo.
+2. Viñetas con las 3 métricas de la semana.
+3. Dos recomendaciones accionables precisas (ej. "Tienen $X atrapados en pipeline, sugiero ofrecer descuento XYZ", o "El flujo de caja fue bajo, sugiero contactar deudores").
+Mantén un tono profesional, optimista y extremadamente directivo.`;
 
-            const userPrompt = `Datos de la Semana (Últimos 7 días) para la empresa ${tenantData['nombre'] || 'del tenant'}:
-- Nuevos Clientes (Leads/Prospectos creados): ${nuevosClientesSnap.size}
-- Ingresos Cobrados (Facturas pagadas): $${ingresosSemana}
-- Nuevo Pipeline Generado (Oportunidades creadas): $${pipelineGenerado}
+            const userPrompt = `Datos financieros y operacionales recolectados de los últimos 7 días:
+- Nuevos Prospectos CRM ingresados: ${nuevosClientesSnap.size}
+- Ingresos Líquidos Cobrados: $${ingresosSemana}
+- Nuevo Pipeline Comercial Creado: $${pipelineGenerado}
 
-Genera un resumen breve de 2-3 párrafos destacando los logros y sugiriendo el foco para esta nueva semana.`;
+Genera el resumen CFO-AI en HTML.`;
 
-            const response = await ai.models.generateContent({
+            const chat = ai.chats.create({
                 model: 'gemini-2.5-flash',
-                contents: userPrompt,
                 config: {
                     systemInstruction: systemPrompt,
-                    temperature: 0.3
+                    temperature: 0.2 // Rigor ejecutivo
                 }
             });
 
-            const resumenIA = response.text;
+            const response = await chat.sendMessage(userPrompt);
+            const resumenIAHtml = response.text || '<p>Error al generar reporte.</p>';
 
-            // 3. Guardar el Briefing en BD para ser mostrado en una vista "Notificaciones" o Dashboard
+            // 3. Guardar el Briefing en BD para historial interno
             await db.collection(`tenants/${tenantId}/briefings`).add({
                 fechaGeneracion: admin.firestore.Timestamp.now(),
                 tipo: 'semanal',
                 ingresosReportados: ingresosSemana,
                 pipelineReportado: pipelineGenerado,
                 nuevosClientesReportados: nuevosClientesSnap.size,
-                resumenIA: resumenIA,
+                resumenIA: resumenIAHtml, // Ahora es HTML
                 leido: false
             });
 
-            // NOTA: Para enviar por correo, aquí se integraría una llamada a la extensión de Trigger Email o una API como SendGrid.
-            console.log(`Briefing semanal generado exitosamente para tenant: ${tenantId}`);
+            // 4. Integración Firebase Trigger Email Extension
+            // Enviamos el correo mediante la creación de un documento en la colección 'mail'
+            if (tenantData['email']) {
+                await db.collection('mail').add({
+                    to: tenantData['email'],
+                    message: {
+                        subject: `📊 Resumen Ejecutivo Dominical CFO-AI - ${nombreAgencia}`,
+                        html: resumenIAHtml,
+                    }
+                });
+                console.log(`CFO-AI Reporte encolado en Trigger Email para: ${tenantData['email']}`);
+            } else {
+                console.warn(`El tenant ${tenantId} no tiene un email configurado para recibir el CFO Report.`);
+            }
         }
 
     } catch (error) {
-        console.error("Error ejecutando Briefing Semanal AI:", error);
+        console.error("Error ejecutando CFO-AI Semanal:", error);
     }
 });

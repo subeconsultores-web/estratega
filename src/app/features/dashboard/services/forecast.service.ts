@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { AuthService } from '../../../core/services/auth.service';
-import { Observable, from } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 export interface ForecastTopDeal {
     descripcion: string;
@@ -38,10 +38,7 @@ export class ForecastService {
     private authService = inject(AuthService);
 
     async getForecast(): Promise<ForecastResponse> {
-        const tenantId = await this.authService.getTenantId();
-        if (!tenantId) {
-            throw new Error('Usuario sin Tenant');
-        }
+        const tenantId = await firstValueFrom(this.authService.tenantId$);
 
         const forecastPredictivoQuery = httpsCallable<{ tenantId: string }, ForecastResponse>(this.functions, 'forecastPredictivo');
         const response = await forecastPredictivoQuery({ tenantId });

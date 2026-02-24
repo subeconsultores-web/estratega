@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Receipt  } from 'lucide-angular';
 import { Observable } from 'rxjs';
 import { FacturaService } from '../../../core/services/factura.service';
 import { Factura } from '../../../core/models/factura.model';
@@ -11,7 +11,8 @@ import { DataTableComponent, ColumnDef } from '../../../shared/components/data-t
     selector: 'app-portal-facturacion',
     standalone: true,
     imports: [CommonModule, LucideAngularModule, LoadingSkeleton, DataTableComponent],
-    providers: [DatePipe],
+    providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Receipt }) },DatePipe],
     template: `
         <div class="space-y-6">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

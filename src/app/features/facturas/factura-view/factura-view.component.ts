@@ -1,9 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, Ban, Calendar, CheckCircle2, Clock, CreditCard, Loader2, ShieldCheck  } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
-import { getFunctions, httpsCallable } from '@angular/fire/functions';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 
 import { FacturaService } from '../../../core/services/factura.service';
 import { CrmService } from '../../../core/services/crm.service';
@@ -13,6 +13,9 @@ import { Factura } from '../../../core/models/factura.model';
     selector: 'app-factura-view',
     standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Ban, Calendar, CheckCircle2, Clock, CreditCard, Loader2, ShieldCheck }) }
+  ],
     templateUrl: './factura-view.component.html'
 })
 export class FacturaViewComponent implements OnInit {
@@ -22,7 +25,7 @@ export class FacturaViewComponent implements OnInit {
     private router = inject(Router);
     private toastr = inject(ToastrService);
     private location = inject(Location);
-    private functions = inject(getFunctions);
+    private functions = inject(Functions);
 
     facturaId = this.route.snapshot.paramMap.get('id');
     factura: Factura | undefined;

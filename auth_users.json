@@ -1,0 +1,32 @@
+{"users": [
+{
+  "localId": "K9uaKV0aeWgwTx6nOAyXSeTUU3c2",
+  "email": "rodrigo@subeia.tech",
+  "emailVerified": false,
+  "passwordHash": "q+wcn9pQPaUbp5p4uQj7cxnXPe+9U0hhcrdgAMdeSMRcbeVY4Ageu0b3BttS5ClnKuloe2UteLyxx4NbTYMtBg==",
+  "salt": "OB5CS2FDNC8ZEA==",
+  "createdAt": "1771777853849",
+  "disabled": false,
+  "providerUserInfo": []
+},
+{
+  "localId": "mDt1lmLqkgfRhgZgnnhKXkbYGKg1",
+  "email": "bruno@subeia.tech",
+  "emailVerified": false,
+  "passwordHash": "THKZQyXbuIUTKhVwQdYG/TZ5go/+Ty2uNtGm8pRNBVxOzB97IHGrSPnpIZqRnKL/S5IMmnDy5Zgoabv7YS5UBg==",
+  "salt": "I2ZVi+cM3GX+sw==",
+  "lastSignedInAt": "1771863342210",
+  "createdAt": "1771731592838",
+  "disabled": false,
+  "providerUserInfo": []
+},
+{
+  "localId": "zBVa2Te8ndNgd0AX6cQRH8j0xVG3",
+  "email": "mario@subeia.tech",
+  "emailVerified": true,
+  "passwordHash": "dgSBIDO1l7VkCnFrD6iCiO8W0AJ6SlsiVvLk2jZKFar57kDFCGKJnk0dE2tHZD1zwtC3O8f2W+lDFLtbidD8EQ==",
+  "salt": "enElu6WhTW2URA==",
+  "lastSignedInAt": "1748232545986",
+  "createdAt": "1745975146196",
+  "providerUserInfo": []
+}]}

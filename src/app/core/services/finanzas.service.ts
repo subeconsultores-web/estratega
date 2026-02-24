@@ -14,11 +14,13 @@ import {
     orderBy,
     serverTimestamp,
     getDocs,
-    Timestamp
+    Timestamp,
+    limit
 } from '@angular/fire/firestore';
-import { Observable, from, switchMap, map } from 'rxjs';
+import { Observable, switchMap, map } from 'rxjs';
 import { AuthService } from './auth.service';
-import { Factura, Transaccion, MetricasFinancieras } from '../models/finanzas.model';
+import { Transaccion, MetricasFinancieras } from '../models/finanzas.model';
+import { Factura } from '../models/factura.model';
 
 @Injectable({
     providedIn: 'root'
@@ -38,7 +40,7 @@ export class FinanzasService {
     // ============== FACTURAS / COBROS ==============
 
     getFacturas(): Observable<Factura[]> {
-        return from(this.getTenantIdOrThrow()).pipe(
+        return this.authService.tenantId$.pipe(
             switchMap(tenantId => {
                 const ref = collection(this.firestore, 'facturas');
                 const q = query(ref, where('tenantId', '==', tenantId), orderBy('createdAt', 'desc'));
@@ -53,18 +55,30 @@ export class FinanzasService {
     }
 
     async createFactura(factura: Omit<Factura, 'id' | 'tenantId' | 'createdAt' | 'updatedAt'>): Promise<string> {
-        const tenantId = await this.getTenantIdOrThrow();
-        const ref = collection(this.firestore, 'facturas');
+        return new Promise<string>((resolve, reject) => {
+            const sub = this.authService.tenantId$.subscribe(async tenantId => {
+                if (!tenantId) {
+                    sub.unsubscribe();
+                    return reject('No tenant ID');
+                }
+                const ref = collection(this.firestore, 'facturas');
+                const newDoc: any = {
+                    ...factura,
+                    tenantId,
+                    createdAt: serverTimestamp() as any,
+                    updatedAt: serverTimestamp() as any
+                };
 
-        const newDoc: Factura = {
-            ...factura,
-            tenantId,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-        };
-
-        const docRef = await addDoc(ref, newDoc);
-        return docRef.id;
+                try {
+                    const docRef = await addDoc(ref, newDoc);
+                    resolve(docRef.id);
+                } catch (error) {
+                    reject(error);
+                } finally {
+                    sub.unsubscribe();
+                }
+            });
+        });
     }
 
     async updateFactura(id: string, data: Partial<Factura>): Promise<void> {
@@ -80,14 +94,51 @@ export class FinanzasService {
         await deleteDoc(docRef);
     }
 
+    getProximosCobros(limite: number = 3): Observable<Factura[]> {
+        return this.authService.tenantId$.pipe(
+            switchMap(tenantId => {
+                const ref = collection(this.firestore, 'facturas');
+                const q = query(
+                    ref,
+                    where('tenantId', '==', tenantId),
+                    where('estado', 'in', ['emitida', 'vencida', 'pagada_parcial'])
+                    // Ordenamos localmente para evitar requerir un índice compuesto obligatorio en Firebase
+                );
+                return (collectionData(q, { idField: 'id' }) as Observable<Factura[]>).pipe(
+                    map(facturas => {
+                        return facturas.sort((a, b) => {
+                            const dateA = a.fechaVencimiento as any;
+                            const dateB = b.fechaVencimiento as any;
+                            const tA = dateA?.seconds ? dateA.seconds : new Date(dateA).getTime() / 1000;
+                            const tB = dateB?.seconds ? dateB.seconds : new Date(dateB).getTime() / 1000;
+                            return (tA || 0) - (tB || 0);
+                        }).slice(0, limite);
+                    })
+                );
+            })
+        );
+    }
+
     // ============== TRANSACCIONES (CAJA) ==============
 
     getTransacciones(): Observable<Transaccion[]> {
-        return from(this.getTenantIdOrThrow()).pipe(
+        return this.authService.tenantId$.pipe(
             switchMap(tenantId => {
                 const ref = collection(this.firestore, 'transacciones');
                 const q = query(ref, where('tenantId', '==', tenantId), orderBy('fecha', 'desc'));
                 return collectionData(q, { idField: 'id' }) as Observable<Transaccion[]>;
+            })
+        );
+    }
+
+    getTransaccion(id: string): Observable<Transaccion | undefined> {
+        return this.authService.tenantId$.pipe(
+            switchMap(tenantId => {
+                if (!tenantId) return [undefined];
+                const docRef = doc(this.firestore, `transacciones/${id}`);
+                return docData(docRef, { idField: 'id' }).pipe(
+                    map(data => data && (data as any)['tenantId'] === tenantId ? data as Transaccion : undefined)
+                );
             })
         );
     }
@@ -108,6 +159,11 @@ export class FinanzasService {
         // Aquí podríamos disparar un actualizador optimista.
 
         return docRef.id;
+    }
+
+    async updateTransaccion(id: string, data: Partial<Transaccion>): Promise<void> {
+        const docRef = doc(this.firestore, `transacciones/${id}`);
+        await updateDoc(docRef, data);
     }
 
     // ============== MÉTRICAS Y DASHBOARD ==============
@@ -146,25 +202,40 @@ export class FinanzasService {
         let egresosMesActual = 0;
         let mrrSimulado = 0; // Sum of recurring subscriptions this month
 
+        const historialMap = new Map<string, { ingresos: number, egresos: number }>();
+
         snapshotTrans.forEach(doc => {
             const t = doc.data() as Transaccion;
             if (t.estado === 'completado') {
+                const fechaDate = t.fecha?.toDate ? t.fecha.toDate() : new Date(t.fecha);
+                const diaStr = fechaDate.toISOString().split('T')[0];
+
+                if (!historialMap.has(diaStr)) {
+                    historialMap.set(diaStr, { ingresos: 0, egresos: 0 });
+                }
+
                 if (t.tipo === 'ingreso') {
                     ingresosMesActual += t.monto;
+                    historialMap.get(diaStr)!.ingresos += t.monto;
                     if (t.categoria === 'suscripcion') {
                         mrrSimulado += t.monto;
                     }
-                }
-                if (t.tipo === 'egreso') {
+                } else if (t.tipo === 'egreso') {
                     egresosMesActual += t.monto;
+                    historialMap.get(diaStr)!.egresos += t.monto;
                 }
             }
         });
 
+        // Ordenamos el historial temporalmente para la gráfica
+        const historialArray = Array.from(historialMap.entries())
+            .map(([fecha, data]) => ({ fecha, ...data }))
+            .sort((a, b) => a.fecha.localeCompare(b.fecha));
+
         let porCobrar = 0;
         snapshotFact.forEach(doc => {
             const f = doc.data() as Factura;
-            porCobrar += (f.saldoPendiente || f.total || 0);
+            porCobrar += (f.montoPendiente !== undefined ? f.montoPendiente : f.total);
         });
 
         return {
@@ -172,7 +243,8 @@ export class FinanzasService {
             ingresosMesActual,
             egresosMesActual,
             porCobrar,
-            crecimientoMRR: mrrSimulado > 0 ? 5.2 : 0 // Still mocked growth metric for now
+            crecimientoMRR: mrrSimulado > 0 ? 5.2 : 0, // Still mocked growth metric for now
+            historial: historialArray
         };
     }
 }

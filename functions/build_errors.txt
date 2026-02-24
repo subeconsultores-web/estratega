@@ -1,0 +1,4 @@
+src/callable/agentes/forecastPredictivo.ts(116,28): error TS18048: 'response.text' is possibly 'undefined'.
+src/callable/agentes/generarPropuestaIA.ts(78,33): error TS18048: 'response.text' is possibly 'undefined'.
+src/triggers/agentes/leadScoringIA.ts(109,28): error TS18048: 'response.text' is possibly 'undefined'.
+src/triggers/agentes/leadScoringIA.ts(119,15): error TS18048: 'event.data' is possibly 'undefined'.

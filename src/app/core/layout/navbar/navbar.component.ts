@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Bell, Clock, Menu, Moon, Search, Sun  } from 'lucide-angular';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
@@ -9,6 +9,9 @@ import { Router } from '@angular/router';
     selector: 'app-navbar',
     standalone: true,
     imports: [CommonModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Bell, Clock, Menu, Moon, Search, Sun }) }
+  ],
     template: `
     <header class="h-16 lg:h-16 bg-surface border-b border-border flex items-center justify-between px-4 lg:px-6 z-10 sticky top-0">
       

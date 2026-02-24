@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, Loader2, Plus, Save, Trash  } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 
 import { FacturaService } from '../../../core/services/factura.service';
@@ -13,6 +13,9 @@ import { CrmService } from '../../../core/services/crm.service';
     selector: 'app-factura-form',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Loader2, Plus, Save, Trash }) }
+  ],
     templateUrl: './factura-form.component.html'
 })
 export class FacturaFormComponent implements OnInit {

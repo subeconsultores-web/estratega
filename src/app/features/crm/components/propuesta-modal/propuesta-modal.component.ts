@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Copy, FileDown, FileSearch, ListChecks, Loader2, RotateCcw, Sparkles, Wand2, X  } from 'lucide-angular';
 import { PropuestasIAService } from '../../services/propuestas-ia.service';
 import { ToastrService } from 'ngx-toastr';
 import { marked } from 'marked';
@@ -12,6 +12,9 @@ import html2pdf from 'html2pdf.js';
     selector: 'app-propuesta-modal',
     standalone: true,
     imports: [CommonModule, FormsModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Copy, FileDown, FileSearch, ListChecks, Loader2, RotateCcw, Sparkles, Wand2, X }) }
+  ],
     templateUrl: './propuesta-modal.component.html'
 })
 export class PropuestaModalComponent {

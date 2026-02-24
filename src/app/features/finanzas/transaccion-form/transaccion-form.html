@@ -141,16 +141,21 @@
 
                 </div>
 
-                <div class="bg-gray-50 p-6 border-t border-gray-100 flex justify-end gap-3">
+                <div class="bg-gray-50 p-6 border-t border-gray-100 flex justify-end gap-3 relative">
+                    <button *ngIf="isEditMode && form.get('estado')?.value !== 'anulado'" type="button"
+                        (click)="anularTransaccion()" [disabled]="isSubmitting"
+                        class="absolute left-6 top-6 px-5 py-2.5 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors disabled:opacity-50">
+                        Anular Transacción
+                    </button>
                     <a routerLink="/finanzas/transacciones"
                         class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors">
-                        Cancelar
+                        {{ isEditMode ? 'Volver al Listado' : 'Cancelar' }}
                     </a>
-                    <button type="submit" [disabled]="form.invalid || isSubmitting"
+                    <button *ngIf="!isEditMode" type="submit" [disabled]="form.invalid || isSubmitting"
                         class="inline-flex items-center px-6 py-2.5 text-sm font-medium text-white bg-primary border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm">
                         <lucide-icon *ngIf="isSubmitting" name="loader-2"
                             class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
-                        {{ isEditMode ? 'Guardar Cambios' : 'Registrar Transacción' }}
+                        Registrar Transacción
                     </button>
                 </div>
             </form>
@@ -165,8 +170,9 @@
                 </h3>
                 <div class="space-y-4 text-sm text-gray-600">
                     <p>Las transacciones manuales complementan las operaciones automatizadas de Facturación.</p>
-                    <p><strong>Edición Bloqueada:</strong> Por estrictas normativas contables, las transacciones
-                        registradas no son editables libremente tras su compensación (`Completado`).</p>
+                    <p><strong>Auditoría Contable:</strong> Por estrictas normativas, las transacciones
+                        registradas <strong>no son editables</strong>. En caso de error, <strong>anula la
+                            transacción</strong> y crea una nueva con los datos correctos.</p>
                     <div class="bg-blue-50 text-blue-800 p-3 rounded-lg border border-blue-100 italic mt-4">
                         💡 Usa el escáner de LangExtract para leer "Boletas de Honorarios" o Compras sin tener que
                         tipear tú mismo los montos e impuestos asociados.

@@ -107,35 +107,58 @@
     <!-- Layout Gráficas -->
     <div *ngIf="!isLoading" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- Main Chart Placeholder -->
+        <!-- Main Chart -->
         <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Ingresos vs MRR</h3>
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Ingresos vs Egresos</h3>
             <div
-                class="h-64 flex items-center justify-center bg-gray-50 rounded-lg border border-dashed border-gray-200">
-                <div class="text-center text-gray-400">
-                    <lucide-icon name="bar-chart-3" class="w-12 h-12 mx-auto mb-2 opacity-50"></lucide-icon>
-                    <p class="text-sm">Gráfica Comercial de Cashflow</p>
-                    <p class="text-xs mt-1">Requiere biblioteca Chart.js o Integración</p>
-                </div>
+                class="h-64 flex items-center justify-center bg-gray-50 rounded-lg border border-dashed border-gray-200 p-2">
+                <canvas *ngIf="metricas?.historial && metricas!.historial!.length > 0; else noMap" baseChart
+                    [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType">
+                </canvas>
+                <ng-template #noMap>
+                    <div class="text-center text-gray-400">
+                        <lucide-icon name="bar-chart-3" class="w-12 h-12 mx-auto mb-2 opacity-50"></lucide-icon>
+                        <p class="text-sm">Gráfica Comercial de Cashflow</p>
+                        <p class="text-xs mt-1">Sin transacciones registradas para este periodo.</p>
+                    </div>
+                </ng-template>
             </div>
         </div>
 
-        <!-- Cobranza Sidebar Placeholder -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <!-- Cobranza Sidebar -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 overflow-y-auto"
+            style="max-height: 22rem;">
             <h3 class="text-lg font-bold text-gray-900 mb-4">Próximos Cobros</h3>
             <div class="space-y-4">
-                <div *ngFor="let _ of [1,2,3]"
-                    class="flex items-center justify-between p-3 rounded-lg bg-gray-50 border border-gray-100">
+                <div *ngIf="(proximosCobros$ | async)?.length === 0" class="text-sm text-gray-500 text-center py-4">
+                    No hay cobros pendientes.
+                </div>
+                <div *ngFor="let factura of proximosCobros$ | async" [routerLink]="['/facturas', factura.id, 'view']"
+                    class="flex items-center justify-between p-3 rounded-lg bg-gray-50 border border-gray-100 hover:bg-gray-100 transition-colors cursor-pointer">
                     <div class="flex items-center gap-3">
                         <div
-                            class="w-8 h-8 rounded-full bg-blue-100 text-primary flex items-center justify-center text-xs font-bold">
-                            CLI</div>
+                            class="w-10 h-10 rounded-full bg-blue-100 text-primary flex items-center justify-center text-xs font-bold">
+                            {{ factura.codigoFormateado?.substring(4,7) || 'FAC' }}</div>
                         <div>
-                            <p class="text-sm font-medium text-gray-900">Mantención Web</p>
-                            <p class="text-xs text-gray-500">Vence hoy</p>
+                            <p class="text-sm font-medium text-gray-900">{{ factura.codigoFormateado }}</p>
+                            <p class="text-xs text-gray-500">Vence: {{ factura.fechaVencimiento | date:'mediumDate' }}
+                            </p>
                         </div>
                     </div>
-                    <span class="text-sm font-bold text-gray-900">$35.000</span>
+                    <div class="text-right">
+                        <span class="text-sm font-bold text-gray-900">{{ (factura.montoPendiente !== undefined ?
+                            factura.montoPendiente : factura.total) | currency:factura.moneda:'symbol':'1.0-0' }}</span>
+                        <div class="mt-1">
+                            <span class="text-[10px] font-semibold uppercase rounded-full px-2 py-0.5 mt-1 inline-block"
+                                [ngClass]="{
+                                    'bg-yellow-100 text-yellow-800': factura.estado === 'pagada_parcial',
+                                    'bg-red-100 text-red-800': factura.estado === 'vencida',
+                                    'bg-blue-100 text-blue-800': factura.estado === 'emitida'
+                                }">
+                                {{ factura.estado }}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

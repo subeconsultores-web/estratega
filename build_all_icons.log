@@ -1,0 +1,114 @@
+﻿[33mÔØ»[39m Building...
+[32mÔ£ö[39m Building...
+[1mInitial chunk files[22m[2m | [22m[1mNames[22m                    [2m | [22m [1mRaw size[22m[2m | [22m[1mEstimated transfer size[22m
+[32mchunk-WBRIOWGO.js[39m  [2m | [22m[2m-[22m                        [2m | [22m[36m459.02 kB[39m[2m | [22m               [36m83.25 kB[39m
+[32mchunk-3FMDLL5U.js[39m  [2m | [22m[2m-[22m                        [2m | [22m[36m326.01 kB[39m[2m | [22m               [36m72.83 kB[39m
+[32mchunk-OAKG2BVR.js[39m  [2m | [22m[2m-[22m                        [2m | [22m[36m219.72 kB[39m[2m | [22m               [36m66.01 kB[39m
+[32mchunk-HJFSXVIT.js[39m  [2m | [22m[2m-[22m                        [2m | [22m[36m162.27 kB[39m[2m | [22m               [36m47.82 kB[39m
+[32mstyles-FGRLYFN3.css[39m[2m | [22m[2mstyles[22m                   [2m | [22m [36m99.94 kB[39m[2m | [22m               [36m12.18 kB[39m
+[32mchunk-7FL4BQ2I.js[39m  [2m | [22m[2m-[22m                        [2m | [22m [36m48.48 kB[39m[2m | [22m                [36m9.58 kB[39m
+[32mmain-7MSWYDJA.js[39m   [2m | [22m[2mmain[22m                     [2m | [22m [36m33.78 kB[39m[2m | [22m                [36m9.50 kB[39m
+[32mchunk-2XSW4R6V.js[39m  [2m | [22m[2m-[22m                        [2m | [22m [36m25.67 kB[39m[2m | [22m                [36m6.93 kB[39m
+[32mchunk-TP4PPYGL.js[39m  [2m | [22m[2m-[22m                        [2m | [22m [36m23.17 kB[39m[2m | [22m                [36m7.57 kB[39m
+[32mchunk-5YOFVFM2.js[39m  [2m | [22m[2m-[22m                        [2m | [22m [36m17.14 kB[39m[2m | [22m                [36m4.19 kB[39m
+[32mchunk-GYHSP5LT.js[39m  [2m | [22m[2m-[22m                        [2m | [22m  [36m8.85 kB[39m[2m | [22m                [36m3.19 kB[39m
+[32mchunk-6VGNRL4M.js[39m  [2m | [22m[2m-[22m                        [2m | [22m  [36m2.20 kB[39m[2m | [22m              [36m764 bytes[39m
+[32mchunk-56UO4VMW.js[39m  [2m | [22m[2m-[22m                        [2m | [22m  [36m1.76 kB[39m[2m | [22m              [36m731 bytes[39m
+[32mchunk-FPENFXYU.js[39m  [2m | [22m[2m-[22m                        [2m | [22m  [36m1.53 kB[39m[2m | [22m              [36m624 bytes[39m
+[32mchunk-5QFTTRJC.js[39m  [2m | [22m[2m-[22m                        [2m | [22m  [36m1.30 kB[39m[2m | [22m              [36m554 bytes[39m
+[32mchunk-7CGTOI24.js[39m  [2m | [22m[2m-[22m                        [2m | [22m[36m618 bytes[39m[2m | [22m              [36m618 bytes[39m
+[32mchunk-XQQ2RZYV.js[39m  [2m | [22m[2m-[22m                        [2m | [22m[36m307 bytes[39m[2m | [22m              [36m307 bytes[39m
+
+[1m [22m                  [2m | [22m[1mInitial total[22m            [2m | [22m  [1m1.43 MB[22m[2m | [22m              [1m326.66 kB[22m
+
+[1mLazy chunk files[22m   [2m | [22m[1mNames[22m                    [2m | [22m [1mRaw size[22m[2m | [22m[1mEstimated transfer size[22m
+[32mchunk-HLBDZQSJ.js[39m  [2m | [22m[2mproyectos-routes[22m         [2m | [22m[36m113.58 kB[39m[2m | [22m               [36m25.26 kB[39m
+[32mchunk-PMIVNVNA.js[39m  [2m | [22m[2mbrowser[22m                  [2m | [22m [36m67.78 kB[39m[2m | [22m               [36m17.80 kB[39m
+[32mchunk-TJDDF3O7.js[39m  [2m | [22m[2mcontratos-routes[22m         [2m | [22m [36m36.16 kB[39m[2m | [22m                [36m8.93 kB[39m
+[32mchunk-EY3UCVVU.js[39m  [2m | [22m[2mdashboard-routes[22m         [2m | [22m [36m30.43 kB[39m[2m | [22m                [36m8.16 kB[39m
+[32mchunk-7XK427AG.js[39m  [2m | [22m[2mconfiguracion-routes[22m     [2m | [22m [36m27.97 kB[39m[2m | [22m                [36m6.26 kB[39m
+[32mchunk-I6PKTSH3.js[39m  [2m | [22m[2mcotizacion-form-component[22m[2m | [22m [36m19.94 kB[39m[2m | [22m                [36m5.47 kB[39m
+[32mchunk-UUIYPT37.js[39m  [2m | [22m[2mfactura-form-component[22m   [2m | [22m [36m14.26 kB[39m[2m | [22m                [36m3.95 kB[39m
+[32mchunk-QCL5OU5N.js[39m  [2m | [22m[2mcotizacion-view-component[22m[2m | [22m [36m14.18 kB[39m[2m | [22m                [36m3.88 kB[39m
+[32mchunk-NHEKIHG4.js[39m  [2m | [22m[2mtransaccion-form[22m         [2m | [22m [36m12.49 kB[39m[2m | [22m                [36m4.13 kB[39m
+[32mchunk-HEYZYAFV.js[39m  [2m | [22m[2msuperadmin-routes[22m        [2m | [22m [36m11.85 kB[39m[2m | [22m                [36m3.77 kB[39m
+[32mchunk-MGOSJFWI.js[39m  [2m | [22m[2mfactura-view-component[22m   [2m | [22m [36m11.61 kB[39m[2m | [22m                [36m3.52 kB[39m
+[32mchunk-J24CQT56.js[39m  [2m | [22m[2mportal-routes[22m            [2m | [22m [36m11.33 kB[39m[2m | [22m                [36m3.02 kB[39m
+[32mchunk-D4I7O466.js[39m  [2m | [22m[2mpipeline-kanban-component[22m[2m | [22m [36m10.80 kB[39m[2m | [22m                [36m2.80 kB[39m
+[32mchunk-B6FR64KW.js[39m  [2m | [22m[2mcliente-form-component[22m   [2m | [22m [36m10.39 kB[39m[2m | [22m                [36m2.74 kB[39m
+[32mchunk-EAJADUKR.js[39m  [2m | [22m[2m-[22m                        [2m | [22m  [36m7.73 kB[39m[2m | [22m                [36m2.41 kB[39m
+[2m...and 19 more lazy chunks files. Use "--verbose" to show all the files.[22m
+
+Application bundle generation complete. [22.516 seconds] - 2026-02-23T03:45:34.142Z
+
+node.exe : 
+[1m[33m[33mÔû▓ [43;
+33m[[43;30mWARNING[43
+;33m][0m [1mNG8107: 
+The left side of this 
+optional chain 
+operation does not 
+include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the '.' 
+operator.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+En línea: 1 Carácter: 1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: ([1m[33m[33   
+ mÔ...r-compiler][    
+0m:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+
+    src/app/features/pr
+oyectos/proyecto-form/p
+royecto-form.component.
+html:47:58:
+[37m      47 Ôöé ...  
+                || clie
+nte.contactoPrincipal?.
+[32mnombre[37m 
+}}</option>
+         ÔòÁ           
+                       
+                  
+[32m~~~~~~[0m
+
+  Warning occurs in 
+the template of 
+component 
+ProyectoFormComponent.
+
+    src/app/features/pr
+oyectos/proyecto-form/p
+royecto-form.component.
+ts:15:17:
+[37m      15 Ôöé     
+templateUrl: [32m'./pr
+oyecto-form.component.h
+tml'[37m
+         ÔòÁ           
+       [32m~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~[
+0m
+
+[39m[22m
+Output location: C:\AppsIA\repogit\Estratega-subeia\sube-gestion\dist\sube-gestion
+

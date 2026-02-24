@@ -2,13 +2,16 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SuperAdminService, Tenant } from '../../../core/services/super-admin.service';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Bot, Briefcase, CheckSquare, Clock, DollarSign, Loader2, PanelLeftClose, Search  } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-superadmin-dashboard',
     standalone: true,
     imports: [CommonModule, FormsModule, LucideAngularModule, DatePipe],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Bot, Briefcase, CheckSquare, Clock, DollarSign, Loader2, PanelLeftClose, Search }) }
+  ],
     templateUrl: './superadmin-dashboard.component.html'
 })
 export class SuperAdminDashboardComponent implements OnInit {

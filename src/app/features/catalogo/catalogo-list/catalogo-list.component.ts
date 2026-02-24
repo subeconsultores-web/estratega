@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, PackageSearch, Plus, Search  } from 'lucide-angular';
 import { CatalogoService } from '../../../core/services/catalogo.service';
 import { CatalogoItem } from '../../../core/models/catalogo.model';
 import { DataTableComponent, ColumnDef } from '../../../shared/components/data-table/data-table.component';
@@ -11,6 +11,9 @@ import { ToastrService } from 'ngx-toastr';
     selector: 'app-catalogo-list',
     standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule, DataTableComponent],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ PackageSearch, Plus, Search }) }
+  ],
     templateUrl: './catalogo-list.component.html'
 })
 export class CatalogoListComponent implements OnInit {

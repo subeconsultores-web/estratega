@@ -1,44 +1,61 @@
-<div class="space-y-6">
+<div class="space-y-8 animate-in slide-in-from-bottom-4 duration-500 relative min-h-[80vh]">
+    <!-- Elementos decorativos (Glow) -->
+    <div
+        class="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl -z-10 pointer-events-none">
+    </div>
+
     <!-- Header -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Proyectos y Tareas</h1>
-            <p class="text-gray-500 mt-1 text-sm">Gestiona la ejecución y tableros operativos de los clientes.</p>
+            <h1
+                class="text-3xl md:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 mb-2">
+                Proyectos y Tareas</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-lg">Gestiona la ejecución y tableros operativos de los
+                clientes.</p>
         </div>
         <div class="flex space-x-3">
             <button (click)="nuevoProyecto()"
-                class="inline-flex items-center px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
-                <lucide-icon name="plus" class="w-4 h-4 mr-2"></lucide-icon>
-                Nuevo Proyecto
+                class="relative group px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 flex items-center gap-2 overflow-hidden">
+                <div
+                    class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
+                </div>
+                <lucide-icon name="plus" class="w-5 h-5 relative z-10"></lucide-icon>
+                <span class="relative z-10">Nuevo Proyecto</span>
             </button>
         </div>
     </div>
 
     <!-- Contenido Principal -->
-    <ng-container *ngIf="proyectos$ | async as proyectos; else loading">
-        <app-data-table *ngIf="proyectos.length > 0; else emptyState" [data]="proyectos" [columns]="columns"
-            (actionClick)="onActionClick($event)">
-        </app-data-table>
+    <app-data-table *ngIf="!isLoading && proyectos.length > 0" [data]="proyectos" [columns]="columns"
+        (actionClick)="onActionClick($event)">
+    </app-data-table>
 
-        <ng-template #emptyState>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-                <div
-                    class="w-16 h-16 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                    <lucide-icon name="folder-plus" class="w-8 h-8"></lucide-icon>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">No hay proyectos activos</h3>
-                <p class="text-gray-500 mb-6 max-w-md mx-auto">Comienza estructurando tu equipo agrupando requerimientos
-                    por clientes debajo de un Proyecto principal.</p>
-                <button (click)="nuevoProyecto()"
-                    class="inline-flex items-center px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
-                    <lucide-icon name="plus" class="w-4 h-4 mr-2"></lucide-icon>
-                    Crear Proyecto
-                </button>
-            </div>
-        </ng-template>
-    </ng-container>
-
-    <ng-template #loading>
+    <!-- Loading -->
+    <div *ngIf="isLoading">
         <app-loading-skeleton></app-loading-skeleton>
-    </ng-template>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && proyectos.length === 0"
+        class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/40 dark:shadow-none border border-slate-200/60 dark:border-slate-700/60 p-12 text-center ring-1 ring-slate-900/5 relative overflow-hidden">
+        <div
+            class="w-20 h-20 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-6 transform rotate-3 shadow-inner border border-blue-100 dark:border-blue-800">
+            <lucide-icon name="folder-plus" class="w-10 h-10"></lucide-icon>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">No hay proyectos activos</h3>
+        <p class="text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto leading-relaxed">Comienza
+            estructurando tu equipo agrupando requerimientos por clientes debajo de un Proyecto principal.</p>
+        <button (click)="nuevoProyecto()"
+            class="relative group px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 inline-flex items-center gap-2 overflow-hidden mx-auto">
+            <div
+                class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
+            </div>
+            <lucide-icon name="plus" class="w-5 h-5 relative z-10"></lucide-icon>
+            <span class="relative z-10">Crear Primer Proyecto</span>
+        </button>
+    </div>
+
+    <!-- Modal de Nuevo Proyecto -->
+    <app-proyecto-form *ngIf="showProyectoModal" (onSave)="guardarProyecto($event)" (onCancel)="cerrarModal()">
+    </app-proyecto-form>
 </div>

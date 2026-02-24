@@ -18,12 +18,29 @@
 
     <!-- MAIN TABLE COMPONENT -->
     <div class="bg-surface border border-border rounded-xl shadow-sm overflow-hidden">
-        <app-data-table *ngIf="!isLoading" [data]="contratos" [columns]="columns"
+        <app-data-table *ngIf="!isLoading && contratos.length > 0" [data]="contratos" [columns]="columns"
             searchPlaceholder="Buscar por título o ID de contrato..." (actionClick)="onAction($event)">
         </app-data-table>
 
         <div *ngIf="isLoading" class="p-12 flex justify-center items-center">
             <lucide-icon name="loader-2" class="w-8 h-8 text-primary animate-spin"></lucide-icon>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && contratos.length === 0"
+            class="py-16 flex flex-col items-center justify-center text-center px-4">
+            <div
+                class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 border border-primary/20">
+                <lucide-icon name="file-signature" class="w-8 h-8 text-primary"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-txt-primary mb-1">Sin Contratos Registrados</h3>
+            <p class="text-txt-muted max-w-md mx-auto mb-6">Aún no has redactado ningún contrato o acuerdo legal.
+                Crea tu primer contrato para formalizar tus ventas.</p>
+            <button routerLink="/contratos/new"
+                class="flex items-center justify-center px-5 py-2.5 bg-surface-hover border border-border text-txt-primary rounded-lg hover:bg-border transition-colors font-medium shadow-sm">
+                <lucide-icon name="plus" class="w-4 h-4 mr-2"></lucide-icon>
+                Redactar Primer Contrato
+            </button>
         </div>
     </div>
 </div>

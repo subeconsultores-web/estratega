@@ -1,0 +1,156 @@
+<div class="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                <lucide-icon [img]="WebhookIcon" class="text-indigo-600 dark:text-indigo-400"></lucide-icon>
+                Motor de Webhooks
+            </h2>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Suscribe endpoints externos para recibir notificaciones
+                HTTP en
+                tiempo real cuando ocurran eventos en tu CRM.</p>
+        </div>
+
+        <button (click)="showCreateModal = true"
+            class="relative group px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 transition-all duration-300 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 flex items-center gap-2 overflow-hidden">
+            <div
+                class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
+            </div>
+            <lucide-icon [img]="PlusIcon" [size]="18" class="relative z-10"></lucide-icon>
+            <span class="relative z-10">Nuevo Webhook</span>
+        </button>
+    </div>
+
+    <!-- Alert Box Premium -->
+    <div
+        class="relative overflow-hidden bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-100 dark:border-indigo-800/50 p-5 rounded-2xl flex items-start gap-4 backdrop-blur-sm shadow-sm">
+        <div class="absolute -top-4 -right-4 p-4 opacity-10 transform -rotate-12">
+            <lucide-icon [img]="WebhookIcon" [size]="100"></lucide-icon>
+        </div>
+        <div
+            class="bg-white dark:bg-slate-800 shadow-sm p-2 rounded-xl shrink-0 relative z-10 border border-indigo-100 dark:border-indigo-800">
+            <lucide-icon [img]="AlertIcon" class="text-indigo-600 dark:text-indigo-400"></lucide-icon>
+        </div>
+        <div class="relative z-10">
+            <h3 class="font-bold text-indigo-900 dark:text-indigo-300 text-base">Integraciones en tiempo real</h3>
+            <p class="text-indigo-700/80 dark:text-indigo-300/80 mt-1 text-sm leading-relaxed max-w-3xl">
+                Conecta Sube con Zapier, Make o tu propio servidor. Enviaremos un POST con los datos JSON tan pronto
+                como un evento clave ocurra. Evita recargas excesivas y encadenamientos ineficientes.
+            </p>
+        </div>
+    </div>
+
+    <!-- Lista de Webhooks -->
+    <div
+        class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/40 dark:shadow-none border border-slate-200/60 dark:border-slate-700/60 overflow-hidden ring-1 ring-slate-900/5">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm whitespace-nowrap">
+                <thead
+                    class="bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider text-xs">
+                    <tr>
+                        <th class="px-6 py-4">Nombre</th>
+                        <th class="px-6 py-4">URL del Endpoint</th>
+                        <th class="px-6 py-4">Eventos</th>
+                        <th class="px-6 py-4">Estado</th>
+                        <th class="px-6 py-4 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-700" *ngIf="webhooks$ | async as webhooks">
+                    <tr *ngFor="let wh of webhooks"
+                        class="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors">
+                        <td class="px-6 py-4">
+                            <span class="font-medium text-slate-800 dark:text-slate-200">{{wh.name}}</span>
+                        </td>
+                        <td class="px-6 py-4 max-w-xs truncate" [title]="wh.url">
+                            <span class="text-slate-500 dark:text-slate-400">{{wh.url}}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex gap-1 flex-wrap">
+                                <span *ngFor="let ev of wh.events"
+                                    class="px-2 py-0.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded text-xs text-slate-600 dark:text-slate-400">
+                                    {{ev}}
+                                </span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span
+                                [class]="wh.isActive ? 'px-2.5 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'px-2.5 py-1 text-xs font-medium rounded-full bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'">
+                                {{wh.isActive ? 'Activo' : 'Pausado'}}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <button (click)="toggleStatus(wh)"
+                                    class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs font-medium transition-colors">
+                                    {{wh.isActive ? 'Pausar' : 'Activar'}}
+                                </button>
+                                <div class="w-px h-4 bg-slate-200 dark:bg-slate-700"></div>
+                                <button (click)="deleteWebhook(wh.id!)"
+                                    class="text-rose-500 hover:text-rose-600 transition-colors p-1"
+                                    title="Eliminar webhook">
+                                    <lucide-icon [img]="TrashIcon" [size]="16"></lucide-icon>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="webhooks.length === 0">
+                        <td colspan="5" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                            No tienes webhooks configurados en este tenant.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nuevo Webhook -->
+<div *ngIf="showCreateModal"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+    <div
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700/50 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 relative">
+        <div
+            class="absolute top-0 right-0 w-40 h-40 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-2xl pointer-events-none">
+        </div>
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Añadir Suscripción Webhook</h3>
+            <p class="text-slate-500 dark:text-slate-400 mb-6 text-sm">Registra una URL (ej. Zapier Catch Hook) a la que
+                enviaremos notificaciones de eventos en vivo.</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nombre</label>
+                    <input type="text" [(ngModel)]="newName" placeholder="Ej: Zapier CRM Sync"
+                        class="input-standard w-full">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">URL del
+                        Endpoint</label>
+                    <input type="url" [(ngModel)]="newUrl" placeholder="https://hooks.zapier.com/..."
+                        class="input-standard w-full">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Eventos a
+                        suscribir</label>
+                    <!-- Por ahora simulamos checks hardcodeados -->
+                    <label class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+                        <input type="checkbox" checked disabled
+                            class="rounded border-slate-300 text-primary-600 focus:ring-primary-500 disabled:opacity-50">
+                        <span>Cliente Creado (cliente.creado)</span>
+                    </label>
+                    <p class="text-xs text-slate-400 mt-1">Nota: Más eventos estarán disponibles próximamente.</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-8">
+                <button (click)="closeModal()"
+                    class="px-5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 bg-slate-100 dark:bg-slate-700 dark:text-slate-300 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancelar</button>
+                <button (click)="createWebhook()"
+                    class="px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 transition-all shadow-md flex items-center gap-2"
+                    [disabled]="!newName.trim() || !newUrl.trim()"><lucide-icon [img]="WebhookIcon"
+                        [size]="16"></lucide-icon> Guardar Suscripción</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -33,7 +33,7 @@ export interface Transaccion {
     fecha: Timestamp | Date | any;
     metodoPago: 'transferencia' | 'tarjeta_credito' | 'tarjeta_debito' | 'efectivo' | 'stripe' | string;
     referenciaExterna?: string; // Ej: ID de transacción de banco o Stripe
-    estado: 'completado' | 'pendiente' | 'fallido' | 'reembolsado';
+    estado: 'completado' | 'pendiente' | 'fallido' | 'reembolsado' | 'anulado';
     comprobanteUrl?: string; // Link a Firebase Storage
     notas?: string;
     creadoPor: string; // userId config
@@ -49,4 +49,5 @@ export interface MetricasFinancieras {
     egresosMesActual: number;
     porCobrar: number;
     crecimientoMRR: number; // Porcentaje vs mes anterior
+    historial?: { fecha: string; ingresos: number; egresos: number }[]; // Para gráfica de cashflow
 }

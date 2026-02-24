@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, Banknote, Loader2, Package, Save, Settings2  } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 import { CatalogoService } from '../../../core/services/catalogo.service';
 import { CatalogoItem } from '../../../core/models/catalogo.model';
@@ -11,6 +11,9 @@ import { CatalogoItem } from '../../../core/models/catalogo.model';
     selector: 'app-catalogo-form',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Banknote, Loader2, Package, Save, Settings2 }) }
+  ],
     templateUrl: './catalogo-form.component.html'
 })
 export class CatalogoFormComponent implements OnInit {

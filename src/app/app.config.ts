@@ -2,6 +2,7 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, importProvidersF
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { tenantInterceptor } from './core/auth/interceptors/tenant.interceptor';
+import { zeroTrustInterceptor } from './core/interceptors/zero-trust.interceptor';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
@@ -14,21 +15,14 @@ import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 
 import {
-  LucideAngularModule,
-  LayoutDashboard, Users, FileText, Briefcase,
-  DollarSign, Clock, Bot, Settings, ChevronLeft,
-  ChevronRight, Sparkles, ChevronDown, Menu, PanelLeftClose, PanelLeft, LogOut, FileBadge, CheckSquare, Search, Bell, User, Plus, Eye, Edit2, X, Send, Trash2, Key
+  LucideAngularModule
 } from 'lucide-angular';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    importProvidersFrom(
-      LucideAngularModule.pick({
-        LayoutDashboard, Users, FileText, Briefcase, DollarSign, Clock, Bot, Settings, ChevronLeft, ChevronRight, Sparkles, ChevronDown, Menu, PanelLeftClose, PanelLeft, LogOut, FileBadge, CheckSquare, Search, Bell, User, Plus, Eye, Edit2, X, Send, Trash2, Key
-      })
-    ),
+    importProvidersFrom(LucideAngularModule),
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withInterceptors([tenantInterceptor])),
+    provideHttpClient(withInterceptors([tenantInterceptor, zeroTrustInterceptor])),
     provideRouter(routes),
     provideAnimationsAsync(),
     provideCharts(withDefaultRegisterables()),

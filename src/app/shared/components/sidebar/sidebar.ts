@@ -1,7 +1,7 @@
 import { Component, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Briefcase, CheckSquare, ChevronDown, Clock, DollarSign, FileBadge, FileText, Key, LayoutDashboard, Menu, PanelLeft, PanelLeftClose, Settings, Sparkles, Users, Webhook  } from 'lucide-angular';
 
 export interface MenuItem {
   label: string;
@@ -14,6 +14,9 @@ export interface MenuItem {
 @Component({
   selector: 'app-sidebar',
   imports: [CommonModule, RouterModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Briefcase, CheckSquare, ChevronDown, Clock, DollarSign, FileBadge, FileText, Key, LayoutDashboard, Menu, PanelLeft, PanelLeftClose, Settings, Sparkles, Users, Webhook }) }
+  ],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
 })
@@ -35,6 +38,15 @@ export class Sidebar {
     { label: 'Proyectos', icon: 'briefcase', route: '/proyectos' },
     { label: 'Finanzas', icon: 'dollar-sign', route: '/finanzas' },
     { label: 'Timetracking', icon: 'clock', route: '/timetracking' },
+    {
+      label: 'Configuración',
+      icon: 'settings',
+      expanded: false,
+      children: [
+        { label: 'API Keys', icon: 'key', route: '/configuracion/api-keys' },
+        { label: 'Webhooks', icon: 'webhook', route: '/configuracion/webhooks' }
+      ]
+    }
   ];
 
   toggleSidebar() {

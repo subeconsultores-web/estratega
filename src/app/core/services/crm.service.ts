@@ -1,7 +1,8 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, NgZone } from '@angular/core';
 import { Firestore, collection, doc, docData, setDoc, updateDoc, deleteDoc, query, where, collectionData, Timestamp, orderBy, addDoc } from '@angular/fire/firestore';
-import { Observable, from, throwError } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+import { Observable, from, throwError, of } from 'rxjs';
+import { switchMap, tap, catchError, distinctUntilChanged, take, shareReplay } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { Cliente, Actividad } from '../models/crm.model';
 
@@ -10,7 +11,9 @@ import { Cliente, Actividad } from '../models/crm.model';
 })
 export class CrmService {
     private firestore = inject(Firestore);
+    private storage = inject(Storage);
     private authService = inject(AuthService);
+    private ngZone = inject(NgZone);
 
     private async getTenantIdOrThrow(): Promise<string> {
         const tenantId = await this.authService.getTenantId();
@@ -21,16 +24,39 @@ export class CrmService {
     }
 
     // ---- CLIENTES ----
+    private clientesCache$: Observable<Cliente[]> | null = null;
 
     // Obtener lista de clientes como Observable (Real-time)
     getClientes(): Observable<Cliente[]> {
-        return from(this.getTenantIdOrThrow()).pipe(
-            switchMap(tenantId => {
-                const clientesRef = collection(this.firestore, 'clientes');
-                const q = query(clientesRef, where('tenantId', '==', tenantId), orderBy('createdAt', 'desc'));
-                return collectionData(q, { idField: 'id' }) as Observable<Cliente[]>;
-            })
-        );
+        if (!this.clientesCache$) {
+            console.log('[CRM] getClientes() cache miss, building pipeline...');
+            this.clientesCache$ = this.authService.tenantId$.pipe(
+                tap(tenantId => console.log('[CRM] tenantId$ emitted:', tenantId)),
+                distinctUntilChanged(),
+                switchMap(tenantId => {
+                    if (!tenantId) {
+                        console.error('[CRM] tenantId is null/undefined, cannot query clientes');
+                        return of([] as Cliente[]);
+                    }
+                    const clientesRef = collection(this.firestore, 'clientes');
+                    const q = query(clientesRef, where('tenantId', '==', tenantId), orderBy('createdAt', 'desc'));
+                    console.log('[CRM] Firestore query created for tenantId:', tenantId);
+                    return (collectionData(q, { idField: 'id' }) as Observable<Cliente[]>).pipe(
+                        tap(data => console.log('[CRM] Firestore returned', data.length, 'clientes')),
+                        catchError(innerErr => {
+                            console.error('[CRM] Firestore query error:', innerErr);
+                            return of([] as Cliente[]);
+                        })
+                    );
+                }),
+                catchError(err => {
+                    console.error('[CRM] Error in getClientes pipe:', err);
+                    return of([] as Cliente[]);
+                }),
+                shareReplay({ bufferSize: 1, refCount: true })
+            );
+        }
+        return this.clientesCache$;
     }
 
     // Obtener cliente por ID
@@ -69,21 +95,29 @@ export class CrmService {
         await deleteDoc(docRef);
     }
 
+
     // ---- ACTIVIDADES ----
 
+    private actividadesCache = new Map<string, Observable<Actividad[]>>();
+
     getActividadesCliente(clienteId: string): Observable<Actividad[]> {
-        return from(this.getTenantIdOrThrow()).pipe(
-            switchMap(tenantId => {
-                const actividadesRef = collection(this.firestore, 'actividades');
-                const q = query(
-                    actividadesRef,
-                    where('tenantId', '==', tenantId),
-                    where('clienteId', '==', clienteId),
-                    orderBy('fecha', 'desc')
-                );
-                return collectionData(q, { idField: 'id' }) as Observable<Actividad[]>;
-            })
-        );
+        if (!this.actividadesCache.has(clienteId)) {
+            const cache$ = from(this.getTenantIdOrThrow()).pipe(
+                switchMap(tenantId => {
+                    const actividadesRef = collection(this.firestore, 'actividades');
+                    const q = query(
+                        actividadesRef,
+                        where('tenantId', '==', tenantId),
+                        where('clienteId', '==', clienteId),
+                        orderBy('fecha', 'desc')
+                    );
+                    return collectionData(q, { idField: 'id' }) as Observable<Actividad[]>;
+                }),
+                shareReplay({ bufferSize: 1, refCount: true })
+            );
+            this.actividadesCache.set(clienteId, cache$);
+        }
+        return this.actividadesCache.get(clienteId)!;
     }
 
     async createActividad(actividadData: Partial<Actividad>): Promise<string> {
@@ -110,5 +144,24 @@ export class CrmService {
     async deleteActividad(id: string): Promise<void> {
         const docRef = doc(this.firestore, `actividades/${id}`);
         await deleteDoc(docRef);
+    }
+
+    // ---- DOCUMENTOS E IA OCR ----
+
+    async uploadDocumento(clienteId: string, file: File): Promise<string> {
+        const tenantId = await this.getTenantIdOrThrow();
+        // Path esperado por la Cloud Function: clientes/{tenantId}/{clienteId}/documentos/{file.name}
+        const filePath = `clientes/${tenantId}/${clienteId}/documentos/${Date.now()}_${file.name}`;
+        const storageRef = ref(this.storage, filePath);
+
+        const snapshot = await uploadBytes(storageRef, file);
+        return getDownloadURL(snapshot.ref);
+    }
+
+    getDocumentosCliente(clienteId: string): Observable<any[]> {
+        // La meta-data de los archivos analizados se guarda en: clientes/{clienteId}/archivos
+        const docsRef = collection(this.firestore, `clientes/${clienteId}/archivos`);
+        const q = query(docsRef, orderBy('fechaSubida', 'desc'));
+        return collectionData(q, { idField: 'id' }) as Observable<any[]>;
     }
 }

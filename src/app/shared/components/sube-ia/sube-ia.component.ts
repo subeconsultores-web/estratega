@@ -1,15 +1,19 @@
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Bot, Database, Send, Sparkles, Trash2, X  } from 'lucide-angular';
 import { BaseChartDirective } from 'ng2-charts';
 import { AiService, ChatMessage } from '../../../core/services/ai.service';
 import { Observable } from 'rxjs';
+import { AiActionCardComponent } from '../ai-widgets/ai-action-card.component';
 
 @Component({
     selector: 'app-sube-ia',
     standalone: true,
-    imports: [CommonModule, FormsModule, LucideAngularModule, BaseChartDirective],
+    imports: [CommonModule, FormsModule, LucideAngularModule, BaseChartDirective, AiActionCardComponent],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Bot, Database, Send, Sparkles, Trash2, X }) }
+  ],
     templateUrl: './sube-ia.component.html'
 })
 export class SubeIAComponent implements OnInit {
@@ -17,6 +21,13 @@ export class SubeIAComponent implements OnInit {
 
     isOpen = false;
     userInput = '';
+
+    readonly BotIcon = Bot;
+    readonly DatabaseIcon = Database;
+    readonly SendIcon = Send;
+    readonly SparklesIcon = Sparkles;
+    readonly Trash2Icon = Trash2;
+    readonly XIcon = X;
 
     history$: Observable<ChatMessage[]>;
     isProcessing$: Observable<boolean>;

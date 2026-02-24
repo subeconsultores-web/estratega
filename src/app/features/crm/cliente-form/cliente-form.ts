@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ChevronLeft  } from 'lucide-angular';
 import { CrmService } from '../../../core/services/crm.service';
 
 function rutValidator(control: AbstractControl): ValidationErrors | null {
@@ -32,6 +32,9 @@ function rutValidator(control: AbstractControl): ValidationErrors | null {
   selector: 'app-cliente-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ChevronLeft }) }
+  ],
   templateUrl: './cliente-form.html',
   styleUrl: './cliente-form.scss',
 })
@@ -61,7 +64,7 @@ export class ClienteForm implements OnInit {
   private initForm() {
     this.clienteForm = this.fb.group({
       nombreEmpresa: ['', Validators.required],
-      rut: ['', [Validators.required, rutValidator]],
+      rut: ['', [rutValidator]],
       giro: [''],
       direccion: [''],
       fuenteAdquisicion: ['web'],
@@ -69,7 +72,7 @@ export class ClienteForm implements OnInit {
       notas: [''],
       contactoPrincipal: this.fb.group({
         nombre: ['', Validators.required],
-        email: ['', [Validators.required, Validators.email]],
+        email: ['', [Validators.email]],
         telefono: [''],
         cargo: ['']
       })

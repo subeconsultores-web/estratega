@@ -1,0 +1,342 @@
+
+> sube-gestion@0.0.0 build
+> ng build
+
+[33m❯[39m Building...
+[32m✔[39m Building...
+Application bundle generation failed. [30.251 seconds] - 2026-02-24T09:36:51.607Z
+
+[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/finanzas/dashboard-financiero/dashboard-financiero.component.html:141:57:
+[37m      141 │ ...    {{ factura.codigoFormateado?.[32msubstring[37m(4,7) || 'FAC' }}</div>
+          ╵                                     [32m~~~~~~~~~[0m
+
+  Warning occurs in the template of component DashboardFinancieroComponent.
+
+    src/app/features/finanzas/dashboard-financiero/dashboard-financiero.component.ts:19:17:
+[37m      19 │     templateUrl: [32m'./dashboard-financiero.component.html'[37m
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/proyecto-form/proyecto-form.component.html:47:58:
+[37m      47 │ ...                  || cliente.contactoPrincipal?.[32mnombre[37m }}</option>
+         ╵                                                    [32m~~~~~~[0m
+
+  Warning occurs in the template of component ProyectoFormComponent.
+
+    src/app/features/proyectos/proyecto-form/proyecto-form.component.ts:18:17:
+[37m      18 │     templateUrl: [32m'./proyecto-form.component.html'[37m
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/layout/navbar/navbar.component.ts:15:4:
+[37m      15 │     [32mtemplate[37m: `
+         ╵     [32m~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/auth/register-agency/register-agency.component.ts:18:4:
+[37m      18 │     [32mtemplateUrl[37m: './register-agency.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/catalogo/catalogo-form/catalogo-form.component.ts:17:4:
+[37m      17 │     [32mtemplateUrl[37m: './catalogo-form.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/catalogo/catalogo-list/catalogo-list.component.ts:17:4:
+[37m      17 │     [32mtemplateUrl[37m: './catalogo-list.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracion/api-keys/api-keys.component.ts:18:4:
+[37m      18 │     [32mtemplateUrl[37m: './api-keys.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracion/configuracion-layout.component.ts:13:2:
+[37m      13 │   [32mtemplate[37m: `
+         ╵   [32m~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracion/webhooks/webhooks.component.ts:18:2:
+[37m      18 │   [32mtemplateUrl[37m: './webhooks.component.html'
+         ╵   [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/contratos/contrato-form/contrato-form.component.ts:25:4:
+[37m      25 │     [32mtemplateUrl[37m: './contrato-form.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/contratos/contrato-view/contrato-view.component.ts:18:4:
+[37m      18 │     [32mtemplateUrl[37m: './contrato-view.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/contratos/contratos-list/contratos-list.component.ts:19:4:
+[37m      19 │     [32mtemplateUrl[37m: './contratos-list.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-form/cotizacion-form.component.ts:24:4:
+[37m      24 │     [32mtemplateUrl[37m: './cotizacion-form.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-view/cotizacion-view.component.ts:21:4:
+[37m      21 │     [32mtemplateUrl[37m: './cotizacion-view.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizaciones-list/cotizaciones-list.component.ts:17:4:
+[37m      17 │     [32mtemplateUrl[37m: './cotizaciones-list.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/cliente-detalle/cliente-detalle.ts:18:2:
+[37m      18 │   [32mtemplateUrl[37m: './cliente-detalle.html',
+         ╵   [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/cliente-form/cliente-form.component.ts:17:4:
+[37m      17 │     [32mtemplateUrl[37m: './cliente-form.component.html',
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/cliente-form/cliente-form.ts:38:2:
+[37m      38 │   [32mtemplateUrl[37m: './cliente-form.html',
+         ╵   [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/clientes-list/clientes-list.component.ts:17:4:
+[37m      17 │     [32mtemplateUrl[37m: './clientes-list.component.html',
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/clientes-list/clientes-list.ts:18:2:
+[37m      18 │   [32mtemplateUrl[37m: './clientes-list.html',
+         ╵   [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/components/propuesta-modal/propuesta-modal.component.ts:18:4:
+[37m      18 │     [32mtemplateUrl[37m: './propuesta-modal.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/components/upselling-widget/upselling-widget.component.ts:15:4:
+[37m      15 │     [32mtemplateUrl[37m: './upselling-widget.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/pipeline-kanban/pipeline-kanban.component.ts:17:4:
+[37m      17 │     [32mtemplateUrl[37m: './pipeline-kanban.component.html',
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/dashboard.component.ts:21:4:
+[37m      21 │     [32mtemplateUrl[37m: './dashboard.component.html',
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/forecast/forecast.component.ts:16:4:
+[37m      16 │     [32mtemplateUrl[37m: './forecast.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/esg/esg-dashboard.component.ts:16:4:
+[37m      16 │     [32mtemplateUrl[37m: './esg-dashboard.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/facturas/factura-form/factura-form.component.ts:19:4:
+[37m      19 │     [32mtemplateUrl[37m: './factura-form.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/facturas/factura-view/factura-view.component.ts:19:4:
+[37m      19 │     [32mtemplateUrl[37m: './factura-view.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/facturas/facturas-list/facturas-list.component.ts:19:4:
+[37m      19 │     [32mtemplateUrl[37m: './facturas-list.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/finanzas/dashboard-financiero/dashboard-financiero.component.ts:19:4:
+[37m      19 │     [32mtemplateUrl[37m: './dashboard-financiero.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/finanzas/transaccion-form/transaccion-form.ts:18:2:
+[37m      18 │   [32mtemplateUrl[37m: './transaccion-form.html',
+         ╵   [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/portal-cliente/portal-dashboard/portal-dashboard.component.ts:13:4:
+[37m      13 │     [32mtemplate[37m: `
+         ╵     [32m~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/portal-cliente/portal-layout.component.ts:14:4:
+[37m      14 │     [32mtemplate[37m: `
+         ╵     [32m~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/proyecto-detail/proyecto-detail.component.ts:19:4:
+[37m      19 │     [32mtemplateUrl[37m: './proyecto-detail.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/proyecto-form/proyecto-form.component.ts:18:4:
+[37m      18 │     [32mtemplateUrl[37m: './proyecto-form.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/tarea-form/tarea-form.component.ts:14:4:
+[37m      14 │     [32mtemplateUrl[37m: './tarea-form.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/superadmin/superadmin-dashboard/superadmin-dashboard.component.ts:15:4:
+[37m      15 │     [32mtemplateUrl[37m: './superadmin-dashboard.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/superadmin/superadmin-layout.component.ts:14:4:
+[37m      14 │     [32mtemplate[37m: `
+         ╵     [32m~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/ai-widgets/ai-action-card.component.ts:18:4:
+[37m      18 │     [32mtemplate[37m: `
+         ╵     [32m~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/data-table/data-table.component.ts:20:2:
+[37m      20 │   [32mtemplate[37m: `
+         ╵   [32m~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/global-search/global-search.component.ts:27:4:
+[37m      27 │     [32mtemplateUrl[37m: './global-search.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/navbar/navbar.ts:16:2:
+[37m      16 │   [32mtemplateUrl[37m: './navbar.html',
+         ╵   [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/sidebar/sidebar.ts:20:2:
+[37m      20 │   [32mtemplateUrl[37m: './sidebar.html',
+         ╵   [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/signature-pad/signature-pad.component.ts:17:4:
+[37m      17 │     [32mtemplateUrl[37m: './signature-pad.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/stat-card/stat-card.component.ts:13:2:
+[37m      13 │   [32mtemplate[37m: `
+         ╵   [32m~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS1005: ',' expected.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/sube-ia/sube-ia.component.ts:17:4:
+[37m      17 │     [32mtemplateUrl[37m: './sube-ia.component.html'
+         ╵     [32m~~~~~~~~~~~[0m
+
+[39m[22m

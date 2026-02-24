@@ -1,13 +1,16 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, LogOut, Sparkles  } from 'lucide-angular';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
     selector: 'app-portal-layout',
     standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ LogOut, Sparkles }) }
+  ],
     template: `
         <div class="min-h-screen bg-gray-50 flex flex-col">
             <!-- Header Navegacion Superior Restringida -->

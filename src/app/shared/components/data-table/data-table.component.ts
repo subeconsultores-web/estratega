@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowUpDown, Edit2, Eye, Trash2  } from 'lucide-angular';
 import { ScoringService } from '../../../core/services/scoring.service';
 
 export interface ColumnDef {
@@ -14,6 +14,9 @@ export interface ColumnDef {
   selector: 'app-data-table',
   standalone: true,
   imports: [CommonModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowUpDown, Edit2, Eye, Trash2 }) }
+  ],
   template: `
     <div class="bg-surface border border-border rounded-xl shadow-sm overflow-hidden">
       <div class="overflow-x-auto">

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, FilePlus2, FileText, Search  } from 'lucide-angular';
 import { CotizacionService } from '../../../core/services/cotizacion.service';
 import { Cotizacion } from '../../../core/models/cotizacion.model';
 import { DataTableComponent, ColumnDef } from '../../../shared/components/data-table/data-table.component';
@@ -11,6 +11,9 @@ import { ToastrService } from 'ngx-toastr';
     selector: 'app-cotizaciones-list',
     standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule, DataTableComponent],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ FilePlus2, FileText, Search }) }
+  ],
     templateUrl: './cotizaciones-list.component.html'
 })
 export class CotizacionesListComponent implements OnInit {

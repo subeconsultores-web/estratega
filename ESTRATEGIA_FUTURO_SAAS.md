@@ -7,8 +7,8 @@ Este documento delinea la visión estratégica para la siguiente evolución de *
 ## 1. Propuesta de Valor Aumentada (Value Proposition)
 
 **De un Sistema de Registro a un Motor de Crecimiento Autónomo.**
-Nuestra propuesta actual resuelve la fragmentación (CRM, Facturación, Proyectos en un solo lugar). La propuesta futura resuelve la *fricción del crecimiento*:
-> "Estratega Sube es la primera plataforma de gestión SaaS que no solo organiza tu agencia, sino que *trabaja para ti*. Utilizando IA nativa, predice cuellos de botella financieros, automatiza la captura de leads y mide el impacto sostenible de tus operaciones corporativas, permitiéndote escalar sin engrosar tu estructura administrativa."
+Nuestra propuesta actual resuelve la fragmentación (CRM, Facturación, Proyectos en un solo lugar). Tras la consolidación en Producción del MVP durante los últimos Sprints (con Cloud Functions estabilizadas, Firebase Hosting seguro y módulo de Proyectos CRM sólido), la etapa base está completada. Todo esto para soportar nuestra propuesta futura que resuelve escalablemente la *fricción del crecimiento*:
+> "Estratega Sube es la primera plataforma de gestión SaaS que no solo organiza tu agencia, sino que *trabaja para ti*. Utilizando IA nativa (Gemini), predice cuellos de botella financieros, automatiza la captura de leads y mide el impacto sostenible de tus operaciones corporativas, permitiéndote escalar sin engrosar tu estructura administrativa."
 
 ---
 

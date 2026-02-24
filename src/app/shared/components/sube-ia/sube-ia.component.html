@@ -43,8 +43,13 @@
                 <div class="prose prose-sm dark:prose-invert max-w-none" [innerHTML]="formatMarkdown(msg.content)">
                 </div>
 
+                <!-- Chat Action Suggested Prompts (Generative UI) -->
+                <ng-container *ngIf="msg.actionType === 'ACTION_PROMPT' && msg.actionSuggested">
+                    <app-ai-action-card class="mt-3 block" [actionData]="msg.actionSuggested"></app-ai-action-card>
+                </ng-container>
+
                 <!-- Chart Generativo (Innovación 7) -->
-                <div *ngIf="msg.chartConfig"
+                <div *ngIf="msg.actionType === 'CHART' && msg.chartConfig"
                     class="mt-3 bg-slate-50 dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
                     <div class="h-40 w-full relative">
                         <canvas baseChart [data]="msg.chartConfig.data"
@@ -66,15 +71,11 @@
                 class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center flex-shrink-0">
                 <lucide-icon name="bot" [size]="16" class="text-primary-600"></lucide-icon>
             </div>
-            <div
-                class="flex space-x-1 items-center h-8 px-3 bg-white dark:bg-slate-800 rounded-2xl rounded-bl-none border border-slate-200 dark:border-slate-700">
-                <div class="w-1.5 h-1.5 bg-primary-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                <div class="w-1.5 h-1.5 bg-primary-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                <div class="w-1.5 h-1.5 bg-primary-500 rounded-full animate-bounce"></div>
+            <div class="text-xs text-primary-600 animate-pulse font-medium flex items-center gap-1.5 px-1 py-0.5">
+                <lucide-icon name="database" [size]="12"></lucide-icon> Consultando información...
             </div>
         </div>
     </div>
-
     <!-- Input Area -->
     <div class="p-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
         <div class="relative flex items-end gap-2">

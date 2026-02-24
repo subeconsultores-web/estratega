@@ -113,7 +113,7 @@ Genera el JSON de Forecast Predictivo.`;
             }
         });
 
-        let responseText = response.text.trim();
+        let responseText = (response.text || '{}').trim();
         if (responseText.startsWith('```json')) responseText = responseText.replace(/^```json/, '');
         if (responseText.startsWith('```')) responseText = responseText.replace(/^```/, '');
         if (responseText.endsWith('```')) responseText = responseText.replace(/```$/, '');

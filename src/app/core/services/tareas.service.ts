@@ -14,7 +14,7 @@ import {
     serverTimestamp,
     writeBatch
 } from '@angular/fire/firestore';
-import { Observable, from, switchMap } from 'rxjs';
+import { Observable, switchMap, map } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Tarea, TareaEstado } from '../models/proyectos.model';
 
@@ -34,17 +34,18 @@ export class TareasService {
     }
 
     getTareasByProyecto(proyectoId: string): Observable<Tarea[]> {
-        return from(this.getTenantIdOrThrow()).pipe(
+        return this.authService.tenantId$.pipe(
             switchMap(tenantId => {
                 const ref = collection(this.firestore, 'tareas');
-                const q = query(
-                    ref,
-                    where('tenantId', '==', tenantId),
-                    where('proyectoId', '==', proyectoId),
-                    orderBy('orden', 'asc'),
-                    orderBy('createdAt', 'desc')
+                const q = query(ref, where('tenantId', '==', tenantId), where('proyectoId', '==', proyectoId));
+                return (collectionData(q, { idField: 'id' }) as Observable<Tarea[]>).pipe(
+                    map((tareas: Tarea[]) => tareas.sort((a, b) => {
+                        if (a.orden !== b.orden) return (a.orden || 0) - (b.orden || 0);
+                        const dateA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+                        const dateB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+                        return dateB - dateA;
+                    }))
                 );
-                return collectionData(q, { idField: 'id' }) as Observable<Tarea[]>;
             })
         );
     }

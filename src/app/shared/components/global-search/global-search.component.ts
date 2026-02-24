@@ -2,7 +2,7 @@ import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Briefcase, FileText, Loader2, Search, User  } from 'lucide-angular';
 import { CrmService } from '../../../core/services/crm.service';
 import { ProyectosService } from '../../../core/services/proyectos.service';
 import { FacturaService } from '../../../core/services/factura.service';
@@ -21,6 +21,9 @@ interface SearchResult {
     selector: 'app-global-search',
     standalone: true,
     imports: [CommonModule, FormsModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Briefcase, FileText, Loader2, Search, User }) }
+  ],
     templateUrl: './global-search.component.html'
 })
 export class GlobalSearchComponent implements OnInit {

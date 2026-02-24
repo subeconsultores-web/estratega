@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Bell, ChevronDown, LogOut, Search, User  } from 'lucide-angular';
 import { Observable } from 'rxjs';
 import { User as FirebaseUser } from '@angular/fire/auth';
 
@@ -10,6 +10,9 @@ import { User as FirebaseUser } from '@angular/fire/auth';
   selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Bell, ChevronDown, LogOut, Search, User }) }
+  ],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })

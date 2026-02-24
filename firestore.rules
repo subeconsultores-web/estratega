@@ -16,38 +16,87 @@ service cloud.firestore {
     }
     
     function isAdmin() {
-      return hasRole('super-admin') || hasRole('admin');
+      return hasRole('super_admin') || hasRole('admin') || hasRole('tenant_admin');
+    }
+
+    function isSuperAdmin() {
+      return request.auth.token.email == 'bruno@subeia.tech' || hasRole('super_admin');
     }
     
     // Tenants collection
     match /tenants/{tenantId} {
-      allow read: if isAuthenticated() && getTenantId() == tenantId;
-      allow update: if isAuthenticated() && getTenantId() == tenantId && isAdmin();
+      allow read: if isAuthenticated() && (getTenantId() == tenantId || isSuperAdmin());
+      allow update: if isAuthenticated() && ((getTenantId() == tenantId && isAdmin()) || isSuperAdmin());
+      allow create, delete: if isAuthenticated() && isSuperAdmin();
     }
     
     // Users collection
     match /users/{userId} {
-      allow read: if isAuthenticated() && getTenantId() == resource.data.tenantId;
-      allow create: if isAuthenticated() && getTenantId() == request.resource.data.tenantId;
-      allow update: if isAuthenticated() && getTenantId() == resource.data.tenantId 
-        && (userId == request.auth.uid || isAdmin());
+      allow read: if isAuthenticated() && (getTenantId() == resource.data.tenantId || isSuperAdmin());
+      allow create: if isAuthenticated() && (getTenantId() == request.resource.data.tenantId || isSuperAdmin());
+      allow update: if isAuthenticated() && ((getTenantId() == resource.data.tenantId && (userId == request.auth.uid || isAdmin())) || isSuperAdmin());
+      allow delete: if isAuthenticated() && isSuperAdmin();
     }
     
-    // Generic pattern for tenant-scoped collections
-    match /{collection}/{docId} {
-      allow read: if isAuthenticated() 
-        && getTenantId() == resource.data.tenantId;
-      
-      allow create: if isAuthenticated() 
-        && getTenantId() == request.resource.data.tenantId;
-      
-      allow update: if isAuthenticated() 
-        && getTenantId() == resource.data.tenantId
-        && getTenantId() == request.resource.data.tenantId;
-      
-      allow delete: if isAuthenticated() 
-        && getTenantId() == resource.data.tenantId
-        && isAdmin();
+    // ApiKeys collection (Admin only)
+    match /apiKeys/{docId} {
+      allow read: if isAuthenticated() && ((getTenantId() == resource.data.tenantId && isAdmin()) || isSuperAdmin());
+      allow create: if isAuthenticated() && ((getTenantId() == request.resource.data.tenantId && isAdmin()) || isSuperAdmin());
+      allow update: if isAuthenticated() && ((getTenantId() == resource.data.tenantId && getTenantId() == request.resource.data.tenantId && isAdmin()) || isSuperAdmin());
+      allow delete: if isAuthenticated() && ((getTenantId() == resource.data.tenantId && isAdmin()) || isSuperAdmin());
+    }
+    
+    // Validation Helpers
+    function isUnmodified(field) {
+      return request.resource.data[field] == resource.data[field];
+    }
+
+    function isTenantData(data) {
+      return getTenantId() == data.tenantId || isSuperAdmin();
+    }
+
+    // Common rules for tenant-scoped collections
+    function canReadTenantDoc() {
+      // allow read if tenant matches, or if it's a legacy doc without tenantId (for migrations)
+      return isAuthenticated() && (isTenantData(resource.data) || !('tenantId' in resource.data));
+    }
+
+    function canCreateTenantDoc() {
+      return isAuthenticated() && isTenantData(request.resource.data) 
+             && ('tenantId' in request.resource.data);
+    }
+
+    function canUpdateTenantDoc() {
+      return isAuthenticated() && isTenantData(resource.data) 
+             && isTenantData(request.resource.data)
+             && (!('tenantId' in resource.data) || isUnmodified('tenantId'));
+    }
+
+    function canDeleteTenantDoc() {
+      return isAuthenticated() && isTenantData(resource.data) && (isAdmin() || isSuperAdmin());
+    }
+
+    // Explicit Tenant-Scoped Collections
+    match /clientes/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /actividades/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /catalogoServicios/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /cotizaciones/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /contratos/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /facturas/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /proyectos/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /tareas/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /registrosTiempo/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /movimientosFinancieros/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /notificaciones/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    
+    // Clientes subcollections (like archivos)
+    match /clientes/{clienteId}/archivos/{docId} {
+      allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc();
+    }
+    
+    // Public collections
+    match /client-logos/{docId} {
+      allow read: if true;
     }
   }
 }

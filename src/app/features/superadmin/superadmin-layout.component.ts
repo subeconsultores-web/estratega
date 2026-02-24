@@ -2,12 +2,15 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { Auth, signOut } from '@angular/fire/auth';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ChevronRight, LayoutDashboard, LogOut, Sparkles, Users  } from 'lucide-angular';
 
 @Component({
     selector: 'app-superadmin-layout',
     standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ChevronRight, LayoutDashboard, LogOut, Sparkles, Users }) }
+  ],
     template: `
     <div class="flex h-screen bg-slate-900 text-slate-100 font-sans overflow-hidden">
       <!-- Sidebar -->

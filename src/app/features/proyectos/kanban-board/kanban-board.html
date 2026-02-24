@@ -1,16 +1,22 @@
 <ng-container *ngIf="{tracker: activeTracker$ | async, elapsed: currentElapsed$ | async} as ctx">
-    <div class="h-[calc(100vh-6rem)] flex flex-col">
+    <div class="h-[calc(100vh-6rem)] flex flex-col relative z-0">
+        <!-- Elementos decorativos (Glow) -->
+        <div
+            class="absolute top-10 right-20 w-[300px] h-[300px] bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-3xl -z-10 pointer-events-none">
+        </div>
+
         <!-- Board Header -->
-        <div class="mb-6 flex justify-between items-end shrink-0">
+        <div class="mb-6 flex justify-between items-end shrink-0 relative z-10">
             <div>
                 <a routerLink="/proyectos"
-                    class="text-sm font-medium text-gray-500 hover:text-primary flex items-center mb-2 transition-colors">
+                    class="text-sm font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center mb-2 transition-colors">
                     <lucide-icon name="arrow-left" class="w-4 h-4 mr-1"></lucide-icon> Volver a Proyectos
                 </a>
-                <h1 class="text-2xl font-bold text-gray-900 tracking-tight">
+                <h1
+                    class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 tracking-tight">
                     {{ proyecto.nombre || 'Cargando Proyecto...' }}
                 </h1>
-                <p class="text-sm text-gray-500 mt-1 flex items-center">
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center">
                     <lucide-icon name="folder-kanban" class="w-4 h-4 mr-1.5"></lucide-icon>
                     Tablero Operativo Interactivo
                 </p>
@@ -18,33 +24,37 @@
 
             <div class="flex items-center gap-3">
                 <span *ngIf="proyecto"
-                    class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
+                    class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-sm">
                     {{ proyecto.estado | titlecase }}
                 </span>
-                <button
-                    class="bg-primary text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm hover:bg-blue-700 transition-colors flex items-center">
-                    <lucide-icon name="plus" class="w-4 h-4 mr-1.5"></lucide-icon>
-                    Añadir Tarea
+                <button (click)="abrirModalNuevaTarea('todo')"
+                    class="relative group px-4 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 transition-all duration-300 shadow-md shadow-blue-500/20 hover:shadow-blue-500/40 flex items-center gap-2 overflow-hidden">
+                    <div
+                        class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
+                    </div>
+                    <lucide-icon name="plus" class="w-4 h-4 relative z-10"></lucide-icon>
+                    <span class="relative z-10 text-sm">Añadir Tarea</span>
                 </button>
             </div>
         </div>
 
         <!-- Kanban Board Container -->
-        <div class="flex-1 overflow-x-auto pb-4" cdkDropListGroup>
+        <div class="flex-1 overflow-x-auto pb-4 relative z-10 hide-scrollbar" cdkDropListGroup>
             <div class="flex h-full min-w-max gap-6 pr-6 items-start">
 
                 <!-- Generate Columns Visually -->
                 <div *ngFor="let col of board" class="w-80 flex flex-col shrink-0 h-full max-h-full">
                     <!-- Column Header -->
-                    <div class="flex items-center justify-between mb-3 px-1">
-                        <h3 class="font-bold text-gray-700 flex items-center">
+                    <div class="flex items-center justify-between mb-3 px-2">
+                        <h3 class="font-bold text-slate-700 dark:text-slate-200 flex items-center">
                             {{ col.title }}
-                            <span class="ml-2 bg-gray-200 text-gray-600 text-xs font-semibold px-2 py-0.5 rounded-full">
+                            <span
+                                class="ml-2 bg-slate-200/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 text-xs font-bold px-2.5 py-0.5 rounded-full">
                                 {{ col.tasks.length }}
                             </span>
                         </h3>
                         <button
-                            class="p-1 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors">
+                            class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 dark:hover:text-slate-200 dark:hover:bg-slate-700/50 rounded-lg transition-colors">
                             <lucide-icon name="more-horizontal" class="w-4 h-4"></lucide-icon>
                         </button>
                     </div>
@@ -52,37 +62,43 @@
                     <!-- Column Drag Area -->
                     <div cdkDropList [id]="col.id" [cdkDropListConnectedTo]="connectedLists"
                         [cdkDropListData]="col.tasks" (cdkDropListDropped)="drop($event)"
-                        class="flex-1 rounded-xl p-3 shadow-inner overflow-y-auto border {{ col.color }}">
+                        class="flex-1 rounded-2xl p-3 shadow-inner overflow-y-auto border border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-900/30 backdrop-blur-md hide-scrollbar">
 
                         <!-- Kanban CARDS -->
                         <div *ngFor="let item of col.tasks" cdkDrag
-                            class="bg-white p-4 rounded-lg shadow border border-gray-200 mb-3 cursor-move hover:border-primary/50 hover:shadow-md transition-all group">
-
+                            class="bg-white/90 dark:bg-slate-800/90 backdrop-blur border border-slate-200 dark:border-slate-700/60 p-4 rounded-xl shadow-sm mb-3 cursor-move hover:border-blue-400/50 dark:hover:border-blue-500/50 hover:shadow-md transition-all group ring-1 ring-slate-900/5 relative overflow-hidden">
+                            <div
+                                class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                            </div>
                             <!-- Drag Placeholder (Empty styling while moving) -->
                             <div class="hidden" *cdkDragPlaceholder></div>
 
                             <!-- Card Content -->
                             <div class="flex justify-between items-start mb-2">
-                                <span class="text-xs font-bold text-gray-400">#{{ item.id | slice:-4 | uppercase
+                                <span class="text-xs font-bold text-slate-400 dark:text-slate-500">#{{ item.id |
+                                    slice:-4 | uppercase
                                     }}</span>
-                                <button
-                                    class="text-gray-300 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button (click)="abrirModalEditarTarea(item)"
+                                    class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-white dark:bg-slate-700 rounded-md shadow-sm border border-slate-200 dark:border-slate-600">
                                     <lucide-icon name="edit-2" class="w-3 h-3"></lucide-icon>
                                 </button>
                             </div>
 
-                            <h4 class="text-sm font-semibold text-gray-800 leading-snug">{{ item.titulo }}</h4>
+                            <h4 class="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug">{{
+                                item.titulo }}</h4>
 
-                            <p *ngIf="item.descripcion" class="text-xs text-gray-500 mt-2 line-clamp-2">
+                            <p *ngIf="item.descripcion"
+                                class="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2">
                                 {{ item.descripcion }}
                             </p>
 
                             <!-- TimeTracking Indicator & Controls -->
-                            <div class="mt-4 flex flex-col justify-between border-t border-gray-100 pt-3">
+                            <div
+                                class="mt-4 flex flex-col justify-between border-t border-slate-100 dark:border-slate-700/50 pt-3">
                                 <div class="flex items-center justify-between w-full">
                                     <div class="flex items-center text-xs font-medium"
-                                        [ngClass]="ctx.tracker?.tareaId === item.id && ctx.tracker?.isActive ? 'text-primary font-bold' : 'text-gray-400'">
-                                        <lucide-icon name="clock" class="w-3 h-3 mr-1"
+                                        [ngClass]="ctx.tracker?.tareaId === item.id && ctx.tracker?.isActive ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-400 dark:text-slate-500'">
+                                        <lucide-icon name="clock" class="w-3.5 h-3.5 mr-1"
                                             [class.animate-pulse]="ctx.tracker?.tareaId === item.id && ctx.tracker?.isActive"></lucide-icon>
                                         <span *ngIf="ctx.tracker?.tareaId === item.id">
                                             {{ formatearSegundos(ctx.elapsed || 0) }} / {{ item.tiempoEstimado || '-'
@@ -94,7 +110,7 @@
                                     </div>
                                     <!-- Mock Avatar -->
                                     <div
-                                        class="w-6 h-6 rounded-full bg-blue-100 text-primary flex items-center justify-center text-[10px] font-bold border border-white shrink-0">
+                                        class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 flex items-center justify-center text-[10px] font-bold border-2 border-white dark:border-slate-800 shrink-0">
                                         SV
                                     </div>
                                 </div>
@@ -103,20 +119,20 @@
                                 <div class="flex gap-2 mt-3 w-full opacity-0 group-hover:opacity-100 transition-opacity"
                                     [class.opacity-100]="ctx.tracker?.tareaId === item.id">
                                     <button *ngIf="ctx.tracker?.tareaId !== item.id" (click)="iniciarTracker(item)"
-                                        class="text-xs bg-gray-50 border border-gray-200 text-gray-600 px-2 py-1.5 rounded-md hover:bg-gray-100 flex-1 font-medium flex justify-center items-center">
+                                        class="text-xs bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 px-2 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 flex-1 font-medium flex justify-center items-center transition-colors shadow-sm">
                                         <lucide-icon name="play" class="w-3 h-3 mr-1"></lucide-icon> Iniciar
                                     </button>
                                     <ng-container *ngIf="ctx.tracker?.tareaId === item.id">
                                         <button *ngIf="ctx.tracker?.isActive" (click)="pausarTracker()"
-                                            class="text-xs bg-yellow-50 border border-yellow-200 text-yellow-700 px-2 py-1.5 rounded-md flex-1 font-medium flex justify-center items-center">
+                                            class="text-xs bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 text-amber-700 dark:text-amber-400 px-2 py-1.5 rounded-lg flex-1 font-medium flex justify-center items-center shadow-sm">
                                             <lucide-icon name="pause" class="w-3 h-3 mr-1"></lucide-icon> Pausar
                                         </button>
                                         <button *ngIf="!ctx.tracker?.isActive" (click)="resumirTracker()"
-                                            class="text-xs bg-primary/10 border border-primary/20 text-primary px-2 py-1.5 rounded-md flex-1 font-medium flex justify-center items-center">
+                                            class="text-xs bg-blue-50/50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 text-blue-700 dark:text-blue-400 px-2 py-1.5 rounded-lg flex-1 font-medium flex justify-center items-center shadow-sm">
                                             <lucide-icon name="play" class="w-3 h-3 mr-1"></lucide-icon> Seguir
                                         </button>
                                         <button (click)="detenerTracker()"
-                                            class="text-xs bg-red-50 border border-red-200 text-red-600 px-2 py-1.5 rounded-md flex-1 font-medium hover:bg-red-100 transition-colors flex justify-center items-center">
+                                            class="text-xs bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/50 text-rose-600 dark:text-rose-400 px-2 py-1.5 rounded-lg flex-1 font-medium hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors flex justify-center items-center shadow-sm">
                                             Detener
                                         </button>
                                     </ng-container>
@@ -125,9 +141,9 @@
                         </div>
 
                         <!-- Boton flotante Rapido para la Tarea -->
-                        <button (click)="crearTareaMock(col.id)"
-                            class="w-full py-2.5 flex items-center justify-center text-sm font-medium text-gray-500 hover:bg-white hover:text-gray-700 hover:shadow-sm border border-transparent hover:border-gray-200 rounded-lg transition-all mt-1">
-                            <lucide-icon name="plus" class="w-4 h-4 mr-1.5"></lucide-icon> Tarea rápida
+                        <button (click)="abrirModalNuevaTarea(col.id)"
+                            class="w-full py-2.5 flex items-center justify-center text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 dark:hover:text-slate-200 hover:shadow-sm border border-transparent hover:border-slate-300 dark:hover:border-slate-700 rounded-xl transition-all mt-1">
+                            <lucide-icon name="plus" class="w-4 h-4 mr-1.5"></lucide-icon> Nueva tarea rápida
                         </button>
                     </div>
                 </div>
@@ -135,4 +151,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Formulario de Tarea -->
+    <app-tarea-form *ngIf="showTareaModal" [tareaSeleccionada]="tareaEnEdicion" [columnaInicial]="columnaSeleccionada"
+        (onSave)="guardarTarea($event)" (onCancel)="cerrarModalTarea()">
+    </app-tarea-form>
 </ng-container>

@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { FinanzasService } from '../../../core/services/finanzas.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, Bot, Info, Loader2, ScanLine, Sparkles  } from 'lucide-angular';
 import { Transaccion } from '../../../core/models/finanzas.model';
 import { SubeIaExtractService } from '../../../core/services/sube-ia-extract.service';
 
@@ -12,6 +12,9 @@ import { SubeIaExtractService } from '../../../core/services/sube-ia-extract.ser
   selector: 'app-transaccion-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, RouterModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Bot, Info, Loader2, ScanLine, Sparkles }) }
+  ],
   templateUrl: './transaccion-form.html',
   styles: ``,
 })
@@ -35,15 +38,43 @@ export class TransaccionForm implements OnInit {
   private currentUserId = 'SYSTEM';
 
   ngOnInit(): void {
+    this.authService.user$.subscribe(u => {
+      if (u) this.currentUserId = u.uid;
+    });
     this.initForm();
     this.transaccionId = this.route.snapshot.paramMap.get('id');
     if (this.transaccionId) {
       this.isEditMode = true;
-      // TODO: Load Transaccion if editing is allowed.
+      this.cargarTransaccion(this.transaccionId);
     } else {
       // Default to today
       this.form.patchValue({ fecha: new Date().toISOString().substring(0, 10) });
     }
+  }
+
+  cargarTransaccion(id: string) {
+    this.finanzasService.getTransaccion(id).subscribe(t => {
+      if (t) {
+        let fechaFormatted = '';
+        if (t.fecha) {
+          fechaFormatted = t.fecha.toDate ? t.fecha.toDate().toISOString().substring(0, 10) : new Date(t.fecha).toISOString().substring(0, 10);
+        }
+        this.form.patchValue({
+          tipo: t.tipo,
+          categoria: t.categoria,
+          monto: t.monto,
+          moneda: t.moneda,
+          fecha: fechaFormatted,
+          metodoPago: t.metodoPago,
+          estado: t.estado,
+          referenciaExterna: t.referenciaExterna,
+          notas: t.notas
+        });
+
+        // Bloquear edición por reglas de caja
+        this.form.disable();
+      }
+    });
   }
 
   private initForm(): void {
@@ -133,7 +164,6 @@ export class TransaccionForm implements OnInit {
       };
 
       if (this.isEditMode && this.transaccionId) {
-        // Not implemented: edit transaction. In strict accounting, transactions shouldn't be edited easily.
         alert('La edición de transacciones registradas está restringida. Contáctate con soporte financiero.');
       } else {
         await this.finanzasService.createTransaccion(payload);
@@ -144,6 +174,23 @@ export class TransaccionForm implements OnInit {
       alert('Ocurrió un error al guardar la transacción.');
     } finally {
       this.isSubmitting = false;
+    }
+  }
+
+  async anularTransaccion() {
+    if (!this.transaccionId) return;
+    if (confirm('¿Estás seguro de anular esta transacción? Esto no se puede deshacer y modificará los reportes de caja.')) {
+      this.isSubmitting = true;
+      try {
+        await this.finanzasService.updateTransaccion(this.transaccionId, { estado: 'anulado' });
+        alert('Transacción anulada exitosamente.');
+        this.router.navigate(['/finanzas/transacciones']);
+      } catch (e) {
+        console.error('Error al anular:', e);
+        alert('No se pudo anular la transacción.');
+      } finally {
+        this.isSubmitting = false;
+      }
     }
   }
 }

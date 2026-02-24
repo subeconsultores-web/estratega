@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, CheckCircle, Image, Keyboard, Loader2, PenTool, UploadCloud  } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 import { FirmaData } from '../../../core/models/contrato.model';
 import { ContratoService } from '../../../core/services/contrato.service';
@@ -11,6 +11,9 @@ import { AuthService } from '../../../core/services/auth.service';
     selector: 'app-signature-pad',
     standalone: true,
     imports: [CommonModule, FormsModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ CheckCircle, Image, Keyboard, Loader2, PenTool, UploadCloud }) }
+  ],
     templateUrl: './signature-pad.component.html'
 })
 export class SignaturePadComponent implements AfterViewInit {

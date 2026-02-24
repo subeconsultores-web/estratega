@@ -4,6 +4,11 @@ import { LayoutComponent } from './core/layout/layout.component';
 
 export const routes: Routes = [
     {
+        path: 'validate-signature/:hash',
+        loadComponent: () => import('./features/esg/sostenibilidad-validator/sostenibilidad-validator')
+            .then(c => c.SostenibilidadValidatorComponent)
+    },
+    {
         path: 'auth',
         loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
     },
@@ -35,6 +40,10 @@ export const routes: Routes = [
                 loadChildren: () => import('./features/crm/crm.routes').then(m => m.CRM_ROUTES)
             },
             {
+                path: 'catalogo',
+                loadChildren: () => import('./features/catalogo/catalogo.routes')
+            },
+            {
                 path: 'cotizaciones',
                 loadChildren: () => import('./features/cotizaciones/cotizaciones.routes')
             },
@@ -54,6 +63,16 @@ export const routes: Routes = [
             {
                 path: 'proyectos',
                 loadChildren: () => import('./features/proyectos/proyectos.routes').then(m => m.PROYECTOS_ROUTES)
+            },
+            {
+                path: 'configuracion',
+                canActivate: [authGuard],
+                loadChildren: () => import('./features/configuracion/configuracion.routes').then(m => m.CONFIG_ROUTES)
+            },
+            {
+                path: 'esg',
+                canActivate: [authGuard],
+                loadChildren: () => import('./features/esg/esg.routes').then(m => m.ESG_ROUTES)
             }
         ]
     },

@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Edit2, Eye, Plus, Search  } from 'lucide-angular';
 import { CrmService } from '../../../core/services/crm.service';
 import { Cliente } from '../../../core/models/crm.model';
 import { LoadingSkeleton } from '../../../shared/components/loading-skeleton/loading-skeleton.component';
@@ -12,6 +12,9 @@ import { EmptyState } from '../../../shared/components/empty-state/empty-state.c
   selector: 'app-clientes-list',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, LucideAngularModule, LoadingSkeleton, EmptyState],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Edit2, Eye, Plus, Search }) }
+  ],
   templateUrl: './clientes-list.html',
   styleUrl: './clientes-list.scss',
 })

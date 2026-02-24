@@ -1,0 +1,91 @@
+<div class="min-h-screen bg-surface-50 flex flex-col justify-center items-center p-4">
+    <div class="max-w-md w-full bg-surface border border-border shadow-xl rounded-2xl overflow-hidden animate-fade-in">
+
+        <!-- Top Bar / Navbar Minimalista -->
+        <div class="bg-primary-900 px-6 py-4 flex justify-between items-center text-white">
+            <div class="flex items-center gap-2">
+                <!-- Assuming specific Logo or just text -->
+                <span class="font-bold text-lg tracking-tight">Sube ESG™</span>
+            </div>
+            <lucide-icon name="leaf" class="w-5 h-5 opacity-80"></lucide-icon>
+        </div>
+
+        <div class="p-8">
+
+            <!-- LOADING STATE -->
+            <div *ngIf="state === 'LOADING'" class="flex flex-col items-center justify-center py-10 space-y-4">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+                <p class="text-txt-secondary font-medium animate-pulse">Consultando Blockchain Interna...</p>
+            </div>
+
+            <!-- INVALID STATE -->
+            <div *ngIf="state === 'INVALID'" class="flex flex-col items-center text-center py-8 space-y-4">
+                <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-red-500">
+                    <lucide-icon name="x-circle" [size]="32"></lucide-icon>
+                </div>
+                <h2 class="text-2xl font-black text-txt-primary">Certificado Inválido</h2>
+                <p class="text-txt-muted text-sm px-4">
+                    El Hash <code>{{ hashSegment || 'N/A' | slice:0:15}}...</code> no retornó registros válidos de
+                    Sostenibilidad. Este documento podría estar adulterado.
+                </p>
+                <button routerLink="/auth/login"
+                    class="mt-4 px-6 py-2 bg-surface text-txt-primary border border-border hover:bg-surface-hover rounded-lg font-medium transition-colors w-full">Volver
+                    al Portal</button>
+            </div>
+
+            <!-- VERIFIED STATE -->
+            <div *ngIf="state === 'VERIFIED' && esgRecord" class="flex flex-col items-center text-center py-2">
+
+                <div class="relative mb-6">
+                    <div
+                        class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center text-green-600 shadow-inner">
+                        <lucide-icon name="shield-check" [size]="40"></lucide-icon>
+                    </div>
+                    <div class="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-sm">
+                        <lucide-icon name="check-circle" class="w-6 h-6 text-green-500"></lucide-icon>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-black text-txt-primary text-center">Certificación Verificada</h2>
+                <p class="text-green-600 font-semibold mt-1">Sostenibilidad Operacional</p>
+
+                <div class="w-full bg-green-50/50 border border-green-100/50 rounded-xl p-4 mt-6 text-left space-y-3">
+                    <div class="flex justify-between items-center pb-2 border-b border-green-100">
+                        <span class="text-sm text-txt-muted">Periodo Auditado</span>
+                        <span class="font-bold text-txt-primary">{{ esgRecord.mes }} / {{ esgRecord.anio }}</span>
+                    </div>
+                    <div class="flex justify-between items-center pb-2 border-b border-green-100">
+                        <span class="text-sm text-txt-muted">Huella de Carbono</span>
+                        <span class="font-black text-green-600">{{ esgRecord.totalCarbonoKgCO2eq | number:'1.2-2' }} kg
+                            CO₂eq</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-txt-muted">Hash SHA-256</span>
+                        <span class="text-xs font-mono text-txt-secondary bg-surface p-1 rounded border border-border">
+                            ...{{ hashSegment | slice:-12 }}
+                        </span>
+                    </div>
+                </div>
+
+                <p class="text-xs text-txt-muted mt-6 mb-6">
+                    Este certificado fue emitido por Sube Gestión AI validando inmutabilidad vía OCR de Documentos
+                    Públicos Gubernamentales y cálculos estándar del Ministerio de Medio Ambiente.
+                </p>
+
+                <a [href]="esgRecord.facturaUrl" target="_blank" *ngIf="esgRecord.facturaUrl" class="w-full">
+                    <button
+                        class="w-full px-4 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-hover transition-colors shadow-sm flex justify-center items-center">
+                        <lucide-icon name="download" class="w-4 h-4 mr-2"></lucide-icon>
+                        Descargar Respaldo Original
+                    </button>
+                </a>
+            </div>
+
+        </div>
+        <div
+            class="bg-surface-hover px-6 py-4 flex justify-between items-center text-xs text-txt-muted border-t border-border">
+            <span>Emitido el {{ (esgRecord?.fechaCalculo?.toDate() | date:'shortDate') || 'N/A' }}</span>
+            <span>Validado por SubeAI</span>
+        </div>
+    </div>
+</div>

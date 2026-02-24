@@ -1,7 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Loader2, Plus, Receipt  } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 
 import { FacturaService } from '../../../core/services/factura.service';
@@ -13,6 +13,9 @@ import { DataTableComponent, ColumnDef } from '../../../shared/components/data-t
     selector: 'app-facturas-list',
     standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule, DataTableComponent],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Loader2, Plus, Receipt }) }
+  ],
     templateUrl: './facturas-list.component.html'
 })
 export class FacturasListComponent implements OnInit {
@@ -20,6 +23,7 @@ export class FacturasListComponent implements OnInit {
     private authService = inject(AuthService);
     private router = inject(Router);
     private toastr = inject(ToastrService);
+    private cdr = inject(ChangeDetectorRef);
 
     facturas: Factura[] = [];
     isLoading = true;
@@ -44,6 +48,7 @@ export class FacturasListComponent implements OnInit {
             if (!tenantId) {
                 this.toastr.error('No se pudo identificar la compañía (tenant)');
                 this.isLoading = false;
+                this.cdr.detectChanges();
                 return;
             }
 
@@ -55,16 +60,21 @@ export class FacturasListComponent implements OnInit {
                         fechaVencimiento: (f.fechaVencimiento as any)?.toDate ? (f.fechaVencimiento as any).toDate() : new Date(f.fechaVencimiento)
                     }));
                     this.isLoading = false;
+                    this.cdr.detectChanges();
                 },
                 error: (err) => {
-                    console.error(err);
+                    console.error('[Facturas] Error cargando facturas:', err);
                     this.toastr.error('Error cargando las facturas');
+                    this.facturas = [];
                     this.isLoading = false;
+                    this.cdr.detectChanges();
                 }
             });
         } catch (e) {
-            console.error(e);
+            console.error('[Facturas] Exception in loadFacturas:', e);
+            this.facturas = [];
             this.isLoading = false;
+            this.cdr.detectChanges();
         }
     }
 

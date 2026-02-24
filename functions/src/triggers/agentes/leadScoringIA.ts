@@ -106,7 +106,7 @@ ${webContentText ? webContentText : 'No disponible.'}
             }
         });
 
-        let responseText = response.text.trim();
+        let responseText = (response.text || '{}').trim();
         // Limpiar posibles delimitadores markdown
         if (responseText.startsWith('```json')) responseText = responseText.replace(/^```json/, '');
         if (responseText.startsWith('```')) responseText = responseText.replace(/^```/, '');
@@ -116,7 +116,7 @@ ${webContentText ? webContentText : 'No disponible.'}
         parsedScoringIA.fechaCalculo = admin.firestore.Timestamp.now();
 
         // Actualizar el documento del cliente en Firestore
-        await event.data.ref.update({
+        await snapshot.ref.update({
             scoringIA: parsedScoringIA,
             score: parsedScoringIA.score
         });

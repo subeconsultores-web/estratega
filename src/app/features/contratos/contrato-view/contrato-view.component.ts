@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, FileText, Loader2, Send, ShieldCheck  } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 
 import { ContratoService } from '../../../core/services/contrato.service';
@@ -12,6 +12,9 @@ import { SignaturePadComponent } from '../../../shared/components/signature-pad/
     selector: 'app-contrato-view',
     standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule, SignaturePadComponent],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, FileText, Loader2, Send, ShieldCheck }) }
+  ],
     templateUrl: './contrato-view.component.html'
 })
 export class ContratoViewComponent implements OnInit {

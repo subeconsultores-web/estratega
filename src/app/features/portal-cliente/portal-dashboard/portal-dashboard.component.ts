@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Briefcase, CheckCircle, FolderKanban, Headphones, Receipt  } from 'lucide-angular';
 import { RouterModule } from '@angular/router';
 
 @Component({
     selector: 'app-portal-dashboard',
     standalone: true,
     imports: [CommonModule, LucideAngularModule, RouterModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Briefcase, CheckCircle, FolderKanban, Headphones, Receipt }) }
+  ],
     template: `
         <div class="space-y-6">
             <!-- Saludo -->

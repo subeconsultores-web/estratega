@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, FileSignature  } from 'lucide-angular';
 import { Observable } from 'rxjs';
 import { ContratoService } from '../../../core/services/contrato.service';
 import { Contrato } from '../../../core/models/contrato.model';
@@ -11,7 +11,8 @@ import { DataTableComponent, ColumnDef } from '../../../shared/components/data-t
     selector: 'app-portal-documentos',
     standalone: true,
     imports: [CommonModule, LucideAngularModule, LoadingSkeleton, DataTableComponent],
-    providers: [DatePipe],
+    providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ FileSignature }) },DatePipe],
     template: `
         <div class="space-y-6">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

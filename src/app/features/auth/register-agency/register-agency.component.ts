@@ -5,13 +5,16 @@ import { Router, RouterModule } from '@angular/router';
 import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { ToastrService } from 'ngx-toastr';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Key, Loader2, User  } from 'lucide-angular';
 import { FirebaseError } from '@angular/fire/app';
 
 @Component({
     selector: 'app-register-agency',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Key, Loader2, User }) }
+  ],
     templateUrl: './register-agency.component.html'
 })
 export class RegisterAgencyComponent {

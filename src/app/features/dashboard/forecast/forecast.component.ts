@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, AlertTriangle, Bell, Bot, Sparkles, Target  } from 'lucide-angular';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { ForecastService, ForecastResponse } from '../services/forecast.service';
@@ -10,6 +10,9 @@ import { ToastrService } from 'ngx-toastr';
     selector: 'app-forecast-dashboard',
     standalone: true,
     imports: [CommonModule, LucideAngularModule, BaseChartDirective],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ AlertTriangle, Bell, Bot, Sparkles, Target }) }
+  ],
     templateUrl: './forecast.component.html'
 })
 export class ForecastDashboardComponent implements OnInit {

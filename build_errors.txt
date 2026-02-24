@@ -1,0 +1,11 @@
+[33m❯[39m Building...
+[32m✔[39m Building...
+Application bundle generation failed. [38.193 seconds] - 2026-02-23T01:21:29.025Z
+
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2307: Cannot find module 'marked' or its corresponding type declarations.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/components/propuesta-modal/propuesta-modal.component.ts:7:23:
+[37m      7 │ import { marked } from [32m'marked'[37m;
+        ╵                        [32m~~~~~~~~[0m
+
+[39m[22m

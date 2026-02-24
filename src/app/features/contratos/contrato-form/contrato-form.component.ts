@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, FileSignature, List, Loader2, Plus, Save, ScrollText, Trash2  } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 
 import { ContratoService } from '../../../core/services/contrato.service';
@@ -19,6 +19,9 @@ import { Timestamp } from '@angular/fire/firestore';
     selector: 'app-contrato-form',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, FileSignature, List, Loader2, Plus, Save, ScrollText, Trash2 }) }
+  ],
     templateUrl: './contrato-form.component.html'
 })
 export class ContratoFormComponent implements OnInit {

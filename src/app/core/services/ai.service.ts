@@ -1,11 +1,18 @@
 import { Injectable, inject } from '@angular/core';
 import { Functions, httpsCallable } from '@angular/fire/functions';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
+// Estructura adaptada al Schema de la Fase 1 Generative UI
 export interface ChatMessage {
     role: 'user' | 'assistant' | 'system';
-    content: string;
-    chartConfig?: any;
+    content: string; // Mensaje textual base en markdown
+    actionType?: 'MESSAGE' | 'CHART' | 'ACTION_PROMPT'; // Múltiples layouts
+    chartConfig?: any; // Contenedor original Chart.js JSON
+    actionSuggested?: {
+        actionId: string;
+        buttonLabel: string;
+        payload: any;
+    };
     timestamp: Date;
 }
 
@@ -25,7 +32,7 @@ export class AiService {
 
     constructor() {
         // Optional: Seed the conversation with an initial greeting
-        this.addMessage('assistant', '¡Hola! Soy SUBE IA. Estoy aquí para ayudarte a encontrar información rápidamente, resumir proyectos o buscar clientes. ¿En qué te ayudo hoy?');
+        this.addMessage('assistant', '¡Hola! Soy SUBE IA 4.0. Estoy aquí para ayudarte a analizar contratos, obtener gráficas financieras o crear elementos CRM de forma dinámica. ¿En qué te ayudo hoy?');
     }
 
     /**
@@ -39,14 +46,15 @@ export class AiService {
         this.processingSubject.next(true);
 
         try {
-            const callable = httpsCallable<{ prompt: string, context?: any }, { success: boolean, response: string }>(this.functions, 'askSubeIA');
+            // El callable retorna el JSON directo dentro de data.data ahora
+            const callable = httpsCallable<{ prompt: string, context?: any }, { success: boolean, data: any }>(this.functions, 'askSubeIA');
 
             // Inject the current history into the context so the model has "memory" of the conversation
             // We limit to the last 6 messages to save tokens.
             const recentHistory = this.historySubject.value
                 .slice(-6)
                 .map(msg => `${msg.role === 'user' ? 'Usuario' : 'SUBE IA'}: ${msg.content}`)
-                .join('\\n');
+                .join('\n');
 
             const enrichedContext = {
                 ...context,
@@ -55,21 +63,15 @@ export class AiService {
 
             const result = await callable({ prompt, context: enrichedContext });
 
-            if (result.data && result.data.success) {
-                let textResponse = result.data.response;
-                let chartConfig: any = undefined;
+            if (result.data && result.data.success && result.data.data) {
+                // Leer del modelo estricto (AI Generative UI JSON)
+                const payload = result.data.data;
+                const textResponse = payload.message || 'Sin mensaje de respuesta';
+                const type = payload.actionType || 'MESSAGE';
+                const chartCfg = payload.chartData;
+                const suggestion = payload.actionSuggested;
 
-                // Extraer bloque json_chart si el LLM lo retorna
-                const chartRegex = /```json_chart([\s\S]*?)```/;
-                const match = chartRegex.exec(textResponse);
-                if (match && match[1]) {
-                    try {
-                        chartConfig = JSON.parse(match[1].trim());
-                        textResponse = textResponse.replace(match[0], ''); // Remover texto del bloque
-                    } catch (e) { console.error('Error parseando JSON chart de SUBE IA', e); }
-                }
-
-                this.addMessage('assistant', textResponse.trim(), chartConfig);
+                this.addStructuredMessage('assistant', textResponse.trim(), type, chartCfg, suggestion);
             } else {
                 this.addMessage('assistant', 'Lo siento, no pude procesar esa solicitud correctamente.');
             }
@@ -82,11 +84,26 @@ export class AiService {
     }
 
     /**
-     * Helper function to append messages to history
+     * Helper function to append TEXT messages to history
      */
-    private addMessage(role: 'user' | 'assistant' | 'system', content: string, chartConfig?: any) {
+    private addMessage(role: 'user' | 'assistant' | 'system', content: string) {
         const current = this.historySubject.value;
-        this.historySubject.next([...current, { role, content, chartConfig, timestamp: new Date() }]);
+        this.historySubject.next([...current, { role, content, actionType: 'MESSAGE', timestamp: new Date() }]);
+    }
+
+    /**
+     * Helper function to append STRUCTURED AI messages to history
+     */
+    private addStructuredMessage(role: 'user' | 'assistant', content: string, actionType: 'MESSAGE' | 'CHART' | 'ACTION_PROMPT', chartConfig?: any, actionSuggested?: any) {
+        const current = this.historySubject.value;
+        this.historySubject.next([...current, {
+            role,
+            content,
+            actionType,
+            chartConfig,
+            actionSuggested,
+            timestamp: new Date()
+        }]);
     }
 
     /**

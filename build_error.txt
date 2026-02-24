@@ -1,0 +1,729 @@
+
+> sube-gestion@0.0.0 build
+> ng build
+
+[33m❯[39m Building...
+[32m✔[39m Building...
+Application bundle generation failed. [12.097 seconds] - 2026-02-24T04:04:54.095Z
+
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/layout/navbar/navbar.component.ts:11:28:
+[37m      11 │ ...onModule, [32mLucideAngularModule.pick({ Bell, Clock, Menu, Moon, S[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/layout/navbar/navbar.component.ts:11:28:
+[37m      11 │ ...onModule, [32mLucideAngularModule.pick({ Bell, Clock, Menu, Moon, S[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'EnvironmentProviders' is not assignable to type 'Provider'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/core/layout/sidebar/sidebar.component.ts:11:4:
+[37m      11 │     [32mimportProvidersFrom(LucideAngularModule.pick({ Briefcase, Doll[37m...
+         ╵     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/auth/register-agency/register-agency.component.ts:14:63:
+[37m      14 │ ..., RouterModule, [32mLucideAngularModule.pick({ Key, Loader2, User })[37m],
+         ╵                    [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/auth/register-agency/register-agency.component.ts:14:63:
+[37m      14 │ ..., RouterModule, [32mLucideAngularModule.pick({ Key, Loader2, User })[37m],
+         ╵                    [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/catalogo/catalogo-form/catalogo-form.component.ts:13:63:
+[37m      13 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, Banknote, Loade[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/catalogo/catalogo-form/catalogo-form.component.ts:13:63:
+[37m      13 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, Banknote, Loade[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/catalogo/catalogo-list/catalogo-list.component.ts:13:42:
+[37m      13 │ ...erModule, [32mLucideAngularModule.pick({ PackageSearch, Plus, Searc[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/catalogo/catalogo-list/catalogo-list.component.ts:13:42:
+[37m      13 │ ...erModule, [32mLucideAngularModule.pick({ PackageSearch, Plus, Searc[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracion/api-keys/api-keys.component.ts:14:41:
+[37m      14 │ ...msModule, [32mLucideAngularModule.pick({ Key, Plus, Copy, Trash2, S[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracion/api-keys/api-keys.component.ts:14:41:
+[37m      14 │ ...msModule, [32mLucideAngularModule.pick({ Key, Plus, Copy, Trash2, S[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracion/configuracion-layout.component.ts:9:40:
+[37m      9 │ ...dule, RouterModule, [32mLucideAngularModule.pick({ Shield, Webhook })[37m],
+        ╵                        [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracion/configuracion-layout.component.ts:9:40:
+[37m      9 │ ...dule, RouterModule, [32mLucideAngularModule.pick({ Shield, Webhook })[37m],
+        ╵                        [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracion/webhooks/webhooks.component.ts:14:39:
+[37m      14 │ ...msModule, [32mLucideAngularModule.pick({ Webhook, Plus, Trash2, Shi[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracion/webhooks/webhooks.component.ts:14:39:
+[37m      14 │ ...msModule, [32mLucideAngularModule.pick({ Webhook, Plus, Trash2, Shi[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/contratos/contrato-form/contrato-form.component.ts:21:63:
+[37m      21 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, FileSignature, [37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/contratos/contrato-form/contrato-form.component.ts:21:63:
+[37m      21 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, FileSignature, [37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/contratos/contrato-view/contrato-view.component.ts:14:42:
+[37m      14 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, FileText, Loade[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/contratos/contrato-view/contrato-view.component.ts:14:42:
+[37m      14 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, FileText, Loade[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/contratos/contratos-list/contratos-list.component.ts:15:42:
+[37m      15 │ ...erModule, [32mLucideAngularModule.pick({ FileSignature, Loader2, Pl[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/contratos/contratos-list/contratos-list.component.ts:15:42:
+[37m      15 │ ...erModule, [32mLucideAngularModule.pick({ FileSignature, Loader2, Pl[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-form/cotizacion-form.component.ts:20:63:
+[37m      20 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, Calculator, Lay[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-form/cotizacion-form.component.ts:20:63:
+[37m      20 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, Calculator, Lay[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-view/cotizacion-view.component.ts:17:42:
+[37m      17 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, CalendarClock, [37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizacion-view/cotizacion-view.component.ts:17:42:
+[37m      17 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, CalendarClock, [37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizaciones-list/cotizaciones-list.component.ts:13:42:
+[37m      13 │ ...erModule, [32mLucideAngularModule.pick({ FilePlus2, FileText, Searc[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cotizaciones/cotizaciones-list/cotizaciones-list.component.ts:13:42:
+[37m      13 │ ...erModule, [32mLucideAngularModule.pick({ FilePlus2, FileText, Searc[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/cliente-detalle/cliente-detalle.ts:14:38:
+[37m      14 │ ...uterLink, [32mLucideAngularModule.pick({ Briefcase, ChevronLeft, Cl[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/cliente-detalle/cliente-detalle.ts:14:38:
+[37m      14 │ ...uterLink, [32mLucideAngularModule.pick({ Briefcase, ChevronLeft, Cl[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/cliente-form/cliente-form.component.ts:13:63:
+[37m      13 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, Building2, Load[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/cliente-form/cliente-form.component.ts:13:63:
+[37m      13 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, Building2, Load[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/cliente-form/cliente-form.ts:34:59:
+[37m      34 │ ...rmsModule, RouterLink, [32mLucideAngularModule.pick({ ChevronLeft })[37m],
+         ╵                           [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/cliente-form/cliente-form.ts:34:59:
+[37m      34 │ ...rmsModule, RouterLink, [32mLucideAngularModule.pick({ ChevronLeft })[37m],
+         ╵                           [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/clientes-list/clientes-list.component.ts:13:42:
+[37m      13 │ ...erModule, [32mLucideAngularModule.pick({ KanbanSquare, Plus, Search[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/clientes-list/clientes-list.component.ts:13:42:
+[37m      13 │ ...erModule, [32mLucideAngularModule.pick({ KanbanSquare, Plus, Search[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/clientes-list/clientes-list.ts:14:51:
+[37m      14 │ ...uterLink, [32mLucideAngularModule.pick({ Edit2, Eye, Plus, Search }[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/clientes-list/clientes-list.ts:14:51:
+[37m      14 │ ...uterLink, [32mLucideAngularModule.pick({ Edit2, Eye, Plus, Search }[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/components/propuesta-modal/propuesta-modal.component.ts:14:41:
+[37m      14 │ ...msModule, [32mLucideAngularModule.pick({ Copy, FileDown, FileSearch[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/components/propuesta-modal/propuesta-modal.component.ts:14:41:
+[37m      14 │ ...msModule, [32mLucideAngularModule.pick({ Copy, FileDown, FileSearch[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/components/upselling-widget/upselling-widget.component.ts:11:42:
+[37m      11 │ ...erModule, [32mLucideAngularModule.pick({ ArrowRight, CheckCircle, L[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/components/upselling-widget/upselling-widget.component.ts:11:42:
+[37m      11 │ ...erModule, [32mLucideAngularModule.pick({ ArrowRight, CheckCircle, L[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/pipeline-kanban/pipeline-kanban.component.ts:13:28:
+[37m      13 │ ...onModule, [32mLucideAngularModule.pick({ ArrowLeftCircle, ArrowRigh[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/crm/pipeline-kanban/pipeline-kanban.component.ts:13:28:
+[37m      13 │ ...onModule, [32mLucideAngularModule.pick({ ArrowLeftCircle, ArrowRigh[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/dashboard.component.ts:17:28:
+[37m      17 │ ...onModule, [32mLucideAngularModule.pick({ ArrowUpFromLine, Briefcase[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/dashboard.component.ts:17:28:
+[37m      17 │ ...onModule, [32mLucideAngularModule.pick({ ArrowUpFromLine, Briefcase[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/forecast/forecast.component.ts:12:28:
+[37m      12 │ ...onModule, [32mLucideAngularModule.pick({ AlertTriangle, Bell, Bot, [37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/forecast/forecast.component.ts:12:28:
+[37m      12 │ ...onModule, [32mLucideAngularModule.pick({ AlertTriangle, Bell, Bot, [37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/esg/esg-dashboard.component.ts:12:48:
+[37m      12 │ ...irective, [32mLucideAngularModule.pick({ Leaf, Wind, Droplets, Arro[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/esg/esg-dashboard.component.ts:12:48:
+[37m      12 │ ...irective, [32mLucideAngularModule.pick({ Leaf, Wind, Droplets, Arro[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/facturas/factura-form/factura-form.component.ts:15:63:
+[37m      15 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, Loader2, Plus, [37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/facturas/factura-form/factura-form.component.ts:15:63:
+[37m      15 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, Loader2, Plus, [37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/facturas/factura-view/factura-view.component.ts:15:42:
+[37m      15 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, Ban, Calendar, [37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/facturas/factura-view/factura-view.component.ts:15:42:
+[37m      15 │ ...erModule, [32mLucideAngularModule.pick({ ArrowLeft, Ban, Calendar, [37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/facturas/facturas-list/facturas-list.component.ts:15:42:
+[37m      15 │ ...erModule, [32mLucideAngularModule.pick({ Loader2, Plus, Receipt })[37m,...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/facturas/facturas-list/facturas-list.component.ts:15:42:
+[37m      15 │ ...erModule, [32mLucideAngularModule.pick({ Loader2, Plus, Receipt })[37m,...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/finanzas/dashboard-financiero/dashboard-financiero.component.ts:15:42:
+[37m      15 │ ...erModule, [32mLucideAngularModule.pick({ ArrowDownToLine, ArrowUpFr[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/finanzas/dashboard-financiero/dashboard-financiero.component.ts:15:42:
+[37m      15 │ ...erModule, [32mLucideAngularModule.pick({ ArrowDownToLine, ArrowUpFr[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/finanzas/transaccion-form/transaccion-form.ts:14:47:
+[37m      14 │ ...msModule, [32mLucideAngularModule.pick({ ArrowLeft, Bot, Info, Load[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/finanzas/transaccion-form/transaccion-form.ts:14:47:
+[37m      14 │ ...msModule, [32mLucideAngularModule.pick({ ArrowLeft, Bot, Info, Load[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/finanzas/transacciones-list/transacciones-list.ts:14:26:
+[37m      14 │ ...onModule, [32mLucideAngularModule.pick({ LineChart, Plus })[37m, Router...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/finanzas/transacciones-list/transacciones-list.ts:14:26:
+[37m      14 │ ...onModule, [32mLucideAngularModule.pick({ LineChart, Plus })[37m, Router...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/portal-cliente/portal-dashboard/portal-dashboard.component.ts:9:28:
+[37m      9 │ ...monModule, [32mLucideAngularModule.pick({ Briefcase, CheckCircle, Fo[37m...
+        ╵               [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/portal-cliente/portal-dashboard/portal-dashboard.component.ts:9:28:
+[37m      9 │ ...monModule, [32mLucideAngularModule.pick({ Briefcase, CheckCircle, Fo[37m...
+        ╵               [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/portal-cliente/portal-documentos/portal-documentos.component.ts:13:28:
+[37m      13 │ ...onModule, [32mLucideAngularModule.pick({ FileSignature })[37m, LoadingS...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/portal-cliente/portal-documentos/portal-documentos.component.ts:13:28:
+[37m      13 │ ...onModule, [32mLucideAngularModule.pick({ FileSignature })[37m, LoadingS...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/portal-cliente/portal-facturacion/portal-facturacion.component.ts:13:28:
+[37m      13 │ ...ommonModule, [32mLucideAngularModule.pick({ Receipt })[37m, LoadingSkel...
+         ╵                 [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/portal-cliente/portal-facturacion/portal-facturacion.component.ts:13:28:
+[37m      13 │ ...ommonModule, [32mLucideAngularModule.pick({ Receipt })[37m, LoadingSkel...
+         ╵                 [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/portal-cliente/portal-layout.component.ts:10:42:
+[37m      10 │ ...le, RouterModule, [32mLucideAngularModule.pick({ LogOut, Sparkles })[37m],
+         ╵                      [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/portal-cliente/portal-layout.component.ts:10:42:
+[37m      10 │ ...le, RouterModule, [32mLucideAngularModule.pick({ LogOut, Sparkles })[37m],
+         ╵                      [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/portal-cliente/portal-proyectos/portal-proyectos.component.ts:15:28:
+[37m      15 │ ...CommonModule, [32mLucideAngularModule.pick({ Folder })[37m, RouterModul...
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/portal-cliente/portal-proyectos/portal-proyectos.component.ts:15:28:
+[37m      15 │ ...CommonModule, [32mLucideAngularModule.pick({ Folder })[37m, RouterModul...
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/kanban-board/kanban-board.ts:38:8:
+[37m      38 │         [32mLucideAngularModule.pick({ ArrowLeft, Clock, Edit2, Folder[37m...
+         ╵         [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/kanban-board/kanban-board.ts:38:8:
+[37m      38 │         [32mLucideAngularModule.pick({ ArrowLeft, Clock, Edit2, Folder[37m...
+         ╵         [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/proyecto-detail/proyecto-detail.component.ts:15:42:
+[37m      15 │ ...erModule, [32mLucideAngularModule.pick({ Activity, Building2, Chevr[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/proyecto-detail/proyecto-detail.component.ts:15:42:
+[37m      15 │ ...erModule, [32mLucideAngularModule.pick({ Activity, Building2, Chevr[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/proyecto-form/proyecto-form.component.ts:14:49:
+[37m      14 │ ...msModule, [32mLucideAngularModule.pick({ Building2, Clock, Edit2, F[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/proyecto-form/proyecto-form.component.ts:14:49:
+[37m      14 │ ...msModule, [32mLucideAngularModule.pick({ Building2, Clock, Edit2, F[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/proyectos-list/proyectos-list.ts:18:28:
+[37m      18 │ ...onModule, [32mLucideAngularModule.pick({ FolderPlus, Plus })[37m, Route...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/proyectos-list/proyectos-list.ts:18:28:
+[37m      18 │ ...onModule, [32mLucideAngularModule.pick({ FolderPlus, Plus })[37m, Route...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/tarea-form/tarea-form.component.ts:10:49:
+[37m      10 │ ...msModule, [32mLucideAngularModule.pick({ CheckSquare, Clock, Edit3,[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/tarea-form/tarea-form.component.ts:10:49:
+[37m      10 │ ...msModule, [32mLucideAngularModule.pick({ CheckSquare, Clock, Edit3,[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/tarea-list/tarea-list.component.ts:16:28:
+[37m      16 │ ...onModule, [32mLucideAngularModule.pick({ ClipboardList, Plus })[37m, Da...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/proyectos/tarea-list/tarea-list.component.ts:16:28:
+[37m      16 │ ...onModule, [32mLucideAngularModule.pick({ ClipboardList, Plus })[37m, Da...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/superadmin/superadmin-dashboard/superadmin-dashboard.component.ts:11:41:
+[37m      11 │ ...msModule, [32mLucideAngularModule.pick({ Bot, Briefcase, CheckSquar[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/superadmin/superadmin-dashboard/superadmin-dashboard.component.ts:11:41:
+[37m      11 │ ...msModule, [32mLucideAngularModule.pick({ Bot, Briefcase, CheckSquar[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/superadmin/superadmin-layout.component.ts:10:42:
+[37m      10 │ ...erModule, [32mLucideAngularModule.pick({ ChevronRight, LayoutDashbo[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/superadmin/superadmin-layout.component.ts:10:42:
+[37m      10 │ ...erModule, [32mLucideAngularModule.pick({ ChevronRight, LayoutDashbo[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/ai-widgets/ai-action-card.component.ts:14:28:
+[37m      14 │ ...mmonModule, [32mLucideAngularModule.pick({ Sparkles, CheckCircle2 })[37m],
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/ai-widgets/ai-action-card.component.ts:14:28:
+[37m      14 │ ...mmonModule, [32mLucideAngularModule.pick({ Sparkles, CheckCircle2 })[37m],
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/data-table/data-table.component.ts:16:26:
+[37m      16 │ ...onModule, [32mLucideAngularModule.pick({ ArrowUpDown, Edit2, Eye, T[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/data-table/data-table.component.ts:16:26:
+[37m      16 │ ...onModule, [32mLucideAngularModule.pick({ ArrowUpDown, Edit2, Eye, T[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/global-search/global-search.component.ts:23:41:
+[37m      23 │ ...msModule, [32mLucideAngularModule.pick({ Briefcase, FileText, Loade[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/global-search/global-search.component.ts:23:41:
+[37m      23 │ ...msModule, [32mLucideAngularModule.pick({ Briefcase, FileText, Loade[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/navbar/navbar.ts:12:26:
+[37m      12 │ ...onModule, [32mLucideAngularModule.pick({ Bell, ChevronDown, LogOut,[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/navbar/navbar.ts:12:26:
+[37m      12 │ ...onModule, [32mLucideAngularModule.pick({ Bell, ChevronDown, LogOut,[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/sidebar/sidebar.ts:16:40:
+[37m      16 │ ...erModule, [32mLucideAngularModule.pick({ Briefcase, CheckSquare, Ch[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/sidebar/sidebar.ts:16:40:
+[37m      16 │ ...erModule, [32mLucideAngularModule.pick({ Briefcase, CheckSquare, Ch[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/signature-pad/signature-pad.component.ts:13:41:
+[37m      13 │ ...msModule, [32mLucideAngularModule.pick({ CheckCircle, Image, Keyboa[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/signature-pad/signature-pad.component.ts:13:41:
+[37m      13 │ ...msModule, [32mLucideAngularModule.pick({ CheckCircle, Image, Keyboa[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/stat-card/stat-card.component.ts:9:26:
+[37m      9 │ ...monModule, [32mLucideAngularModule.pick({ ArrowDown, ArrowUp })[37m, Cur...
+        ╵               [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/stat-card/stat-card.component.ts:9:26:
+[37m      9 │ ...monModule, [32mLucideAngularModule.pick({ ArrowDown, ArrowUp })[37m, Cur...
+        ╵               [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2012: Component imports contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. These calls are not used to configure components and are not valid in standalone component imports - consider importing them in the application bootstrap instead.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/sube-ia/sube-ia.component.ts:13:41:
+[37m      13 │ ...msModule, [32mLucideAngularModule.pick({ Bot, Database, Send, Spark[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'ModuleWithProviders<LucideAngularModule>' is not assignable to type 'readonly any[] | Type<any>'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/sube-ia/sube-ia.component.ts:13:41:
+[37m      13 │ ...msModule, [32mLucideAngularModule.pick({ Bot, Database, Send, Spark[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m

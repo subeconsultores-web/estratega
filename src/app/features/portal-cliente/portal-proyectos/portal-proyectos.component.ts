@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Folder  } from 'lucide-angular';
 import { RouterModule } from '@angular/router';
 import { Observable, switchMap, from } from 'rxjs';
 import { ProyectosService } from '../../../core/services/proyectos.service';
@@ -13,7 +13,8 @@ import { DataTableComponent, ColumnDef } from '../../../shared/components/data-t
     selector: 'app-portal-proyectos',
     standalone: true,
     imports: [CommonModule, LucideAngularModule, RouterModule, LoadingSkeleton, DataTableComponent],
-    providers: [DatePipe],
+    providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Folder }) },DatePipe],
     template: `
         <div class="space-y-6">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

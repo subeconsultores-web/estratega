@@ -75,7 +75,7 @@ Contexto adicional: ${contextoExtra || 'Elabora argumentos de venta convincentes
             }
         });
 
-        let propuestaMarkdown = response.text.trim();
+        let propuestaMarkdown = (response.text || '').trim();
         // Limpieza básica
         if (propuestaMarkdown.startsWith('```markdown')) propuestaMarkdown = propuestaMarkdown.replace(/^```markdown\\n?/, '');
         if (propuestaMarkdown.startsWith('```')) propuestaMarkdown = propuestaMarkdown.replace(/^```\\n?/, '');

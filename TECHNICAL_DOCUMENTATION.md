@@ -98,6 +98,7 @@ Todas las tecnologías seleccionadas priorizan soluciones gratuitas o con tiers 
 | `date-fns` | Manipulación de fechas (más liviano que moment) |
 | `ngx-toastr` | Notificaciones toast |
 | `@ngrx/component-store` | Estado local por componente (opcional para módulos complejos) |
+| `lucide-angular` | Íconos UI (Implementado con *lazy-loading* a nivel de componente para optimización extrema de bundle size) |
 
 ---
 
@@ -496,10 +497,13 @@ Cada módulo se describe con su propósito, vistas principales, componentes Angu
 ## 5.3 CRM y Pipeline de Ventas
 ### Vistas
 *   **ClientesListComponent:** Tabla con búsqueda, filtros por estado/etiqueta/vendedor, paginación.
-*   **ClienteDetalleComponent:** Vista 360° del cliente: datos, timeline de actividades, cotizaciones, contratos, facturas, proyectos, total histórico.
-*   **ClienteFormComponent:** Formulario reactivo para crear/editar con validación de RUT.
+*   **ClienteDetalleComponent:** Vista 360° del cliente: datos, timeline de actividades, cotizaciones, contratos, facturas, proyectos, total histórico. (Soporta carga en tiempo real con estabilización y *change detection* strategy).
+*   **ClienteFormComponent:** Formulario reactivo para crear/editar. Los campos **RUT y Email son opcionales** para permitir la generación ágil de cotizaciones sin fricción (manteniendo validaciones algorítmicas robustas si el dato es provisto).
 *   **PipelineKanbanComponent:** Vista Kanban del pipeline de ventas con columnas configurables por tenant. Drag-and-drop entre etapas.
 *   **ActividadFormComponent:** Modal para registrar llamadas, reuniones, emails, notas vinculadas al cliente.
+
+### Integridad de Datos (CRM)
+Se ha resuelto y asegurado la estabilidad de la inyección de `tenantId` cruzada entre el token JWT (Session actual) y las queries estructuradas de Firestore de los Clientes, solucionando problemas de retención permitiendo visualización en tiempo real consistente.
 
 ### Pipeline de ventas — Etapas por defecto
 | Etapa | Color Badge | Acción esperada |
@@ -620,9 +624,9 @@ Módulo externo (lazy-loaded, SSR recomendado para SEO y performance) donde los 
 *   Los magic links expiran en 24 horas y son de un solo uso.
 
 ## 5.9 Proyectos y Tareas
-### Vistas
-*   **ProyectosListComponent:** Tabla/cards con filtros por estado, cliente, equipo. Progress bar visual por proyecto.
-*   **ProyectoDetalleComponent:** Vista completa: overview (presupuesto, timeline, equipo, rentabilidad), tablero Kanban de tareas, timeline de actividad, archivos del proyecto.
+### Vistas (Módulo Core Operativo)
+*   **ProyectosListComponent:** Tabla maestra de gestión integral. Permite filtros por estado, cliente, equipo, con acciones directas y botones rápidos para administrar el estado vitalicio y operativo de los proyectos (convirtiéndose en una vista iterativa real). Progress bar visual integrada.
+*   **ProyectoDetalleComponent:** Visualizador profundo de capacidades de management: overview interactivo (presupuesto, timeline, equipo, rentabilidad), gestión de acciones del supervisor, tablero Kanban de tareas, timeline de actividad, archivos del proyecto.
 *   **KanbanBoardComponent:** Tablero drag-and-drop con columnas: Pendiente, En Progreso, En Revisión, Completada. Cards muestran título, asignado, prioridad (color-coded), deadline.
 *   **GanttSimpleComponent:** Vista de timeline simplificada mostrando tareas en barras horizontales con dependencias básicas (opcional, se puede implementar en fase posterior).
 
@@ -886,6 +890,7 @@ Objetivo: Asistente IA, integraciones finales, y pulido general.
 # 10. Requisitos No Funcionales
 ## 10.1 Performance
 *   Time to Interactive (TTI) < 3 segundos en conexión 3G.
+*   **Bundle Optimization Extrema (Chunks):** Eliminación sistemática de dependencias globales eager. (La UI en `lucide-angular` se inyecta estrictamente a nivel de features/components optimizando el load page inicial).
 *   Lazy loading de módulos Angular para reducir bundle inicial.
 *   Índices compuestos en Firestore para queries frecuentes (`tenantId` + `estado`, `tenantId` + `clienteId` + `createdAt`).
 *   Paginación con cursor-based pagination en todas las listas (no offset).
@@ -1852,6 +1857,15 @@ Para soportar de manera resiliente el contexto SaaS B2B "God Mode", hemos adopta
 * **GCP Secret Manager**: Para la incrustación de Kyes de IA (ej: `GEMINI_API_KEY`), se abolieron las Environment Variables inyectadas expuestas, canalizando las directivas vía secret management.
 * **Firestore Security Rules**: Todas las colecciones base están capadas condicionalmente a `request.auth.token.tenantId == resource.data.tenantId`. Salvo para los Super Admins (`role == 'superadmin'`) quienes pueden hacer queries cross-tenant para las métricas del Dashboard Global.
 * **Firebase App Check con reCAPTCHA Enterprise**: Activación recomendada para bloquear tráfico no-Angular a las APIs (Funciones Callable) de Sube IA y registro de Agencias, mitigando el abuso robótico en formularios públicos.
+
+---
+
+## 32. Estado Actual de Despliegue (Producción)
+
+A partir de los Sprints finales (11/12), la suite central del SaaS se encuentra desplegada y **establecida formalmente en ambiente de Producción Público**:
+1. **Firebase Functions:** Exitosamente re-desplegadas, solventando las alertas de entorno (Node/deprecated runtimes) dejándolas estables.
+2. **Hosting y Seguridad:** Reglas de `firestore.rules` estrictamente funcionales impidiendo brechas multi-tenant, posibilitando que el portal principal (`Firebase Hosting`) aloje clientes reales.
+3. Se certifica que la "Arquitectura Base" está consolidada, pavimentando soporte para arrancar la futura inyección directa de Agentes IA (Copiloto) sin riesgo colateral.
 
 ---
 

@@ -1,12 +1,16 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Briefcase, DollarSign, FileSignature, FileText, LayoutDashboard, Package, Receipt, Settings, Sparkles, Users, Leaf  } from 'lucide-angular';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [CommonModule, RouterModule, LucideAngularModule],
+  providers: [
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Briefcase, DollarSign, FileSignature, FileText, LayoutDashboard, Package, Receipt, Settings, Sparkles, Users, Leaf }) }
+  ],
+  
   template: `
     <aside class="flex flex-col w-64 h-screen bg-surface border-r border-border transition-all duration-300 z-20">
       <!-- Logo Area -->
@@ -33,7 +37,7 @@ import { LucideAngularModule } from 'lucide-angular';
 
         <a routerLink="/catalogo/lista" routerLinkActive="bg-primary/10 text-primary font-medium"
            class="flex items-center px-3 py-2.5 rounded-lg text-txt-secondary hover:bg-surface-hover hover:text-txt-primary transition-colors cursor-pointer">
-          <lucide-icon name="packages" class="w-5 h-5 mr-3"></lucide-icon>
+          <lucide-icon name="package" class="w-5 h-5 mr-3"></lucide-icon>
           <span>Catálogo</span>
         </a>
 
@@ -57,7 +61,7 @@ import { LucideAngularModule } from 'lucide-angular';
           <span>Facturas</span>
         </a>
 
-        <div class="pt-4 pb-2 px-3 text-xs font-semibold text-txt-muted uppercase tracking-wider">Gestión</div>
+        <div class="pt-4 pb-2 px-3 text-xs font-semibold text-txt-muted uppercase tracking-wider">Gestión & ESG</div>
 
         <a routerLink="/proyectos" routerLinkActive="bg-primary/10 text-primary font-medium"
            class="flex items-center px-3 py-2.5 rounded-lg text-txt-secondary hover:bg-surface-hover hover:text-txt-primary transition-colors cursor-pointer">
@@ -69,6 +73,12 @@ import { LucideAngularModule } from 'lucide-angular';
            class="flex items-center px-3 py-2.5 rounded-lg text-txt-secondary hover:bg-surface-hover hover:text-txt-primary transition-colors cursor-pointer">
           <lucide-icon name="dollar-sign" class="w-5 h-5 mr-3"></lucide-icon>
           <span>Finanzas</span>
+        </a>
+
+        <a routerLink="/esg" routerLinkActive="bg-primary/10 text-primary font-medium"
+           class="flex items-center px-3 py-2.5 rounded-lg text-txt-secondary hover:bg-surface-hover hover:text-txt-primary transition-colors cursor-pointer">
+          <lucide-icon name="leaf" class="w-5 h-5 mr-3"></lucide-icon>
+          <span>Impacto ESG</span>
         </a>
       </nav>
 
@@ -83,4 +93,16 @@ import { LucideAngularModule } from 'lucide-angular';
     </aside>
   `
 })
-export class SidebarComponent { }
+export class SidebarComponent {
+  readonly BriefcaseIcon = Briefcase;
+  readonly DollarSignIcon = DollarSign;
+  readonly FileSignatureIcon = FileSignature;
+  readonly FileTextIcon = FileText;
+  readonly LayoutDashboardIcon = LayoutDashboard;
+  readonly PackageIcon = Package;
+  readonly ReceiptIcon = Receipt;
+  readonly SettingsIcon = Settings;
+  readonly SparklesIcon = Sparkles;
+  readonly UsersIcon = Users;
+  readonly LeafIcon = Leaf;
+}
