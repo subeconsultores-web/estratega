@@ -1,5 +1,12 @@
 import { Timestamp } from '@angular/fire/firestore';
 
+export interface PartidaPresupuestaria {
+    id: string;
+    nombre: string;
+    montoEstimado: number;
+    montoEjecutado: number;
+}
+
 export interface Proyecto {
     id?: string;
     tenantId: string;
@@ -7,8 +14,16 @@ export interface Proyecto {
     nombre: string;
     descripcion?: string;
     estado: 'activo' | 'pausado' | 'completado';
+    // Control Financiero & Burn-Rate Predictivo
+    horasEstimadas?: number;    // Capacidad original vendida
+    horasInvertidas?: number;   // Horas ejecutadas totales (rollup de TimeTracking)
+    tarifaHoraAprox?: number;   // Utilidad estimada (Ingreso / horasEstimadas)
+    progresoGlobal?: number;
     presupuestoHoras?: number;
     horasConsumidas?: number;
+    presupuestoFinancieroEstimado?: number;
+    presupuestoFinancieroEjecutado?: number;
+    partidas?: PartidaPresupuestaria[];
     fechaInicio?: Timestamp | Date | any;
     fechaFin?: Timestamp | Date | any;
     createdAt?: Timestamp | Date | any;

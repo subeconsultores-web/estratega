@@ -27,7 +27,7 @@ export const zeroTrustInterceptor: HttpInterceptorFn = (req, next) => {
 
     // Avalancha de peticiones detectada
     if (requestTimestamps.length > MAX_REQUESTS_PER_WINDOW) {
-        console.warn('⚠️ [Zero Trust Firewall] Tráfico anómalo detectado. Exceso de peticiones detectado.');
+        console.error('[Zero Trust] Rate limit exceeded — excessive requests detected.');
 
         // Disparar Cloud Function Firewall Evaluator para que el Backend audite y posiblemente revoque la sesión
         const reportAnomaly = httpsCallable(functions, 'evaluateZeroTrustAnomaly');

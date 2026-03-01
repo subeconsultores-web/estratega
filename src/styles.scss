@@ -5,13 +5,21 @@
 :root {
   /* Brand Colors - Light Mode Default */
   --color-primary: #1A56DB;
-  --color-secondary: #3F83F8;
-  --color-accent: #0E9F6E;
+  --color-secondary: #8B5CF6;
+  /* Purple/Magenta hint */
+  --color-accent: #059669;
+
+  /* Semantic Colors */
+  --color-success: #059669;
+  --color-warning: #D97706;
+  --color-danger: #DC2626;
+  --color-info: #2563EB;
 
   /* Background & Surface */
-  --bg-base: #F9FAFB;
+  --bg-base: #F3F4F6;
+  /* Lighter base for contrast */
   --bg-surface: #FFFFFF;
-  --bg-surface-hover: #F3F4F6;
+  --bg-surface-hover: #F9FAFB;
 
   /* Text */
   --text-primary: #111827;
@@ -20,28 +28,336 @@
 
   /* Borders */
   --border-color: #E5E7EB;
+
+  /* Gradients */
+  --gradient-hero: linear-gradient(135deg, #1A56DB 0%, #8B5CF6 50%, #059669 100%);
+  --gradient-surface: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-base) 100%);
+  --gradient-primary: linear-gradient(135deg, #1A56DB 0%, #3B82F6 100%);
+  --gradient-accent: linear-gradient(135deg, #059669 0%, #10B981 100%);
+
+  /* Shadows */
+  --shadow-glow-primary: 0 0 20px rgba(26, 86, 219, 0.15);
+  --shadow-glow-accent: 0 0 20px rgba(5, 150, 105, 0.15);
+  --shadow-elevation-1: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.025);
+  --shadow-elevation-2: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.025);
+  --shadow-elevation-3: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.025);
 }
 
 .dark {
-  /* Brand Colors - Dark Mode */
-  --color-primary: #3F83F8;
-  --color-secondary: #76A9FA;
-  --color-accent: #31C48D;
+  /* Brand Colors - Dark Mode (NEON WOW Factor) */
+  --color-primary: #00E5FF;
+  /* Cyan Neon */
+  --color-secondary: #B026FF;
+  /* Magenta Neon */
+  --color-accent: #00E676;
+  /* Emerald Neon */
 
-  /* Background & Surface */
-  --bg-base: #111827;
-  --bg-surface: #1F2937;
-  --bg-surface-hover: #374151;
+  /* Semantic Colors */
+  --color-success: #00E676;
+  --color-warning: #FFAB00;
+  --color-danger: #FF1744;
+  --color-info: #00B0FF;
+
+  /* Background & Surface (Deep Onyx / Midnight) */
+  --bg-base: #0B0F19;
+  --bg-surface: #111827;
+  --bg-surface-hover: #1F2937;
 
   /* Text */
-  --text-primary: #F9FAFB;
-  --text-secondary: #D1D5DB;
-  --text-muted: #6B7280;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #475569;
 
   /* Borders */
-  --border-color: #374151;
+  --border-color: rgba(255, 255, 255, 0.08);
+  /* Transparent borders for glassmorphism */
+
+  /* Gradients */
+  --gradient-hero: linear-gradient(135deg, #00E5FF 0%, #B026FF 50%, #00E676 100%);
+  --gradient-surface: linear-gradient(180deg, rgba(17, 24, 39, 0.8) 0%, rgba(11, 15, 25, 0.95) 100%);
+  --gradient-primary: linear-gradient(135deg, #00E5FF 0%, #0088CC 100%);
+  --gradient-accent: linear-gradient(135deg, #00E676 0%, #00B259 100%);
+
+  /* Shadows (Neon Glows) */
+  --shadow-glow-primary: 0 0 25px rgba(0, 229, 255, 0.25), 0 0 10px rgba(0, 229, 255, 0.1);
+  --shadow-glow-accent: 0 0 25px rgba(0, 230, 118, 0.25), 0 0 10px rgba(0, 230, 118, 0.1);
+  --shadow-glow-secondary: 0 0 25px rgba(176, 38, 255, 0.25), 0 0 10px rgba(176, 38, 255, 0.1);
+  --shadow-elevation-1: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-elevation-2: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-elevation-3: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
 }
 
 body {
   @apply bg-base text-primary antialiased min-h-screen transition-colors duration-200;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* =========================================
+   ANIMATION SYSTEM
+   ========================================= */
+
+/* Fade in up — main page entry animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out both;
+}
+
+/* Fade in — simple opacity transition */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out both;
+}
+
+/* Scale in — for modals and popovers */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out both;
+}
+
+/* Slide in from right — for sidepanels */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out both;
+}
+
+/* Stagger delay utility classes */
+.delay-1 {
+  animation-delay: 50ms;
+}
+
+.delay-2 {
+  animation-delay: 100ms;
+}
+
+.delay-3 {
+  animation-delay: 150ms;
+}
+
+.delay-4 {
+  animation-delay: 200ms;
+}
+
+.delay-5 {
+  animation-delay: 250ms;
+}
+
+.delay-6 {
+  animation-delay: 300ms;
+}
+
+/* Shimmer for skeleton loading */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, var(--bg-surface-hover) 25%, var(--bg-surface) 50%, var(--bg-surface-hover) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Pulse glow — for attention-drawing elements */
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(26, 86, 219, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(26, 86, 219, 0);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* =========================================
+   SIDEBAR ACTIVE INDICATOR
+   ========================================= */
+.sidebar-active {
+  position: relative;
+}
+
+.sidebar-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--color-primary);
+  border-radius: 0 4px 4px 0;
+  animation: fadeIn 0.2s ease;
+}
+
+/* =========================================
+   GLASSMORPHISM UTILITIES
+   ========================================= */
+.glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+.glass-panel {
+  @extend .glass;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+  transform: skewX(-20deg);
+  animation: shine 8s infinite;
+  pointer-events: none;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+
+  20% {
+    left: 200%;
+  }
+
+  100% {
+    left: 200%;
+  }
+}
+
+.dark .glass {
+  background: rgba(17, 24, 39, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.dark .glass-panel::before {
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0) 100%);
+}
+
+.neon-border {
+  position: relative;
+  background: var(--bg-surface);
+  border-radius: 16px;
+  z-index: 1;
+}
+
+.neon-border::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  bottom: -2px;
+  left: -2px;
+  background: var(--gradient-hero);
+  z-index: -1;
+  border-radius: 18px;
+  opacity: 0.5;
+  filter: blur(8px);
+  transition: opacity 0.3s ease;
+}
+
+.neon-border:hover::before {
+  opacity: 1;
+  filter: blur(12px);
+}
+
+
+/* =========================================
+   CUSTOM SCROLLBAR
+   ========================================= */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* =========================================
+   BUTTON PRESS FEEDBACK
+   ========================================= */
+.btn-press:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+/* =========================================
+   GRADIENT TEXT UTILITY
+   ========================================= */
+.text-gradient {
+  background: var(--gradient-hero);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

@@ -9,6 +9,11 @@ export const routes: Routes = [
             .then(c => c.SostenibilidadValidatorComponent)
     },
     {
+        path: 'p/:id',
+        loadComponent: () => import('./features/cotizaciones/cotizacion-public/interactive-proposal.component')
+            .then(c => c.InteractiveProposalComponent)
+    },
+    {
         path: 'auth',
         loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
     },
@@ -53,7 +58,6 @@ export const routes: Routes = [
             },
             {
                 path: 'facturas',
-                canActivate: [authGuard],
                 loadChildren: () => import('./features/facturas/facturas.routes').then(m => m.FACTURAS_ROUTES)
             },
             {
@@ -66,13 +70,15 @@ export const routes: Routes = [
             },
             {
                 path: 'configuracion',
-                canActivate: [authGuard],
                 loadChildren: () => import('./features/configuracion/configuracion.routes').then(m => m.CONFIG_ROUTES)
             },
             {
                 path: 'esg',
-                canActivate: [authGuard],
                 loadChildren: () => import('./features/esg/esg.routes').then(m => m.ESG_ROUTES)
+            },
+            {
+                path: 'mensajeria',
+                loadChildren: () => import('./features/mensajeria/mensajeria.routes').then(m => m.MENSAJERIA_ROUTES)
             }
         ]
     },

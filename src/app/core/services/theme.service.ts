@@ -21,21 +21,15 @@ export class ThemeService {
     }
 
     private initTheme() {
-        // Check localStorage first
+        // En Estratega V4, forzamos el Dark Mode "Cyber-Corporate" por defecto
         const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            this.setTheme(savedTheme === 'dark');
+        if (savedTheme === 'light') {
+            this.setTheme(false);
             return;
         }
 
-        // Then check system preference
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            this.setTheme(true);
-            return;
-        }
-
-        // Default to light
-        this.setTheme(false);
+        // Default to dark (Next-Gen Aesthetic)
+        this.setTheme(true);
     }
 
     private applyTheme(isDark: boolean) {

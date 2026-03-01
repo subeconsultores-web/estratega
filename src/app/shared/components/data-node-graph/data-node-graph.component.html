@@ -1,0 +1,35 @@
+<div class="relative w-full h-full min-h-[400px] glass-panel rounded-2xl overflow-hidden border border-white/5">
+
+    <!-- Floating Header -->
+    <div class="absolute top-4 left-6 z-10 pointer-events-none">
+        <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 neon-glow-cyan animate-pulse"></span>
+            Ecosistema de Clientes
+        </h3>
+        <p class="text-xs text-slate-400 mt-1">Análisis de Nodos Predictivo (Estratega CRM)</p>
+    </div>
+
+    <!-- Legend -->
+    <div class="absolute bottom-4 right-6 z-10 pointer-events-none flex flex-col gap-2">
+        <div class="flex items-center gap-2 text-xs text-slate-300">
+            <span
+                class="w-3 h-3 rounded-full border-2 border-cyan-400 bg-slate-900 shadow-[0_0_10px_rgba(34,211,238,0.5)]"></span>
+            Cliente
+        </div>
+        <div class="flex items-center gap-2 text-xs text-slate-300">
+            <span
+                class="w-3 h-3 rounded-full border-2 border-emerald-400 bg-slate-900 shadow-[0_0_10px_rgba(52,211,153,0.5)]"></span>
+            Proyecto Activo
+        </div>
+        <div class="flex items-center gap-2 text-xs text-slate-300">
+            <span
+                class="w-3 h-3 rounded-full border-2 border-violet-400 bg-slate-900 shadow-[0_0_10px_rgba(167,139,250,0.5)]"></span>
+            Métrica Predictiva
+        </div>
+    </div>
+
+    <!-- Interactive Canvas -->
+    <canvas #networkCanvas class="block w-full h-full" (mousedown)="onMouseDown($event)"
+        (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp()" (mouseleave)="onMouseLeave()">
+    </canvas>
+</div>

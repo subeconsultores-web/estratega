@@ -15,17 +15,27 @@ export class CotizacionService {
 
     // Obtiene cotizaciones (Admin ve todas, vendedor podría ver solo las suyas luego extendiendo la lógica)
     getCotizaciones(): Observable<Cotizacion[]> {
-        return this.authService.user$.pipe(
-            switchMap(user => {
-                if (!user || !user.tenantId) return of([]);
+        return this.authService.tenantId$.pipe(
+            switchMap(tenantId => {
                 const q = query(
                     collection(this.firestore, this.collectionName),
-                    where('tenantId', '==', user.tenantId),
+                    where('tenantId', '==', tenantId),
                     orderBy('createdAt', 'desc')
                 );
                 return collectionData(q, { idField: 'id' }) as Observable<Cotizacion[]>;
             })
         );
+    }
+
+    // Obtiene cotizaciones específicas para un cliente (Portal de Clientes)
+    getCotizacionesCliente(tenantId: string, clienteId: string): Observable<Cotizacion[]> {
+        const q = query(
+            collection(this.firestore, this.collectionName),
+            where('tenantId', '==', tenantId),
+            where('clienteId', '==', clienteId),
+            orderBy('createdAt', 'desc')
+        );
+        return collectionData(q, { idField: 'id' }) as Observable<Cotizacion[]>;
     }
 
     // Get por ID
@@ -43,8 +53,9 @@ export class CotizacionService {
 
     // Crear Documento
     async createCotizacion(payload: Partial<Cotizacion>): Promise<string> {
-        const user = await firstValueFrom(this.authService.user$);
-        if (!user || !user.tenantId || !user.uid) throw new Error('Usuario inválido o sin tenantId');
+        const tenantId = await firstValueFrom(this.authService.tenantId$);
+        const user = await this.authService.getCurrentUser();
+        if (!user) throw new Error('Usuario no autenticado');
 
         const newDocRef = doc(collection(this.firestore, this.collectionName));
 
@@ -59,7 +70,7 @@ export class CotizacionService {
         const cotizacionBase: Cotizacion = {
             ...payload as any,
             id: newDocRef.id,
-            tenantId: user.tenantId,
+            tenantId,
             vendedorId: user.uid,
             correlativo: payload.correlativo || this.generateMockCorrelativo(),
             estadoActual: 'Borrador',

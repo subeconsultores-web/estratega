@@ -1,0 +1,150 @@
+<div class="px-6 space-y-6 max-w-5xl">
+    <!-- Cabecera y KPIs Básicos -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <lucide-icon name="clock" class="w-6 h-6 text-brand-500"></lucide-icon>
+                Time Tracking
+            </h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400">
+                Registra el tiempo invertido en este proyecto para medir su rentabilidad.
+            </p>
+        </div>
+
+        <!-- Acciones -->
+        <button (click)="abrirFormulario()"
+            class="flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition-colors font-medium shadow-sm hover:shadow-md">
+            <lucide-icon name="plus" class="w-4 h-4"></lucide-icon>
+            Imputar Horas
+        </button>
+    </div>
+
+    <!-- Formulario Inline Mágico -->
+    <div *ngIf="showForm"
+        class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm transition-all duration-300">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-700 pb-3">
+            <h3 class="font-semibold text-slate-800 dark:text-white flex items-center gap-2">
+                Nuevo Registro
+            </h3>
+            <button (click)="cerrarFormulario()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                <lucide-icon name="plus" class="w-5 h-5 rotate-45"></lucide-icon>
+            </button>
+        </div>
+
+        <form [formGroup]="timeForm" (ngSubmit)="guardarTiempo()" class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+
+            <!-- Fecha -->
+            <div class="sm:col-span-3">
+                <label class="block text-xs font-medium text-slate-500 mb-1">Fecha</label>
+                <div class="relative">
+                    <lucide-icon name="calendar"
+                        class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></lucide-icon>
+                    <input type="date" formControlName="fecha"
+                        class="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                </div>
+            </div>
+
+            <!-- Duración -->
+            <div class="sm:col-span-3">
+                <label class="block text-xs font-medium text-slate-500 mb-1">Minutos Invertidos</label>
+                <div class="relative">
+                    <lucide-icon name="clock"
+                        class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></lucide-icon>
+                    <input type="number" formControlName="duracionMinutos" placeholder="60"
+                        class="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                </div>
+            </div>
+
+            <!-- Facturable Toggle -->
+            <div class="sm:col-span-2 flex items-center mt-6">
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" formControlName="facturable" class="sr-only peer">
+                    <div
+                        class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-brand-500">
+                    </div>
+                    <span class="ml-2 text-sm font-medium text-slate-600 dark:text-slate-300">Facturable</span>
+                </label>
+            </div>
+
+            <!-- Descripción (Full Width) -->
+            <div class="sm:col-span-12">
+                <label class="block text-xs font-medium text-slate-500 mb-1">Descripción de la Tarea</label>
+                <input type="text" formControlName="descripcion" placeholder="¿En qué trabajaste?"
+                    class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+            </div>
+
+            <!-- Submit -->
+            <div class="sm:col-span-12 flex justify-end">
+                <button type="submit" [disabled]="timeForm.invalid || isSaving"
+                    class="px-6 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors disabled:opacity-50 flex items-center gap-2">
+                    <ng-container *ngIf="isSaving; else saveIcon">
+                        <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Guardando...
+                    </ng-container>
+                    <ng-template #saveIcon>
+                        <lucide-icon name="check-circle-2" class="w-4 h-4"></lucide-icon>
+                        Guardar Tiempo
+                    </ng-template>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabla de Tiempos Recientes -->
+    <div
+        class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs text-slate-500 uppercase bg-slate-50 dark:bg-slate-900/50 dark:text-slate-400">
+                    <tr>
+                        <th class="px-4 py-3 font-medium">Fecha</th>
+                        <th class="px-4 py-3 font-medium">Descripción</th>
+                        <th class="px-4 py-3 font-medium">Facturable</th>
+                        <th class="px-4 py-3 font-medium text-right">Tiempo (Min)</th>
+                        <th class="px-4 py-3 font-medium text-right text-slate-400">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+
+                    <tr *ngFor="let reg of registros$ | async"
+                        class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+                        <td class="px-4 py-3 whitespace-nowrap text-slate-600 dark:text-slate-300">
+                            {{ reg.fecha | date:'MMM dd, yyyy' }}
+                        </td>
+                        <td class="px-4 py-3 text-slate-800 dark:text-slate-200">
+                            {{ reg.descripcion }}
+                        </td>
+                        <td class="px-4 py-3">
+                            <span *ngIf="reg.facturable"
+                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                Sí
+                            </span>
+                            <span *ngIf="!reg.facturable"
+                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400">
+                                No
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-right font-medium text-slate-800 dark:text-slate-200">
+                            {{ reg.duracionMinutos }} m
+                        </td>
+                        <td class="px-4 py-3 text-right">
+                            <button (click)="eliminarRegistro(reg.id)"
+                                class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-all p-1"
+                                title="Eliminar registro">
+                                <lucide-icon name="trash-2" class="w-4 h-4"></lucide-icon>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Empty State -->
+                    <tr *ngIf="(registros$ | async)?.length === 0">
+                        <td colspan="5" class="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                            <lucide-icon name="clock" class="w-8 h-8 mx-auto mb-2 opacity-50"></lucide-icon>
+                            <p>Aún no hay horas invertidas en este proyecto.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

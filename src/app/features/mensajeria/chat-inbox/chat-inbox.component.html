@@ -1,0 +1,205 @@
+<div class="flex h-[calc(100vh-6rem)] bg-surface rounded-2xl shadow-elevation-1 border border-border overflow-hidden">
+
+    <!-- Sidebar: Lista de Conversaciones -->
+    <div class="w-80 border-r border-border flex flex-col shrink-0">
+        <!-- Header -->
+        <div class="p-4 border-b border-border">
+            <div class="flex items-center justify-between mb-3">
+                <h1 class="text-lg font-bold text-txt-primary flex items-center gap-2">
+                    <lucide-icon name="message-circle" class="w-5 h-5 text-primary"></lucide-icon>
+                    Mensajería
+                </h1>
+                <button (click)="showNuevaConv = true" aria-label="Nueva conversación"
+                    class="p-2 bg-primary text-white rounded-lg hover:brightness-110 transition-all btn-press">
+                    <lucide-icon name="plus" [size]="16"></lucide-icon>
+                </button>
+            </div>
+            <!-- Search -->
+            <div class="relative">
+                <lucide-icon name="search" [size]="14"
+                    class="absolute left-3 top-1/2 -translate-y-1/2 text-txt-muted"></lucide-icon>
+                <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar conversación..."
+                    aria-label="Buscar conversación"
+                    class="w-full pl-9 pr-3 py-2 text-sm bg-base border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/30 text-txt-primary placeholder:text-txt-muted transition-all">
+            </div>
+        </div>
+
+        <!-- Conversations List -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar">
+            <div *ngIf="isLoading" class="p-8 text-center text-txt-muted text-sm">
+                <lucide-icon name="loader-2" [size]="20" class="animate-spin mx-auto mb-2"></lucide-icon>
+                Cargando...
+            </div>
+
+            <div *ngIf="!isLoading && conversacionesFiltradas.length === 0"
+                class="p-8 text-center text-txt-muted text-sm">
+                <lucide-icon name="message-circle" [size]="32" class="mx-auto mb-2 opacity-40"></lucide-icon>
+                No hay conversaciones aún
+            </div>
+
+            <div *ngFor="let conv of conversacionesFiltradas; trackBy: trackByConv"
+                (click)="seleccionarConversacion(conv)"
+                class="p-4 border-b border-border/50 cursor-pointer transition-colors hover:bg-surface-hover"
+                [class.bg-primary/5]="conversacionActiva?.id === conv.id"
+                [class.border-l-4]="conversacionActiva?.id === conv.id"
+                [class.border-l-primary]="conversacionActiva?.id === conv.id">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div
+                            class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold shrink-0">
+                            {{ conv.clienteNombre?.charAt(0) || '?' }}
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-txt-primary truncate">{{ conv.clienteNombre }}</p>
+                            <p class="text-xs text-txt-secondary truncate">{{ conv.asunto }}</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end shrink-0 ml-2">
+                        <span class="text-[10px] px-1.5 py-0.5 rounded-full uppercase font-semibold" [ngClass]="{
+                                'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400': conv.canal === 'whatsapp',
+                                'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400': conv.canal === 'interno',
+                                'bg-surface-hover text-txt-secondary': conv.canal === 'email'
+                            }">{{ conv.canal }}</span>
+                        <span *ngIf="conv.noLeidos > 0"
+                            class="mt-1 w-5 h-5 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                            {{ conv.noLeidos }}
+                        </span>
+                    </div>
+                </div>
+                <p *ngIf="conv.ultimoMensaje" class="text-xs text-txt-muted mt-1.5 truncate pl-[52px]">{{
+                    conv.ultimoMensaje }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="flex-1 flex flex-col">
+        <!-- Empty State -->
+        <div *ngIf="!conversacionActiva" class="flex-1 flex flex-col items-center justify-center text-txt-muted">
+            <lucide-icon name="message-circle" [size]="48" class="mb-4 opacity-30"></lucide-icon>
+            <p class="text-lg font-medium">Selecciona una conversación</p>
+            <p class="text-sm mt-1">O crea una nueva pulsando el botón +</p>
+        </div>
+
+        <!-- Active Chat -->
+        <ng-container *ngIf="conversacionActiva">
+            <!-- Chat Header -->
+            <div class="px-6 py-4 border-b border-border flex items-center justify-between bg-surface">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
+                        {{ conversacionActiva.clienteNombre?.charAt(0) || '?' }}
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-txt-primary">{{ conversacionActiva.clienteNombre }}</p>
+                        <p class="text-xs text-txt-secondary">{{ conversacionActiva.asunto }} · {{
+                            conversacionActiva.canal
+                            }}</p>
+                    </div>
+                </div>
+                <button (click)="sugerirRespuestaIA()" [disabled]="isLoadingSugerencia"
+                    aria-label="Sugerir respuesta con IA"
+                    class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-violet-700 dark:text-violet-300 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-700/40 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors disabled:opacity-50">
+                    <lucide-icon *ngIf="isLoadingSugerencia" name="loader-2" [size]="14"
+                        class="animate-spin"></lucide-icon>
+                    <lucide-icon *ngIf="!isLoadingSugerencia" name="sparkles" [size]="14"></lucide-icon>
+                    {{ isLoadingSugerencia ? 'Pensando...' : '✨ Sugerir Respuesta IA' }}
+                </button>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-base/50 custom-scrollbar" role="log" aria-live="polite">
+                <div *ngIf="mensajes.length === 0" class="text-center text-txt-muted text-sm py-12">
+                    Sin mensajes aún. ¡Inicia la conversación!
+                </div>
+
+                <div *ngFor="let msg of mensajes; trackBy: trackByMsg" class="flex"
+                    [class.justify-end]="msg.autorTipo === 'interno'"
+                    [class.justify-start]="msg.autorTipo !== 'interno'">
+                    <div class="max-w-[70%] rounded-2xl px-4 py-3 shadow-sm" [ngClass]="{
+                            'bg-primary text-white rounded-br-md': msg.autorTipo === 'interno',
+                            'bg-surface text-txt-primary border border-border rounded-bl-md': msg.autorTipo === 'cliente',
+                            'bg-violet-50 dark:bg-violet-900/20 text-violet-900 dark:text-violet-200 border border-violet-200 dark:border-violet-700/40 rounded-bl-md': msg.autorTipo === 'ia'
+                        }">
+                        <p class="text-xs font-semibold mb-1 opacity-70">
+                            {{ msg.autorTipo === 'ia' ? '✨ ' : '' }}{{ msg.autorNombre }}
+                        </p>
+                        <p class="text-sm leading-relaxed whitespace-pre-wrap">{{ msg.contenido }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IA Suggestion Banner -->
+            <div *ngIf="sugerenciaIA"
+                class="px-6 py-3 bg-violet-50 dark:bg-violet-900/20 border-t border-violet-200 dark:border-violet-700/40">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="flex-1">
+                        <p class="text-xs font-semibold text-violet-700 dark:text-violet-300 mb-1">✨ Sugerencia IA</p>
+                        <p class="text-sm text-violet-900 dark:text-violet-200 leading-relaxed">{{ sugerenciaIA }}</p>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <button (click)="usarSugerencia()"
+                            class="px-3 py-1.5 text-xs font-medium bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors">
+                            Usar
+                        </button>
+                        <button (click)="sugerenciaIA = ''" aria-label="Descartar sugerencia"
+                            class="p-1.5 text-violet-400 hover:text-violet-600 dark:hover:text-violet-300 transition-colors">
+                            <lucide-icon name="x" [size]="14"></lucide-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="px-6 py-4 border-t border-border bg-surface">
+                <div class="flex items-center gap-3">
+                    <input type="text" [(ngModel)]="nuevoMensaje" placeholder="Escribe un mensaje..."
+                        aria-label="Escribe un mensaje" (keydown.enter)="enviarMensaje()"
+                        class="flex-1 px-4 py-3 bg-base border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-txt-primary placeholder:text-txt-muted transition-all">
+                    <button (click)="enviarMensaje()" [disabled]="!nuevoMensaje.trim()" aria-label="Enviar mensaje"
+                        class="p-3 bg-primary text-white rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed btn-press">
+                        <lucide-icon name="send" [size]="18"></lucide-icon>
+                    </button>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>
+
+<!-- Modal: Nueva Conversación -->
+<div *ngIf="showNuevaConv" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+    role="dialog" aria-modal="true" aria-labelledby="nuevaconv-title">
+    <div
+        class="bg-surface rounded-2xl shadow-elevation-3 w-full max-w-md p-6 space-y-4 animate-scale-in border border-border">
+        <div class="flex items-center justify-between">
+            <h3 id="nuevaconv-title" class="text-lg font-bold text-txt-primary">Nueva Conversación</h3>
+            <button (click)="showNuevaConv = false" aria-label="Cerrar"
+                class="p-2 text-txt-muted hover:text-txt-primary transition-colors">
+                <lucide-icon name="x" [size]="18"></lucide-icon>
+            </button>
+        </div>
+
+        <div>
+            <label for="cliente-select" class="text-sm font-medium text-txt-secondary mb-1 block">Cliente</label>
+            <select id="cliente-select" [(ngModel)]="nuevaConv.clienteId"
+                class="w-full px-3 py-2 border border-border rounded-lg text-sm bg-base text-txt-primary outline-none focus:ring-2 focus:ring-primary/30 transition-all">
+                <option value="">Seleccionar cliente...</option>
+                <option *ngFor="let c of clientes; trackBy: trackByCliente" [value]="c.id">{{ c.nombreEmpresa ||
+                    c.contactoPrincipal?.nombre }}
+                </option>
+            </select>
+        </div>
+
+        <div>
+            <label for="asunto-input" class="text-sm font-medium text-txt-secondary mb-1 block">Asunto</label>
+            <input id="asunto-input" type="text" [(ngModel)]="nuevaConv.asunto"
+                placeholder="Ej: Seguimiento propuesta Q1"
+                class="w-full px-3 py-2 border border-border rounded-lg text-sm bg-base text-txt-primary placeholder:text-txt-muted outline-none focus:ring-2 focus:ring-primary/30 transition-all">
+        </div>
+
+        <button (click)="crearConversacion()" [disabled]="!nuevaConv.clienteId || !nuevaConv.asunto"
+            class="w-full py-3 bg-primary text-white font-medium rounded-xl hover:brightness-110 transition-all disabled:opacity-50 btn-press">
+            Crear Conversación
+        </button>
+    </div>
+</div>

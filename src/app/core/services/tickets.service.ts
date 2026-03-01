@@ -2,9 +2,14 @@ import { inject, Injectable } from '@angular/core';
 import {
     Firestore,
     collection,
+    collectionData,
     addDoc,
+    query,
+    where,
+    orderBy,
     serverTimestamp
 } from '@angular/fire/firestore';
+import { Observable, switchMap, of, catchError } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Ticket } from '../models/ticket.model';
 
@@ -30,5 +35,18 @@ export class TicketsService {
 
         const docRef = await addDoc(ref, newDoc);
         return docRef.id;
+    }
+
+    getTickets(): Observable<Ticket[]> {
+        return this.authService.tenantId$.pipe(
+            switchMap(tenantId => {
+                if (!tenantId) return of([] as Ticket[]);
+                const ref = collection(this.firestore, 'tickets');
+                const q = query(ref, where('tenantId', '==', tenantId), orderBy('createdAt', 'desc'));
+                return (collectionData(q, { idField: 'id' }) as Observable<Ticket[]>).pipe(
+                    catchError(() => of([] as Ticket[]))
+                );
+            })
+        );
     }
 }

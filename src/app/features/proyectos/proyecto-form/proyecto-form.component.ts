@@ -1,7 +1,7 @@
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Building2, Clock, Edit2, FolderPlus, Loader2, Save, X  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, Building2, Clock, Edit2, FolderPlus, Loader2, Save, X, DollarSign } from 'lucide-angular';
 import { Observable } from 'rxjs';
 
 import { CrmService } from '../../../core/services/crm.service';
@@ -12,9 +12,9 @@ import { Proyecto } from '../../../core/models/proyectos.model';
     selector: 'app-proyecto-form',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Building2, Clock, Edit2, FolderPlus, Loader2, Save, X }) }
-  ],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Building2, Clock, Edit2, FolderPlus, Loader2, Save, X, DollarSign }) }
+    ],
     templateUrl: './proyecto-form.component.html'
 })
 export class ProyectoFormComponent implements OnInit {

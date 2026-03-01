@@ -2,11 +2,11 @@
     <!-- Header Sec -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-            <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                <lucide-icon [img]="KeyIcon" class="text-primary text-blue-600 dark:text-blue-400"></lucide-icon>
+            <h2 class="text-2xl font-bold tracking-tight text-txt-primary flex items-center gap-2">
+                <lucide-icon [img]="KeyIcon" class="text-primary"></lucide-icon>
                 Gestor de Llaves API
             </h2>
-            <p class="text-slate-500 dark:text-slate-400 mt-1">Llaves de acceso de sistema a sistema. (ej. Zapier, Make,
+            <p class="text-txt-muted mt-1">Llaves de acceso de sistema a sistema. (ej. Zapier, Make,
                 Scripts personalizados).</p>
         </div>
 
@@ -27,7 +27,7 @@
             <lucide-icon [img]="ShieldIcon" [size]="100"></lucide-icon>
         </div>
         <div
-            class="bg-white dark:bg-slate-800 shadow-sm p-2 rounded-xl shrink-0 relative z-10 border border-blue-100 dark:border-blue-800">
+            class="bg-surface shadow-sm p-2 rounded-xl shrink-0 relative z-10 border border-blue-100 dark:border-blue-800">
             <lucide-icon [img]="AlertIcon" class="text-blue-600 dark:text-blue-400"></lucide-icon>
         </div>
         <div class="relative z-10">
@@ -42,11 +42,11 @@
 
     <!-- Lista de Keys -->
     <div
-        class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/40 dark:shadow-none border border-slate-200/60 dark:border-slate-700/60 overflow-hidden ring-1 ring-slate-900/5">
+        class="bg-surface/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/40 dark:shadow-none border border-border overflow-hidden ring-1 ring-slate-900/5">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm whitespace-nowrap">
                 <thead
-                    class="bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider text-xs">
+                    class="bg-surface-hover/50 backdrop-blur border-b border-border text-txt-muted font-semibold uppercase tracking-wider text-xs">
                     <tr>
                         <th class="px-6 py-4">Nombre</th>
                         <th class="px-6 py-4">Key / Token</th>
@@ -55,23 +55,22 @@
                         <th class="px-6 py-4 text-right">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-200 dark:divide-slate-700" *ngIf="apiKeys$ | async as apiKeys">
-                    <tr *ngFor="let key of apiKeys"
-                        class="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors">
+                <tbody class="divide-y divide-border" *ngIf="apiKeys$ | async as apiKeys">
+                    <tr *ngFor="let key of apiKeys" class="hover:bg-surface-hover/30 transition-colors">
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-2">
                                 <div
-                                    class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 dark:text-primary-400">
+                                    class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                                     <lucide-icon [img]="KeyIcon" [size]="14"></lucide-icon>
                                 </div>
-                                <span class="font-medium text-slate-800 dark:text-slate-200">{{key.name}}</span>
+                                <span class="font-medium text-txt-primary">{{key.name}}</span>
                             </div>
                         </td>
                         <td class="px-6 py-4">
                             <code
-                                class="bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded text-slate-600 dark:text-slate-300 font-mono text-xs">{{key.prefix}}••••••••••••••</code>
+                                class="bg-surface-hover px-2 py-1 rounded text-txt-primary font-mono text-xs">{{key.prefix}}••••••••••••••</code>
                         </td>
-                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400">
+                        <td class="px-6 py-4 text-txt-muted">
                             {{ key.createdAt?.toDate() | date:'dd MMM yyyy' }}
                         </td>
                         <td class="px-6 py-4">
@@ -83,10 +82,10 @@
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <button (click)="toggleStatus(key)"
-                                    class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs font-medium transition-colors">
+                                    class="text-txt-muted hover:text-primary text-xs font-medium transition-colors">
                                     {{key.isActive ? 'Revocar' : 'Activar'}}
                                 </button>
-                                <div class="w-px h-4 bg-slate-200 dark:bg-slate-700"></div>
+                                <div class="w-px h-4 bg-border"></div>
                                 <button (click)="deleteKey(key.id!)"
                                     class="text-rose-500 hover:text-rose-600 transition-colors p-1"
                                     title="Eliminar llave">
@@ -96,8 +95,11 @@
                         </td>
                     </tr>
                     <tr *ngIf="apiKeys.length === 0">
-                        <td colspan="5" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
-                            Un entorno cerrado. No tienes API Keys generadas.
+                        <td colspan="5" class="px-0 py-0">
+                            <app-empty-state icon="key" title="Sin API Keys"
+                                description="Un entorno cerrado. No tienes API Keys generadas."
+                                actionLabel="Generar API Key" (onAction)="showCreateModal = true">
+                            </app-empty-state>
                         </td>
                     </tr>
                 </tbody>
@@ -110,19 +112,19 @@
 <div *ngIf="showCreateModal"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
     <div
-        class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700/50 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 relative">
+        class="bg-surface rounded-2xl shadow-2xl border border-border w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 relative">
         <div
             class="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-2xl pointer-events-none">
         </div>
         <div class="p-6">
 
             <ng-container *ngIf="!recentlyCreatedKey; else keyGenerated">
-                <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Generar API Key</h3>
-                <p class="text-slate-500 dark:text-slate-400 mb-6 text-sm">Asigna un nombre descriptivo a esta llave
+                <h3 class="text-xl font-bold text-txt-primary mb-2">Generar API Key</h3>
+                <p class="text-txt-muted mb-6 text-sm">Asigna un nombre descriptivo a esta llave
                     para identificar qué aplicación la está utilizando posteriormente.</p>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nombre de la
+                    <label class="block text-sm font-medium text-txt-primary mb-1">Nombre de la
                         llave</label>
                     <input type="text" [(ngModel)]="newKeyName" placeholder="Ej: Zapier Lead Forms, ERP Interno"
                         class="input-standard w-full">
@@ -130,7 +132,7 @@
 
                 <div class="flex justify-end gap-3 mt-8">
                     <button (click)="closeModal()"
-                        class="px-5 py-2.5 rounded-xl font-medium text-slate-600 hover:text-slate-900 bg-slate-100 dark:bg-slate-700 dark:text-slate-300 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancelar</button>
+                        class="px-5 py-2.5 rounded-xl font-medium text-txt-muted hover:text-txt-primary bg-surface-hover hover:bg-border transition-colors">Cancelar</button>
                     <button (click)="generateKey()"
                         class="px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 transition-all shadow-md flex items-center gap-2"
                         [disabled]="!newKeyName.trim()"><lucide-icon [img]="KeyIcon" [size]="16"></lucide-icon> Generar
@@ -141,27 +143,27 @@
             <ng-template #keyGenerated>
                 <div class="text-center">
                     <div
-                        class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                        class="w-16 h-16 bg-success/10 text-success rounded-full flex items-center justify-center mx-auto mb-4">
                         <lucide-icon [img]="KeyIcon" [size]="32"></lucide-icon>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Guarda esta API Key</h3>
-                    <p class="text-rose-600 dark:text-rose-400 mb-6 text-sm font-medium">
+                    <h3 class="text-xl font-bold text-txt-primary mb-2">Guarda esta API Key</h3>
+                    <p class="text-error mb-6 text-sm font-medium">
                         Por seguridad, no volveremos a mostrar esta llave completa. Cópiala ahora y guárdala en un
                         lugar seguro.
                     </p>
 
                     <div
-                        class="bg-slate-50 dark:bg-slate-900 rounded-xl p-3 flex items-center gap-3 border border-slate-200 dark:border-slate-700 mb-6 shadow-inner ring-1 ring-slate-900/5">
+                        class="bg-surface-hover rounded-xl p-3 flex items-center gap-3 border border-border mb-6 shadow-inner ring-1 ring-slate-900/5">
                         <code
-                            class="flex-1 text-sm text-slate-800 dark:text-slate-200 font-mono break-all text-left select-all">{{recentlyCreatedKey}}</code>
+                            class="flex-1 text-sm text-txt-primary font-mono break-all text-left select-all">{{recentlyCreatedKey}}</code>
                         <button (click)="copyToClipboard(recentlyCreatedKey)"
-                            class="p-2 text-slate-500 hover:text-blue-600 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 transition-colors hover:border-blue-300">
+                            class="p-2 text-txt-muted hover:text-primary bg-surface rounded-lg shadow-sm border border-border transition-colors hover:border-primary/50">
                             <lucide-icon [img]="CopyIcon" [size]="16"></lucide-icon>
                         </button>
                     </div>
 
                     <button (click)="closeModal()"
-                        class="w-full px-5 py-3 rounded-xl font-bold flex justify-center items-center text-emerald-700 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:hover:bg-emerald-900/60 transition-colors">Entiendo,
+                        class="w-full px-5 py-3 rounded-xl font-bold flex justify-center items-center text-success bg-success/10 hover:bg-success/20 transition-colors">Entiendo,
                         ya la he guardado</button>
                 </div>
             </ng-template>

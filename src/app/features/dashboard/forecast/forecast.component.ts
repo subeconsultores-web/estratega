@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, AlertTriangle, Bell, Bot, Sparkles, Target  } from 'lucide-angular';
-import { BaseChartDirective } from 'ng2-charts';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, AlertTriangle, Bell, Bot, CheckCircle, Info, Sparkles, Target } from 'lucide-angular';
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { ForecastService, ForecastResponse } from '../services/forecast.service';
 import { ToastrService } from 'ngx-toastr';
@@ -10,9 +10,10 @@ import { ToastrService } from 'ngx-toastr';
     selector: 'app-forecast-dashboard',
     standalone: true,
     imports: [CommonModule, LucideAngularModule, BaseChartDirective],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ AlertTriangle, Bell, Bot, Sparkles, Target }) }
-  ],
+    providers: [
+        provideCharts(withDefaultRegisterables()),
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ AlertTriangle, Bell, Bot, CheckCircle, Info, Sparkles, Target }) }
+    ],
     templateUrl: './forecast.component.html'
 })
 export class ForecastDashboardComponent implements OnInit {
@@ -28,11 +29,11 @@ export class ForecastDashboardComponent implements OnInit {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { display: true, position: 'top', labels: { color: '#9CA3AF' } }
+            legend: { display: true, position: 'top', labels: { color: this.chartTextColor } }
         },
         scales: {
-            y: { ticks: { color: '#9CA3AF' }, grid: { color: '#374151' } },
-            x: { ticks: { color: '#9CA3AF' }, grid: { color: '#374151' } }
+            y: { ticks: { color: this.chartTextColor }, grid: { color: this.chartGridColor } },
+            x: { ticks: { color: this.chartTextColor }, grid: { color: this.chartGridColor } }
         }
     };
     public lineChartType: ChartType = 'line';
@@ -124,7 +125,17 @@ export class ForecastDashboardComponent implements OnInit {
             case 'warning': return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20';
             case 'success': return 'text-green-500 bg-green-500/10 border-green-500/20';
             case 'info': return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
-            default: return 'text-gray-500 bg-gray-500/10 border-gray-500/20';
+            default: return 'text-txt-muted bg-surface-hover border-border';
         }
+    }
+
+    trackByAlert(index: number, item: any): number { return index; }
+    trackByDeal(index: number, item: any): string { return item.clienteId ?? index; }
+
+    private get chartTextColor(): string {
+        return getComputedStyle(document.documentElement).getPropertyValue('--color-txt-secondary').trim() || '#9CA3AF';
+    }
+    private get chartGridColor(): string {
+        return getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim() || '#374151';
     }
 }

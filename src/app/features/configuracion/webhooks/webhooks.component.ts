@@ -1,17 +1,20 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Webhook, Plus, Trash2, ShieldAlert, Shield  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, Webhook, Plus, Trash2, ShieldAlert, Shield } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
-import { Observable, switchMap } from 'rxjs';
+import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
+import { Observable, of, switchMap, catchError } from 'rxjs';
 import { WebhookService } from '../../../core/services/webhook.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Webhook as WebhookModel } from '../../../core/models/webhook.model';
 
+import { EmptyState } from '../../../shared/components/empty-state/empty-state.component';
+
 @Component({
   selector: 'app-webhooks',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, EmptyState],
   providers: [
     { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Webhook, Plus, Trash2, ShieldAlert, Shield }) }
   ],
@@ -21,6 +24,7 @@ export class WebhooksComponent implements OnInit {
   private webhookService = inject(WebhookService);
   private authService = inject(AuthService);
   private toastr = inject(ToastrService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   readonly WebhookIcon = Webhook;
   readonly PlusIcon = Plus;
@@ -35,10 +39,11 @@ export class WebhooksComponent implements OnInit {
   newUrl = '';
 
   ngOnInit() {
-    this.webhooks$ = this.authService.user$.pipe(
-      switchMap(user => {
-        if (!user?.tenantId) throw new Error('No tenant ID');
-        return this.webhookService.getWebhooks(user.tenantId);
+    this.webhooks$ = this.authService.tenantId$.pipe(
+      switchMap(tenantId => this.webhookService.getWebhooks(tenantId)),
+      catchError(err => {
+        console.error('Error cargando webhooks:', err);
+        return of([] as WebhookModel[]);
       })
     );
   }
@@ -55,11 +60,11 @@ export class WebhooksComponent implements OnInit {
     }
 
     try {
-      const user = await this.authService.getCurrentUser();
-      if (!user?.tenantId) return;
+      const tenantId = await this.authService.getTenantId();
+      if (!tenantId) return;
 
       await this.webhookService.createWebhook(
-        user.tenantId,
+        tenantId,
         this.newName,
         this.newUrl,
         ['cliente.creado'] // Único evento soportado actualmente
@@ -83,7 +88,13 @@ export class WebhooksComponent implements OnInit {
   }
 
   async deleteWebhook(whId: string) {
-    if (confirm('¿Eliminar esta suscripción webhook? Ya no se enviarán datos.')) {
+    const ok = await this.confirmDialog.confirm({
+      title: 'Eliminar webhook',
+      message: '¿Eliminar esta suscripción webhook? Ya no se enviarán datos a esta URL.',
+      variant: 'danger',
+      confirmText: 'Eliminar'
+    });
+    if (ok) {
       try {
         await this.webhookService.deleteWebhook(whId);
         this.toastr.success('Webhook eliminado');

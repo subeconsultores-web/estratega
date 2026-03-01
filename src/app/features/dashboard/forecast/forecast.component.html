@@ -65,8 +65,8 @@
                 </h3>
 
                 <div class="space-y-3 max-h-[140px] overflow-y-auto custom-scrollbar pr-1">
-                    <div *ngFor="let msg of data.prediccionIA.alertasIA" [ngClass]="getColorForAlert(msg.tipo)"
-                        class="flex items-start p-2.5 rounded-lg text-sm border">
+                    <div *ngFor="let msg of data.prediccionIA.alertasIA; trackBy: trackByAlert"
+                        [ngClass]="getColorForAlert(msg.tipo)" class="flex items-start p-2.5 rounded-lg text-sm border">
                         <lucide-icon [name]="getIconForAlert(msg.tipo)"
                             class="w-4 h-4 mr-2 mt-0.5 shrink-0"></lucide-icon>
                         <span class="leading-tight">{{ msg.mensaje }}</span>
@@ -85,7 +85,7 @@
                 </h3>
 
                 <div class="space-y-2">
-                    <div *ngFor="let deal of data.prediccionIA.topDeals | slice:0:2"
+                    <div *ngFor="let deal of data.prediccionIA.topDeals | slice:0:2; trackBy: trackByDeal"
                         class="flex justify-between items-center group">
                         <span
                             class="text-sm font-medium text-txt-primary truncate pr-2 group-hover:text-primary transition-colors cursor-pointer">{{

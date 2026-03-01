@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, FileSignature, List, Loader2, Plus, Save, ScrollText, Trash2  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ArrowLeft, FileSignature, List, Loader2, Plus, Save, ScrollText, Trash2 } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 
 import { ContratoService } from '../../../core/services/contrato.service';
@@ -19,9 +20,9 @@ import { Timestamp } from '@angular/fire/firestore';
     selector: 'app-contrato-form',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterModule, LucideAngularModule],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, FileSignature, List, Loader2, Plus, Save, ScrollText, Trash2 }) }
-  ],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, FileSignature, List, Loader2, Plus, Save, ScrollText, Trash2 }) }
+    ],
     templateUrl: './contrato-form.component.html'
 })
 export class ContratoFormComponent implements OnInit {
@@ -34,6 +35,7 @@ export class ContratoFormComponent implements OnInit {
     private router = inject(Router);
     private location = inject(Location);
     private toastr = inject(ToastrService);
+    private destroyRef = inject(DestroyRef);
 
     contratoForm: FormGroup;
     itemId = this.route.snapshot.paramMap.get('id');
@@ -71,17 +73,17 @@ export class ContratoFormComponent implements OnInit {
     async loadMasters() {
         this.isLoading = true;
         try {
-            this.crmService.getClientes().subscribe(async (clientes: Cliente[]) => {
+            this.crmService.getClientes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(async (clientes: Cliente[]) => {
                 this.clientesActivos = clientes;
 
                 if (this.isEditMode && this.itemId) {
-                    this.contratoService.getContratoById(this.itemId).subscribe((cot: Contrato | undefined) => {
+                    this.contratoService.getContratoById(this.itemId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe((cot: Contrato | undefined) => {
                         if (cot) this.patchFormulario(cot);
                         this.isLoading = false;
                     });
                 } else if (this.cotiIdParam) {
                     // New from Cotizacion
-                    this.cotizacionService.getCotizacion(this.cotiIdParam).subscribe((cot: Cotizacion | undefined) => {
+                    this.cotizacionService.getCotizacion(this.cotiIdParam).pipe(takeUntilDestroyed(this.destroyRef)).subscribe((cot: Cotizacion | undefined) => {
                         if (cot) this.patchFromCotizacion(cot);
                         this.isLoading = false;
                     });

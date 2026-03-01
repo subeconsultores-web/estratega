@@ -36,20 +36,11 @@
         </ng-container>
 
         <!-- Empty State -->
-        <div *ngIf="!isLoading && items.length === 0"
-            class="py-16 flex flex-col items-center justify-center text-center px-4">
-            <div
-                class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 border border-primary/20">
-                <lucide-icon name="package-search" class="w-8 h-8 text-primary"></lucide-icon>
-            </div>
-            <h3 class="text-lg font-semibold text-txt-primary mb-1">Catálogo Vacío</h3>
-            <p class="text-txt-muted max-w-md mx-auto mb-6">Aún no has registrado ningún producto o servicio. Añade el
-                primer ítem para empezar a generar cotizaciones de ventas.</p>
-            <button routerLink="/catalogo/nuevo"
-                class="flex items-center justify-center px-5 py-2.5 bg-surface-hover border border-border text-txt-primary rounded-lg hover:bg-border transition-colors font-medium shadow-sm">
-                <lucide-icon name="plus" class="w-4 h-4 mr-2"></lucide-icon>
-                Añadir Primer Ítem
-            </button>
+        <div *ngIf="!isLoading && items.length === 0" class="mt-8">
+            <app-empty-state icon="package-search" title="Catálogo Vacío"
+                description="Aún no has registrado ningún producto o servicio. Añade el primer ítem para empezar a generar cotizaciones de ventas."
+                actionLabel="Añadir Primer Ítem" actionIcon="plus" (onAction)="goToNuevoItem()">
+            </app-empty-state>
         </div>
 
     </div>

@@ -14,6 +14,7 @@ import {
     orderBy,
     serverTimestamp,
     getDocs,
+    getDoc,
     Timestamp,
     limit
 } from '@angular/fire/firestore';
@@ -105,13 +106,38 @@ export class FinanzasService {
                     // Ordenamos localmente para evitar requerir un índice compuesto obligatorio en Firebase
                 );
                 return (collectionData(q, { idField: 'id' }) as Observable<Factura[]>).pipe(
-                    map(facturas => {
-                        return facturas.sort((a, b) => {
-                            const dateA = a.fechaVencimiento as any;
-                            const dateB = b.fechaVencimiento as any;
-                            const tA = dateA?.seconds ? dateA.seconds : new Date(dateA).getTime() / 1000;
-                            const tB = dateB?.seconds ? dateB.seconds : new Date(dateB).getTime() / 1000;
-                            return (tA || 0) - (tB || 0);
+                    switchMap(async (facturas) => {
+                        const facturasConProyeccion = await Promise.all(facturas.map(async (f: any) => {
+                            let diasPromedioPago = 0;
+                            if (f.clienteId) {
+                                try {
+                                    const clienteSnap = await getDoc(doc(this.firestore, `clientes/${f.clienteId}`));
+                                    if (clienteSnap.exists()) {
+                                        diasPromedioPago = clienteSnap.data()['diasPromedioPago'] || 0;
+                                    }
+                                } catch (e) { console.error(e); }
+                            }
+
+                            const fechaOriginal = f.fechaVencimiento?.toDate ? f.fechaVencimiento.toDate() : new Date(f.fechaVencimiento);
+                            const fechaProyectada = new Date(fechaOriginal);
+
+                            if (diasPromedioPago > 0) {
+                                fechaProyectada.setDate(fechaProyectada.getDate() + diasPromedioPago);
+                                f.alertaRetraso = true;
+                            } else {
+                                f.alertaRetraso = false;
+                            }
+
+                            f.fechaProyectada = fechaProyectada;
+                            f.diasPromedioPago = diasPromedioPago;
+
+                            return f;
+                        }));
+
+                        return facturasConProyeccion.sort((a, b) => {
+                            const tA = a.fechaProyectada.getTime();
+                            const tB = b.fechaProyectada.getTime();
+                            return tA - tB;
                         }).slice(0, limite);
                     })
                 );

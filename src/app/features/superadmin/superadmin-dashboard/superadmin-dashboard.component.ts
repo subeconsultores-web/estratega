@@ -1,29 +1,38 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SuperAdminService, Tenant } from '../../../core/services/super-admin.service';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Bot, Briefcase, CheckSquare, Clock, DollarSign, Loader2, PanelLeftClose, Search  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, Activity, Bot, Briefcase, CheckSquare, Clock, DollarSign, Loader2, PanelLeftClose, Search, ShieldCheck, TrendingUp, TrendingDown } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
+import { EmptyState } from '../../../shared/components/empty-state/empty-state.component';
+import { SkillRadarComponent } from '../../../shared/components/skill-radar/skill-radar.component';
+import { DataNodeGraphComponent } from '../../../shared/components/data-node-graph/data-node-graph.component';
+import { ChurnRadarComponent } from '../../../shared/components/churn-radar/churn-radar.component';
+import { MagicProposalComponent } from '../../../shared/components/magic-proposal/magic-proposal.component';
+import { ProofOfCompetenceReplayComponent } from '../../../shared/components/proof-of-competence-replay/proof-of-competence-replay.component';
+import { AdaptiveGreetingComponent } from '../../../shared/components/adaptive-greeting/adaptive-greeting.component';
 
 @Component({
     selector: 'app-superadmin-dashboard',
     standalone: true,
-    imports: [CommonModule, FormsModule, LucideAngularModule, DatePipe],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Bot, Briefcase, CheckSquare, Clock, DollarSign, Loader2, PanelLeftClose, Search }) }
-  ],
+    imports: [CommonModule, FormsModule, LucideAngularModule, DatePipe, EmptyState, SkillRadarComponent, DataNodeGraphComponent, ChurnRadarComponent, MagicProposalComponent, ProofOfCompetenceReplayComponent, AdaptiveGreetingComponent],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Activity, Bot, Briefcase, CheckSquare, Clock, DollarSign, Loader2, PanelLeftClose, Search, ShieldCheck, TrendingUp, TrendingDown }) }
+    ],
     templateUrl: './superadmin-dashboard.component.html'
 })
 export class SuperAdminDashboardComponent implements OnInit {
     private saasService = inject(SuperAdminService);
     private toastr = inject(ToastrService);
+    private destroyRef = inject(DestroyRef);
 
     tenants: Tenant[] = [];
     metrics = { total: 0, active: 0, trial: 0, mrr: 0 };
     isLoading = true;
 
     ngOnInit() {
-        this.saasService.getTenants().subscribe({
+        this.saasService.getTenants().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (data) => {
                 this.tenants = data;
                 this.calculateMetrics(data);
@@ -74,4 +83,6 @@ export class SuperAdminDashboardComponent implements OnInit {
     getDate(createdAt: any): Date {
         return createdAt?.toDate ? createdAt.toDate() : new Date();
     }
+
+    trackById(index: number, item: any): string { return item.id; }
 }

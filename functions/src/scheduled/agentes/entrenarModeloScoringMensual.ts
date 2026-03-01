@@ -6,7 +6,7 @@ export const entrenarModeloScoringMensual = onSchedule({
     timeZone: "America/Santiago",
     timeoutSeconds: 540, // 9 min timeout por procesamiento batch extenso
     memory: "1GiB"
-}, async (event) => {
+}, async (_event) => {
     try {
         const db = admin.firestore();
         const tenantsSnapshot = await db.collection('tenants').get();

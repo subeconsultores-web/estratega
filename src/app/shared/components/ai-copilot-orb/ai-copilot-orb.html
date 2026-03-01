@@ -1,0 +1,31 @@
+<div class="fixed bottom-6 right-6 z-50 flex flex-col items-end pointer-events-none">
+
+    <!-- Message Bubble -->
+    <div *ngIf="currentMessage()" @messageFade
+        class="glass-panel text-sm text-primary p-4 mb-4 rounded-2xl rounded-br-sm max-w-xs shadow-elevation-2 border border-[rgba(255,255,255,0.1)] mb-4 ml-4 font-medium pointer-events-auto">
+        {{ currentMessage() }}
+    </div>
+
+    <!-- Orb Container -->
+    <div class="relative w-20 h-20 cursor-pointer pointer-events-auto flex items-center justify-center p-2"
+        (click)="toggleOrb()" (mouseenter)="currentState() === 'idle' ? setState('speaking', '¿Hablamos?') : null"
+        (mouseleave)="currentState() === 'speaking' && !isOpen() ? setState('idle', null) : null">
+
+        <!-- Outer Glow / Ripple effect -->
+        <div class="absolute inset-0 rounded-full orb-ripple opacity-50"
+            [class.animate-processing-ripple]="currentState() === 'processing'"
+            [class.animate-listening-ripple]="currentState() === 'listening'">
+        </div>
+
+        <!-- Main Orb Core -->
+        <div class="relative w-full h-full rounded-full orb-core shadow-glow-primary overflow-hidden transition-all duration-300 transform"
+            [@stateChange]="currentState()">
+            <!-- Inner energy patterns (CSS rendering) -->
+            <div class="absolute inset-0 orb-energy"></div>
+            <div class="absolute inset-0 orb-energy orb-energy-alt"></div>
+
+            <!-- Center highlight -->
+            <div class="absolute top-1/4 left-1/4 w-4 h-4 bg-white rounded-full opacity-60 filter blur-sm"></div>
+        </div>
+    </div>
+</div>

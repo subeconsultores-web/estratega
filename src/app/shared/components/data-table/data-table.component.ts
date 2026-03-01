@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowUpDown, Edit2, Eye, Trash2  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ArrowUpDown, Edit2, Eye, Trash2 } from 'lucide-angular';
 import { ScoringService } from '../../../core/services/scoring.service';
 
 export interface ColumnDef {
@@ -18,12 +18,12 @@ export interface ColumnDef {
     { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowUpDown, Edit2, Eye, Trash2 }) }
   ],
   template: `
-    <div class="bg-surface border border-border rounded-xl shadow-sm overflow-hidden">
+    <div class="bg-surface border border-border rounded-xl shadow-elevation-1 overflow-hidden hover:shadow-elevation-2 transition-shadow duration-300">
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm text-txt-secondary">
           <thead class="text-xs text-txt-muted uppercase bg-surface-hover/50 border-b border-border">
             <tr>
-              <th *ngFor="let col of columns" scope="col" class="px-6 py-4 font-semibold">
+              <th *ngFor="let col of columns; trackBy: trackByCol" scope="col" class="px-6 py-4 font-semibold">
                 <div class="flex items-center space-x-1" [ngClass]="{'cursor-pointer hover:text-txt-primary': col.sortable}" (click)="col.sortable && sort(col.key)">
                   <span>{{ col.label }}</span>
                   <lucide-icon *ngIf="col.sortable" name="arrow-up-down" class="w-3 h-3 text-txt-muted"></lucide-icon>
@@ -32,8 +32,8 @@ export interface ColumnDef {
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of paginatedData; let i = index" class="border-b border-border/50 hover:bg-surface-hover/30 transition-colors">
-              <td *ngFor="let col of columns" class="px-6 py-4">
+            <tr *ngFor="let item of paginatedData; let i = index; trackBy: trackByRow" class="border-b border-border/50 hover:bg-primary/5 transition-colors duration-150">
+              <td *ngFor="let col of columns; trackBy: trackByCol" class="px-6 py-4">
                 
                 <!-- Currency -->
                 <ng-container *ngIf="col.type === 'currency'">
@@ -207,4 +207,7 @@ export class DataTableComponent {
   getScoreColor(score: number): string {
     return this.scoringService.getScoreColor(score);
   }
+
+  trackByCol(index: number, col: ColumnDef): string { return col.key; }
+  trackByRow(index: number, item: any): string { return item.id ?? index; }
 }

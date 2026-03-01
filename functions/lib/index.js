@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fixUserClaims = exports.webhookDispatcherClientes = exports.api = exports.briefingSemanal = exports.generarSugerenciasUpselling = exports.generarPropuestaIA = exports.forecastPredictivo = exports.registerAgency = exports.askSubeIA = exports.analyzeDocument = exports.stripeWebhook = exports.createCheckoutSession = exports.generarPdf = exports.onCotizacionCreated = exports.leadScoringIA = exports.onActividadCreated = exports.onUserCreated = void 0;
+exports.webhookDispatcherClientes = exports.api = exports.calcularPromedioPago = exports.entrenarModeloScoringMensual = exports.briefingSemanal = exports.onContratoAudit = exports.onFacturaAudit = exports.onLoginAudit = exports.calcularHuellaDigitalAuto = exports.busquedaSemantica = exports.verificarIntegridadLedger = exports.updateTeamMember = exports.createTeamMember = exports.createClientUser = exports.portalClienteChat = exports.sugerirRespuestaIA = exports.autocompletarEquipo = exports.acceptPublicCotizacion = exports.getPublicCotizacion = exports.evaluarCapacidadYPrecios = exports.evaluateZeroTrustAnomaly = exports.getAnalyticsBenchmarking = exports.generarSugerenciasUpselling = exports.generarPropuestaIA = exports.forecastPredictivo = exports.registerAgency = exports.generarNextBestAction = exports.askSubeIA = exports.analyzeDocument = exports.stripeWebhook = exports.createCheckoutSession = exports.generarPdf = exports.onCotizacionCreated = exports.onRegistroTiempoCreated = exports.onClienteUpdateLeadScore = exports.leadScoringIA = exports.onActividadCreated = exports.onUserCreated = void 0;
 const admin = require("firebase-admin");
 admin.initializeApp();
 // Triggers
@@ -10,6 +10,10 @@ var onActividadCreated_1 = require("./triggers/onActividadCreated");
 Object.defineProperty(exports, "onActividadCreated", { enumerable: true, get: function () { return onActividadCreated_1.onActividadCreated; } });
 var leadScoringIA_1 = require("./triggers/agentes/leadScoringIA");
 Object.defineProperty(exports, "leadScoringIA", { enumerable: true, get: function () { return leadScoringIA_1.leadScoringIA; } });
+var onClienteUpdateLeadScore_1 = require("./triggers/agentes/onClienteUpdateLeadScore");
+Object.defineProperty(exports, "onClienteUpdateLeadScore", { enumerable: true, get: function () { return onClienteUpdateLeadScore_1.onClienteUpdateLeadScore; } });
+var onRegistroTiempoCreated_1 = require("./triggers/agentes/onRegistroTiempoCreated");
+Object.defineProperty(exports, "onRegistroTiempoCreated", { enumerable: true, get: function () { return onRegistroTiempoCreated_1.onRegistroTiempoCreated; } });
 // Dummy mocks for other functions to satisfy structure
 var onCotizacionCreated_1 = require("./triggers/onCotizacionCreated");
 Object.defineProperty(exports, "onCotizacionCreated", { enumerable: true, get: function () { return onCotizacionCreated_1.onCotizacionCreated; } });
@@ -23,6 +27,8 @@ var analyzeDocument_1 = require("./callable/analyzeDocument");
 Object.defineProperty(exports, "analyzeDocument", { enumerable: true, get: function () { return analyzeDocument_1.analyzeDocument; } });
 var askSubeIA_1 = require("./callable/askSubeIA");
 Object.defineProperty(exports, "askSubeIA", { enumerable: true, get: function () { return askSubeIA_1.askSubeIA; } });
+var generarNextBestAction_1 = require("./callable/generarNextBestAction");
+Object.defineProperty(exports, "generarNextBestAction", { enumerable: true, get: function () { return generarNextBestAction_1.generarNextBestAction; } });
 var registerAgency_1 = require("./callable/registerAgency");
 Object.defineProperty(exports, "registerAgency", { enumerable: true, get: function () { return registerAgency_1.registerAgency; } });
 var forecastPredictivo_1 = require("./callable/agentes/forecastPredictivo");
@@ -31,8 +37,46 @@ var generarPropuestaIA_1 = require("./callable/agentes/generarPropuestaIA");
 Object.defineProperty(exports, "generarPropuestaIA", { enumerable: true, get: function () { return generarPropuestaIA_1.generarPropuestaIA; } });
 var generarSugerenciasUpselling_1 = require("./callable/agentes/generarSugerenciasUpselling");
 Object.defineProperty(exports, "generarSugerenciasUpselling", { enumerable: true, get: function () { return generarSugerenciasUpselling_1.generarSugerenciasUpselling; } });
+var getAnalyticsBenchmarking_1 = require("./callable/getAnalyticsBenchmarking");
+Object.defineProperty(exports, "getAnalyticsBenchmarking", { enumerable: true, get: function () { return getAnalyticsBenchmarking_1.getAnalyticsBenchmarking; } });
+var evaluateZeroTrustAnomaly_1 = require("./callable/evaluateZeroTrustAnomaly");
+Object.defineProperty(exports, "evaluateZeroTrustAnomaly", { enumerable: true, get: function () { return evaluateZeroTrustAnomaly_1.evaluateZeroTrustAnomaly; } });
+var evaluarCapacidadYPrecios_1 = require("./callable/evaluarCapacidadYPrecios");
+Object.defineProperty(exports, "evaluarCapacidadYPrecios", { enumerable: true, get: function () { return evaluarCapacidadYPrecios_1.evaluarCapacidadYPrecios; } });
+var getPublicCotizacion_1 = require("./callable/getPublicCotizacion");
+Object.defineProperty(exports, "getPublicCotizacion", { enumerable: true, get: function () { return getPublicCotizacion_1.getPublicCotizacion; } });
+var acceptPublicCotizacion_1 = require("./callable/acceptPublicCotizacion");
+Object.defineProperty(exports, "acceptPublicCotizacion", { enumerable: true, get: function () { return acceptPublicCotizacion_1.acceptPublicCotizacion; } });
+var autocompletarEquipo_1 = require("./callable/autocompletarEquipo");
+Object.defineProperty(exports, "autocompletarEquipo", { enumerable: true, get: function () { return autocompletarEquipo_1.autocompletarEquipo; } });
+var sugerirRespuestaIA_1 = require("./callable/sugerirRespuestaIA");
+Object.defineProperty(exports, "sugerirRespuestaIA", { enumerable: true, get: function () { return sugerirRespuestaIA_1.sugerirRespuestaIA; } });
+var portalClienteChat_1 = require("./callable/portalClienteChat");
+Object.defineProperty(exports, "portalClienteChat", { enumerable: true, get: function () { return portalClienteChat_1.portalClienteChat; } });
+var createClientUser_1 = require("./callable/createClientUser");
+Object.defineProperty(exports, "createClientUser", { enumerable: true, get: function () { return createClientUser_1.createClientUser; } });
+var createTeamMember_1 = require("./callable/createTeamMember");
+Object.defineProperty(exports, "createTeamMember", { enumerable: true, get: function () { return createTeamMember_1.createTeamMember; } });
+var updateTeamMember_1 = require("./callable/updateTeamMember");
+Object.defineProperty(exports, "updateTeamMember", { enumerable: true, get: function () { return updateTeamMember_1.updateTeamMember; } });
+var verificarIntegridadLedger_1 = require("./callable/verificarIntegridadLedger");
+Object.defineProperty(exports, "verificarIntegridadLedger", { enumerable: true, get: function () { return verificarIntegridadLedger_1.verificarIntegridadLedger; } });
+var busquedaSemantica_1 = require("./callable/busquedaSemantica");
+Object.defineProperty(exports, "busquedaSemantica", { enumerable: true, get: function () { return busquedaSemantica_1.busquedaSemantica; } });
+var calcularHuellaDigitalAuto_1 = require("./callable/sostenibilidad/calcularHuellaDigitalAuto");
+Object.defineProperty(exports, "calcularHuellaDigitalAuto", { enumerable: true, get: function () { return calcularHuellaDigitalAuto_1.calcularHuellaDigitalAuto; } });
+var onLoginAudit_1 = require("./triggers/onLoginAudit");
+Object.defineProperty(exports, "onLoginAudit", { enumerable: true, get: function () { return onLoginAudit_1.onLoginAudit; } });
+var onFacturaAudit_1 = require("./triggers/onFacturaAudit");
+Object.defineProperty(exports, "onFacturaAudit", { enumerable: true, get: function () { return onFacturaAudit_1.onFacturaAudit; } });
+var onContratoAudit_1 = require("./triggers/onContratoAudit");
+Object.defineProperty(exports, "onContratoAudit", { enumerable: true, get: function () { return onContratoAudit_1.onContratoAudit; } });
 var briefingSemanal_1 = require("./scheduled/agentes/briefingSemanal");
 Object.defineProperty(exports, "briefingSemanal", { enumerable: true, get: function () { return briefingSemanal_1.briefingSemanal; } });
+var entrenarModeloScoringMensual_1 = require("./scheduled/agentes/entrenarModeloScoringMensual");
+Object.defineProperty(exports, "entrenarModeloScoringMensual", { enumerable: true, get: function () { return entrenarModeloScoringMensual_1.entrenarModeloScoringMensual; } });
+var calcularPromedioPago_1 = require("./scheduled/finanzas/calcularPromedioPago");
+Object.defineProperty(exports, "calcularPromedioPago", { enumerable: true, get: function () { return calcularPromedioPago_1.calcularPromedioPago; } });
 // export { analizarDocumentoIA } from './triggers/agentes/analizarDocumentoIA';
 // API Abierta (Ecosistema Sube)
 var index_1 = require("./api/index");
@@ -40,7 +84,6 @@ Object.defineProperty(exports, "api", { enumerable: true, get: function () { ret
 var webhookDispatcher_1 = require("./triggers/webhooks/webhookDispatcher");
 Object.defineProperty(exports, "webhookDispatcherClientes", { enumerable: true, get: function () { return webhookDispatcher_1.webhookDispatcherClientes; } });
 // export { verificarCotizacionesExpiradas } from './scheduled/verificarCotizacionesExpiradas';
-// TEMPORARY: Admin function to fix user claims (remove after use)
-var fixUserClaims_1 = require("./callable/fixUserClaims");
-Object.defineProperty(exports, "fixUserClaims", { enumerable: true, get: function () { return fixUserClaims_1.fixUserClaims; } });
+// fixUserClaims removed from production export on 2026-02-27 (audit remediation)
+// Source file kept at ./callable/fixUserClaims.ts for future one-off use if needed
 //# sourceMappingURL=index.js.map

@@ -9,6 +9,7 @@ export interface CotizacionItemDetalle {
     cantidad: number;
     precioUnitario: number; // Snapshot del precio
     subtotal: number;       // Calculado: cantidad * precioUnitario
+    opcional?: boolean;     // Indica si el cliente puede decidir contratarlo web
 }
 
 export interface CotizacionHistorialEstado {

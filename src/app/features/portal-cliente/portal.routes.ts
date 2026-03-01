@@ -23,6 +23,10 @@ export const PORTAL_ROUTES: Routes = [
                 component: PortalFacturacionComponent
             },
             {
+                path: 'cotizaciones',
+                loadComponent: () => import('./portal-cotizaciones/portal-cotizaciones.component').then(m => m.PortalCotizacionesComponent)
+            },
+            {
                 path: 'soporte',
                 loadComponent: () => import('./portal-soporte/portal-soporte.component').then(m => m.PortalSoporteComponent)
             },

@@ -1,0 +1,92 @@
+<div class="replay-container glass-panel">
+    <!-- Cabecera Auditoría -->
+    <div class="audit-header d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <i-lucide name="shield-check" class="neon-icon" [color]="'var(--neon-emerald)'"></i-lucide>
+            <div>
+                <h3 class="m-0 text-white fw-bold">Auditoría AVE (Anti-Fraude)</h3>
+                <p class="text-gray-400 text-sm mb-0">Hash: 0x9fA...k1P | Evaluación React Avanzado</p>
+            </div>
+        </div>
+
+        <!-- Alertas Generales de Riesgo -->
+        <div class="risk-badge" [class]="getRiskColor(maxRiskScore)">
+            <i-lucide name="alert-triangle" size="18" class="mr-2"></i-lucide>
+            Riesgo de Fraude Integral: {{ maxRiskScore }}%
+        </div>
+    </div>
+
+    <!-- Timeline (Heatmap Style Visualizer) -->
+    <div class="timeline-slider mt-5 mb-5 position-relative">
+        <div class="progress-track">
+            <!-- Relleno de progreso visual sincronizado con events array -->
+            <div class="progress-fill" [style.width.%]="(currentTimeIndex() / (events.length - 1)) * 100"></div>
+        </div>
+
+        <!-- Puntos o nodos de actividad a lo largo de la línea -->
+        <div class="event-nodes">
+            <button *ngFor="let ev of events; let i = index" class="event-node pulse"
+                [class.active]="currentTimeIndex() === i" [class.passed]="currentTimeIndex() >= i"
+                [ngClass]="getEventColor(ev.action)" [style.left.%]="(i / (events.length - 1)) * 100"
+                (click)="seekTo(i)">
+                <!-- Tooltip flotante estático para css puro -->
+                <span class="event-tooltip">
+                    <span class="d-block text-xs text-gray-400 mb-1">{{ ev.timestamp }}</span>
+                    <span class="fw-bold">{{ ev.action }}</span>
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Inspector del Evento Actual -->
+    <div class="event-inspector glass-panel neon-border mb-4 p-4 d-flex justify-content-between">
+        <div class="event-details">
+            <div class="d-flex align-items-center gap-2 mb-2 text-gray-300">
+                <i-lucide name="clock" size="16"></i-lucide>
+                <span class="font-mono">{{ currentEvent?.timestamp }}</span>
+            </div>
+            <h4 class="text-white fw-bold mb-1 d-flex align-items-center gap-2">
+                <span [ngClass]="getEventColor(currentEvent?.action || '')">{{ currentEvent?.action }}</span>
+                <span *ngIf="currentEvent?.questionId" class="badge bg-secondary ml-2">{{ currentEvent?.questionId
+                    }}</span>
+            </h4>
+            <p class="text-gray-400 mb-0">{{ currentEvent?.details }}</p>
+        </div>
+
+        <div class="event-risk text-right" *ngIf="currentEvent && currentEvent.riskScore > 0">
+            <span class="d-block text-sm text-gray-400 mb-1">Riesgo Disparado</span>
+            <span class="risk-score font-mono fs-4 text-rose-500">{{ currentEvent.riskScore }}%</span>
+        </div>
+    </div>
+
+    <!-- Controles de Playback -->
+    <div class="playback-controls d-flex justify-content-between align-items-center">
+        <!-- Indicador de Status Vida -->
+        <div class="d-flex align-items-center gap-2 text-gray-400">
+            <i-lucide name="activity" size="18" [class.animate-pulse]="isPlaying()"></i-lucide>
+            <span class="text-sm font-mono">{{ isPlaying() ? 'Simulación En Vivo...' : 'Auditoría Pausada' }}</span>
+        </div>
+
+        <!-- Main Controls -->
+        <div class="d-flex align-items-center gap-4">
+            <button class="control-btn" (click)="reset()" title="Reiniciar Auditoría">
+                <i-lucide name="rotate-ccw"></i-lucide>
+            </button>
+            <button class="play-btn neon-button" (click)="togglePlay()">
+                <i-lucide *ngIf="!isPlaying()" name="play" class="mr-2"></i-lucide>
+                <i-lucide *ngIf="isPlaying()" name="pause" class="mr-2"></i-lucide>
+                {{ isPlaying() ? 'PAUSAR' : 'REPRODUCIR' }}
+            </button>
+        </div>
+
+        <!-- Velocidades -->
+        <div class="speed-controls btn-group" role="group">
+            <button type="button" class="btn btn-outline-secondary btn-sm" [class.active]="playbackSpeed() === 0.5"
+                (click)="setSpeed(0.5)">0.5x</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" [class.active]="playbackSpeed() === 1"
+                (click)="setSpeed(1)">1x</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" [class.active]="playbackSpeed() === 2"
+                (click)="setSpeed(2)">2x</button>
+        </div>
+    </div>
+</div>

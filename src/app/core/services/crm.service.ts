@@ -1,8 +1,9 @@
 import { Injectable, inject, NgZone } from '@angular/core';
 import { Firestore, collection, doc, docData, setDoc, updateDoc, deleteDoc, query, where, collectionData, Timestamp, orderBy, addDoc } from '@angular/fire/firestore';
-import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+import { Storage, ref, uploadBytes, getDownloadURL, getBytes } from '@angular/fire/storage';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { Observable, from, throwError, of } from 'rxjs';
-import { switchMap, tap, catchError, distinctUntilChanged, take, shareReplay } from 'rxjs/operators';
+import { switchMap, catchError, distinctUntilChanged, take, shareReplay } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { Cliente, Actividad } from '../models/crm.model';
 
@@ -14,6 +15,7 @@ export class CrmService {
     private storage = inject(Storage);
     private authService = inject(AuthService);
     private ngZone = inject(NgZone);
+    private functions = inject(Functions);
 
     private async getTenantIdOrThrow(): Promise<string> {
         const tenantId = await this.authService.getTenantId();
@@ -29,20 +31,15 @@ export class CrmService {
     // Obtener lista de clientes como Observable (Real-time)
     getClientes(): Observable<Cliente[]> {
         if (!this.clientesCache$) {
-            console.log('[CRM] getClientes() cache miss, building pipeline...');
             this.clientesCache$ = this.authService.tenantId$.pipe(
-                tap(tenantId => console.log('[CRM] tenantId$ emitted:', tenantId)),
                 distinctUntilChanged(),
                 switchMap(tenantId => {
                     if (!tenantId) {
-                        console.error('[CRM] tenantId is null/undefined, cannot query clientes');
                         return of([] as Cliente[]);
                     }
                     const clientesRef = collection(this.firestore, 'clientes');
                     const q = query(clientesRef, where('tenantId', '==', tenantId), orderBy('createdAt', 'desc'));
-                    console.log('[CRM] Firestore query created for tenantId:', tenantId);
                     return (collectionData(q, { idField: 'id' }) as Observable<Cliente[]>).pipe(
-                        tap(data => console.log('[CRM] Firestore returned', data.length, 'clientes')),
                         catchError(innerErr => {
                             console.error('[CRM] Firestore query error:', innerErr);
                             return of([] as Cliente[]);
@@ -163,5 +160,50 @@ export class CrmService {
         const docsRef = collection(this.firestore, `clientes/${clienteId}/archivos`);
         const q = query(docsRef, orderBy('fechaSubida', 'desc'));
         return collectionData(q, { idField: 'id' }) as Observable<any[]>;
+    }
+
+    async retryAnalisisIA(documento: any): Promise<any> {
+        try {
+            // Descargar archivo primero como Blob, convertir a base64
+            // y enviarlo a analyzeDocument
+            const storageRef = ref(this.storage, documento.storagePath);
+            const arrayBuffer = await getBytes(storageRef);
+
+            // Convert ArrayBuffer to Base64
+            let binary = '';
+            const bytes = new Uint8Array(arrayBuffer);
+            const len = bytes.byteLength;
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            const base64Data = window.btoa(binary);
+
+            const analyzeDoc = httpsCallable(this.functions, 'analyzeDocument');
+            const result = await analyzeDoc({
+                fileBase64: base64Data,
+                mimeType: documento.contentType
+            });
+
+            // Parse result and update Firestore document
+            const dataExtraida: any = result.data;
+            const docRef = doc(this.firestore, `clientes/${documento.clienteId || documento.storagePath.split('/')[2]}/archivos/${documento.id}`);
+
+            await updateDoc(docRef, {
+                ocrData: {
+                    tipoDocumento: dataExtraida.categoria || dataExtraida.tipoDocumento || 'Desconocido',
+                    fechaEmision: dataExtraida.fecha || dataExtraida.fechaEmision || 'N/A',
+                    montoTotal: dataExtraida.monto || dataExtraida.montoTotal || 'N/A',
+                    partesInvolucradas: [dataExtraida.proveedor].filter(Boolean) || [],
+                    resumenCorto: dataExtraida.notas || dataExtraida.resumen || 'Análisis completado.'
+                },
+                analizadoPorIA: true,
+                updatedAt: Timestamp.now()
+            });
+
+            return result.data;
+        } catch (error) {
+            console.error('Error re-analizando documento', error);
+            throw error;
+        }
     }
 }

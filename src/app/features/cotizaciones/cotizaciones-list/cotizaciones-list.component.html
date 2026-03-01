@@ -31,20 +31,11 @@
             </app-data-table>
         </ng-container>
 
-        <div *ngIf="!isLoading && items.length === 0"
-            class="py-16 flex flex-col items-center justify-center text-center px-4">
-            <div
-                class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 border border-primary/20">
-                <lucide-icon name="file-text" class="w-8 h-8 text-primary"></lucide-icon>
-            </div>
-            <h3 class="text-lg font-semibold text-txt-primary mb-1">Sin Cotizaciones</h3>
-            <p class="text-txt-muted max-w-md mx-auto mb-6">Aún no has generado ninguna propuesta. Selecciona un cliente
-                de tu CRM, envíale una cotización profesional y cierra tu primera venta.</p>
-            <button routerLink="/cotizaciones/nueva"
-                class="flex items-center justify-center px-5 py-2.5 bg-surface-hover border border-border text-txt-primary rounded-lg hover:bg-border transition-colors font-medium shadow-sm">
-                <lucide-icon name="file-plus-2" class="w-4 h-4 mr-2"></lucide-icon>
-                Crear Primera Cotización
-            </button>
+        <div *ngIf="!isLoading && items.length === 0" class="mt-8">
+            <app-empty-state icon="file-text" title="Sin Cotizaciones"
+                description="Aún no has generado ninguna propuesta. Selecciona un cliente de tu CRM, envíale una cotización profesional y cierra tu primera venta."
+                actionLabel="Crear Primera Cotización" actionIcon="file-plus-2" (onAction)="goToNuevaCotizacion()">
+            </app-empty-state>
         </div>
     </div>
 </div>

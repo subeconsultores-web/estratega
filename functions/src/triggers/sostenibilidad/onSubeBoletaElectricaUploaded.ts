@@ -11,7 +11,7 @@ export const onSubeBoletaElectricaUploaded = onObjectFinalized(
         memory: "512MiB"
     },
     async (event) => {
-        const fileBucket = event.data.bucket;
+        // const fileBucket = event.data.bucket; // Habilitar cuando se use Document AI real
         const filePath = event.data.name;
         const contentType = event.data.contentType;
 

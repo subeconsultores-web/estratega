@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, importProvidersFrom } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { tenantInterceptor } from './core/auth/interceptors/tenant.interceptor';
 import { zeroTrustInterceptor } from './core/interceptors/zero-trust.interceptor';
@@ -10,7 +10,6 @@ import { provideStorage, getStorage } from '@angular/fire/storage';
 import { provideFunctions, getFunctions } from '@angular/fire/functions';
 import { provideToastr } from 'ngx-toastr';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 
@@ -23,9 +22,8 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(LucideAngularModule),
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(withInterceptors([tenantInterceptor, zeroTrustInterceptor])),
-    provideRouter(routes),
+    provideRouter(routes, withPreloading(PreloadAllModules)),
     provideAnimationsAsync(),
-    provideCharts(withDefaultRegisterables()),
     provideToastr({
       timeOut: 4000,
       positionClass: 'toast-top-right',

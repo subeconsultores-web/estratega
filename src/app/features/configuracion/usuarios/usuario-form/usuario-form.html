@@ -1,0 +1,133 @@
+<!-- Modal Backdrop -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200"
+    (click)="close.emit()">
+
+    <!-- Modal Content -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-md border border-slate-200 dark:border-slate-800 overflow-hidden"
+        (click)="$event.stopPropagation()">
+
+        <!-- Modal Header -->
+        <div
+            class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                    <lucide-icon [name]="isEditMode ? 'edit-2' : 'user-plus'" [size]="20"></lucide-icon>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">
+                        {{ isEditMode ? 'Editar Miembro' : 'Crear Miembro' }}
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                        {{ isEditMode ? 'Edita los permisos o estado de este usuario' : 'Agrega un nuevo usuario al
+                        equipo' }}
+                    </p>
+                </div>
+            </div>
+            <button (click)="close.emit()"
+                class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                <lucide-icon name="x" [size]="20"></lucide-icon>
+            </button>
+        </div>
+
+        <!-- Form Body -->
+        <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="flex flex-col">
+            <div class="p-6 space-y-5">
+
+                <!-- Nombre Completo -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                        for="nombre">Nombre Completo</label>
+                    <input type="text" id="nombre" formControlName="nombre" placeholder="Ej. Juan Pérez"
+                        class="w-full px-4 py-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                        [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-red-500/20': userForm.get('nombre')?.invalid && userForm.get('nombre')?.touched}">
+                    <p *ngIf="userForm.get('nombre')?.invalid && userForm.get('nombre')?.touched"
+                        class="mt-1.5 text-xs text-red-500">
+                        El nombre es obligatorio.
+                    </p>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                        for="email">Correo Electrónico</label>
+                    <input type="email" id="email" formControlName="email" placeholder="juan@empresa.com"
+                        class="w-full px-4 py-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors disabled:opacity-50 disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:cursor-not-allowed"
+                        [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-red-500/20': userForm.get('email')?.invalid && userForm.get('email')?.touched}">
+                    <p *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched"
+                        class="mt-1.5 text-xs text-red-500">
+                        Ingresa un correo electrónico válido.
+                    </p>
+                    <p *ngIf="isEditMode" class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                        El correo electrónico no se puede editar una vez creado.
+                    </p>
+                </div>
+
+                <!-- Rol -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" for="rol">Rol de
+                        Acceso</label>
+                    <select id="rol" formControlName="rol"
+                        class="w-full px-4 py-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors appearance-none">
+                        <option value="admin">Administrador (Acceso Total)</option>
+                        <option value="editor">Editor (Puede modificar)</option>
+                        <option value="viewer">Lector (Solo vista)</option>
+                    </select>
+                </div>
+
+                <!-- Estado (Solo en Edit Mode) -->
+                <div *ngIf="isEditMode" class="flex flex-col gap-1.5 pt-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Estado de la
+                        cuenta</label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" formControlName="activo" class="sr-only peer">
+                            <div
+                                class="block w-10 h-6 bg-slate-300 dark:bg-slate-700 rounded-full peer-checked:bg-blue-600 transition-colors">
+                            </div>
+                            <div
+                                class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-4">
+                            </div>
+                        </div>
+                        <span class="text-sm text-slate-700 dark:text-slate-300 select-none">
+                            {{ userForm.get('activo')?.value ? 'Activo (Puede iniciar sesión)' : 'Suspendido (Acceso
+                            revocado)' }}
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Password (Creación y Edición) -->
+                <div class="pt-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5" for="password">{{
+                        isEditMode ? 'Cambiar Contraseña' : 'Contraseña' }} <span
+                            class="text-slate-400 font-normal">(Opcional)</span></label>
+                    <input type="password" id="password" formControlName="password"
+                        [placeholder]="isEditMode ? 'Nueva contraseña' : 'Ej. MiPasswordSeguro123!'"
+                        autocomplete="new-password"
+                        class="w-full px-4 py-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors">
+                    <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                        {{ isEditMode ? 'Si dejas este campo vacío, la contraseña actual se mantendrá intacta.' : 'Si
+                        dejas este campo vacío, se asignará Subeia2024*' }}
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Footer Actions -->
+            <div
+                class="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+                <button type="button" (click)="close.emit()"
+                    class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                    Cancelar
+                </button>
+                <button type="submit" [disabled]="isSaving"
+                    class="px-4 py-2 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                    <lucide-icon *ngIf="isSaving" name="loader-2" [size]="16" class="animate-spin"></lucide-icon>
+                    <lucide-icon *ngIf="!isSaving" name="save" [size]="16"></lucide-icon>
+                    <span>{{ isSaving ? 'Guardando...' : (isEditMode ? 'Guardar Cambios' : 'Crear Usuario') }}</span>
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>

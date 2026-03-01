@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowDown, ArrowUp  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, Activity, ArrowDown, ArrowUp, ArrowUpFromLine, Briefcase, CheckSquare, Clock, DollarSign, FileText, TrendingUp } from 'lucide-angular';
 import { CurrencyFormatPipe } from '../../pipes/currency-format.pipe';
 
 @Component({
@@ -8,10 +8,14 @@ import { CurrencyFormatPipe } from '../../pipes/currency-format.pipe';
   standalone: true,
   imports: [CommonModule, LucideAngularModule, CurrencyFormatPipe],
   providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowDown, ArrowUp }) }
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Activity, ArrowDown, ArrowUp, ArrowUpFromLine, Briefcase, CheckSquare, Clock, DollarSign, FileText, TrendingUp }) }
   ],
   template: `
-    <div class="bg-surface rounded-xl border border-border p-6 shadow-sm">
+    <div class="bg-surface rounded-xl border border-border p-6 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300 relative overflow-hidden group">
+      <!-- Accent Stripe -->
+      <div class="absolute top-0 left-0 right-0 h-1 rounded-t-xl opacity-80 group-hover:opacity-100 transition-opacity"
+           [style.background]="'linear-gradient(90deg, ' + gradientStart + ', transparent)'">
+      </div>
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm font-medium text-txt-muted">{{ title }}</p>
@@ -24,14 +28,14 @@ import { CurrencyFormatPipe } from '../../pipes/currency-format.pipe';
             </ng-template>
           </h3>
         </div>
-        <div class="w-12 h-12 rounded-lg flex items-center justify-center" [ngClass]="iconBgClass">
+        <div class="w-12 h-12 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110" [ngClass]="iconBgClass">
           <lucide-icon [name]="icon" [class]="iconColorClass"></lucide-icon>
         </div>
       </div>
       <div *ngIf="trendText" class="mt-4 flex items-center text-sm">
-        <lucide-icon *ngIf="trend === 'up'" name="arrow-up" class="w-4 h-4 text-green-500 mr-1"></lucide-icon>
-        <lucide-icon *ngIf="trend === 'down'" name="arrow-down" class="w-4 h-4 text-red-500 mr-1"></lucide-icon>
-        <span [ngClass]="trend === 'up' ? 'text-green-500' : (trend === 'down' ? 'text-red-500' : 'text-txt-muted')">
+        <lucide-icon *ngIf="trend === 'up'" name="arrow-up" class="w-4 h-4 text-success mr-1"></lucide-icon>
+        <lucide-icon *ngIf="trend === 'down'" name="arrow-down" class="w-4 h-4 text-danger mr-1"></lucide-icon>
+        <span [ngClass]="trend === 'up' ? 'text-success' : (trend === 'down' ? 'text-danger' : 'text-txt-muted')">
           {{ trendText }}
         </span>
         <span class="text-txt-muted ml-1">{{ trendDesc }}</span>
@@ -56,8 +60,8 @@ export class StatCardComponent {
       'primary': 'bg-primary/10',
       'secondary': 'bg-secondary/10',
       'accent': 'bg-accent/10',
-      'warning': 'bg-yellow-500/10',
-      'danger': 'bg-red-500/10'
+      'warning': 'bg-warning/10',
+      'danger': 'bg-danger/10'
     };
     return map[this.color] || map['primary'];
   }
@@ -67,8 +71,19 @@ export class StatCardComponent {
       'primary': 'text-primary',
       'secondary': 'text-secondary',
       'accent': 'text-accent',
-      'warning': 'text-yellow-500',
-      'danger': 'text-red-500'
+      'warning': 'text-warning',
+      'danger': 'text-danger'
+    };
+    return map[this.color] || map['primary'];
+  }
+
+  get gradientStart(): string {
+    const map: Record<string, string> = {
+      'primary': 'var(--color-primary)',
+      'secondary': 'var(--color-secondary)',
+      'accent': 'var(--color-accent)',
+      'warning': 'var(--color-warning)',
+      'danger': 'var(--color-danger)'
     };
     return map[this.color] || map['primary'];
   }

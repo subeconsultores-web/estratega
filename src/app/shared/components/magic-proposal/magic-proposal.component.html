@@ -1,0 +1,88 @@
+<div class="relative w-full h-[500px] flex items-center justify-center perspective-[2000px]">
+
+    <!-- Interactive Card -->
+    <div #proposalCard
+        class="magic-card relative w-[90%] max-w-[450px] aspect-[4/5] rounded-[32px] overflow-hidden transition-transform duration-200 ease-out preserve-3d cursor-pointer"
+        [style.transform]="'rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateZ(' + translateZ + 'px)'"
+        (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+
+        <!-- Glass Background -->
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[32px]"></div>
+
+        <!-- Inner Glow (Responsive to mouse) -->
+        <div class="glare absolute inset-0 rounded-[32px] pointer-events-none transition-opacity duration-300 mix-blend-overlay z-20"
+            [style.opacity]="isHovered ? 0.6 : 0"
+            [style.background]="'radial-gradient(circle at ' + glareX + '% ' + glareY + '%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 60%)'">
+        </div>
+
+        <!-- Neon Edge Lighting -->
+        <div class="absolute inset-0 rounded-[32px] border border-cyan-500/0 transition-colors duration-500 z-10"
+            [class.border-cyan-500/50]="isHovered" [class.shadow-[0_0_30px_rgba(34,211,238,0.2)]]="isHovered">
+        </div>
+
+        <!-- Content Container -->
+        <div class="relative z-30 flex flex-col h-full p-8 text-white">
+
+            <!-- Header -->
+            <div class="flex justify-between items-start mb-auto transform-tz-20">
+                <div>
+                    <div
+                        class="text-cyan-400 font-medium text-xs tracking-widest uppercase mb-1 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]"></span>
+                        Propuesta Activa
+                    </div>
+                    <h2 class="text-2xl font-bold leading-tight">{{clientName}}</h2>
+                </div>
+                <div
+                    class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md">
+                    <!-- Lucide Icon Placeholder (Sparkles or FileText) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-cyan-400">
+                        <path
+                            d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="transform-tz-30">
+                <h3 class="text-3xl font-light text-slate-100 mb-4">{{proposalTitle}}</h3>
+                <p class="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-3">
+                    Implementación integral de soluciones de Inteligencia Artificial para optimización de procesos
+                    operativos, predicción de ventas y automatización de reportes ESG según normativas vigentes.
+                </p>
+
+                <!-- Tags -->
+                <div class="flex flex-wrap gap-2 mb-8">
+                    <span
+                        class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium backdrop-blur-sm">Machine
+                        Learning</span>
+                    <span
+                        class="px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-medium backdrop-blur-sm">ESG
+                        Report</span>
+                </div>
+            </div>
+
+            <!-- Footer/Value -->
+            <div class="mt-auto pt-6 border-t border-white/10 flex items-end justify-between transform-tz-40">
+                <div>
+                    <p class="text-slate-500 text-xs uppercase tracking-wider mb-1">Inversión Estimada</p>
+                    <p class="text-3xl font-semibold text-white tracking-tight">
+                        {{totalValue | currency:'USD':'symbol':'1.0-0'}}
+                    </p>
+                </div>
+
+                <button
+                    class="w-12 h-12 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white flex items-center justify-center transition-all focus:outline-none shadow-[0_0_15px_rgba(8,145,178,0.5)] group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="group-hover:translate-x-1 transition-transform">
+                        <path d="M5 12h14" />
+                        <path d="m12 5 7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

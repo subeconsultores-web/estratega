@@ -1,8 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, FileText, Loader2, Send, ShieldCheck  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ArrowLeft, FileText, Loader2, Send, ShieldCheck } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
 
 import { ContratoService } from '../../../core/services/contrato.service';
 import { Contrato, FirmaData } from '../../../core/models/contrato.model';
@@ -12,9 +14,9 @@ import { SignaturePadComponent } from '../../../shared/components/signature-pad/
     selector: 'app-contrato-view',
     standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule, SignaturePadComponent],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, FileText, Loader2, Send, ShieldCheck }) }
-  ],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, FileText, Loader2, Send, ShieldCheck }) }
+    ],
     templateUrl: './contrato-view.component.html'
 })
 export class ContratoViewComponent implements OnInit {
@@ -23,6 +25,8 @@ export class ContratoViewComponent implements OnInit {
     private contratoService = inject(ContratoService);
     private toastr = inject(ToastrService);
     private location = inject(Location);
+    private confirmDialog = inject(ConfirmDialogService);
+    private destroyRef = inject(DestroyRef);
 
     contratoId = this.route.snapshot.paramMap.get('id');
     contrato: Contrato | undefined;
@@ -35,7 +39,7 @@ export class ContratoViewComponent implements OnInit {
     loadContrato() {
         if (!this.contratoId) return;
         this.isLoading = true;
-        this.contratoService.getContratoById(this.contratoId).subscribe({
+        this.contratoService.getContratoById(this.contratoId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (data) => {
                 this.contrato = data;
                 this.isLoading = false;
@@ -64,10 +68,15 @@ export class ContratoViewComponent implements OnInit {
             });
     }
 
-    enviarContrato() {
+    async enviarContrato() {
         if (!this.contratoId) return;
-        // Just changes State to "Enviado" meaning the client can now sign it.
-        if (confirm('¿Confirmas el envío de este contrato comercial al cliente?')) {
+        const ok = await this.confirmDialog.confirm({
+            title: 'Enviar contrato',
+            message: '¿Confirmas el envío de este contrato comercial al cliente? Podrá firmarlo digitalmente.',
+            variant: 'info',
+            confirmText: 'Enviar'
+        });
+        if (ok) {
             this.contratoService.cambiarEstado(this.contratoId, 'Enviado')
                 .then(() => {
                     this.toastr.success('Contrato marcado como Enviado');

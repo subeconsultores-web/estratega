@@ -43,6 +43,11 @@ export interface Factura {
     montoPendiente: number;
     pdfUrl?: string;
 
+    // AI Cash Flow Projections
+    fechaProyectada?: Date;
+    diasPromedioPago?: number;
+    alertaRetraso?: boolean;
+
     // Integración Stripe
     urlStripeCheckout?: string; // URL generada temporal de la sesión para el cliente
     stripeCheckoutSessionId?: string; // ID interno de la sesión de Stripe

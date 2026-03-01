@@ -1,9 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, Calculator, Layers, Loader2, Plus, Save, User, X  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ArrowLeft, Calculator, Layers, Loader2, Plus, Save, User, X, TrendingUp, Copy } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { CotizacionService } from '../../../core/services/cotizacion.service';
 import { CatalogoService } from '../../../core/services/catalogo.service';
 import { CrmService } from '../../../core/services/crm.service';
@@ -18,9 +20,9 @@ import { Timestamp } from '@angular/fire/firestore';
     selector: 'app-cotizacion-form',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterModule, LucideAngularModule],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Calculator, Layers, Loader2, Plus, Save, User, X }) }
-  ],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Calculator, Layers, Loader2, Plus, Save, User, X, TrendingUp, Copy }) }
+    ],
     templateUrl: './cotizacion-form.component.html'
 })
 export class CotizacionFormComponent implements OnInit {
@@ -32,6 +34,8 @@ export class CotizacionFormComponent implements OnInit {
     private router = inject(Router);
     private location = inject(Location);
     private toastr = inject(ToastrService);
+    private destroyRef = inject(DestroyRef);
+    private functions = inject(Functions);
 
     cotiForm: FormGroup;
     itemId = this.route.snapshot.paramMap.get('id');
@@ -43,6 +47,10 @@ export class CotizacionFormComponent implements OnInit {
     // Data Masters
     clientesActivos: Cliente[] = [];
     catalogoActivo: CatalogoItem[] = [];
+
+    // Yield Management IA
+    isLoadingCapacidad = false;
+    capacidadData: any = null;
 
     constructor() {
         this.cotiForm = this.fb.group({
@@ -72,6 +80,7 @@ export class CotizacionFormComponent implements OnInit {
 
     // Storage del recalculo dinámico
     subtotal: number = 0;
+    subtotalOpcional: number = 0;
     montoDescuento: number = 0;
     montoImpuesto: number = 0;
     totalFinal: number = 0;
@@ -84,18 +93,18 @@ export class CotizacionFormComponent implements OnInit {
         this.isLoading = true;
         try {
             // 1. Cargar CRMs
-            this.crmService.getClientes().subscribe((clientes: Cliente[]) => {
+            this.crmService.getClientes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((clientes: Cliente[]) => {
                 this.clientesActivos = clientes;
             });
 
             // 2. Cargar Catálogo (Solo ítems activos)
-            this.catalogoService.getItems().subscribe((cat: CatalogoItem[]) => {
+            this.catalogoService.getItems().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((cat: CatalogoItem[]) => {
                 this.catalogoActivo = cat.filter(i => i.isActive);
             });
 
             // 3. Cargar Cotización si Edit Mode
             if (this.isEditMode && this.itemId) {
-                this.cotizacionService.getCotizacion(this.itemId).subscribe((cot: Cotizacion | undefined) => {
+                this.cotizacionService.getCotizacion(this.itemId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe((cot: Cotizacion | undefined) => {
                     if (cot) this.patchFormularioContexto(cot);
                     this.isLoading = false;
                 });
@@ -139,7 +148,8 @@ export class CotizacionFormComponent implements OnInit {
                     descripcion: i.descripcion,
                     cantidad: i.cantidad,
                     precioUnitario: i.precioUnitario,
-                    subtotal: i.subtotal
+                    subtotal: i.subtotal,
+                    opcional: i.opcional || false
                 });
                 this.itemsArray.push(row);
             });
@@ -156,7 +166,8 @@ export class CotizacionFormComponent implements OnInit {
             descripcion: [''],
             cantidad: [1, [Validators.required, Validators.min(1)]],
             precioUnitario: [0, [Validators.required, Validators.min(0)]],
-            subtotal: [{ value: 0, disabled: true }] // Calculado automáticamente
+            subtotal: [{ value: 0, disabled: true }], // Calculado automáticamente
+            opcional: [false]
         });
 
         // Escuchar cambios de Item catálogo para autollenar metadata comercial
@@ -172,9 +183,10 @@ export class CotizacionFormComponent implements OnInit {
             }
         });
 
-        // Escuchar Quantity y Precio para recomputar subtotales on the fly
+        // Escuchar Quantity, Precio y Opcional para recomputar subtotales on the fly
         grp.get('cantidad')?.valueChanges.subscribe(() => this.recalcularLineaSubtotal(grp));
         grp.get('precioUnitario')?.valueChanges.subscribe(() => this.recalcularLineaSubtotal(grp));
+        grp.get('opcional')?.valueChanges.subscribe(() => this.recalcularTotales());
 
         return grp;
     }
@@ -202,10 +214,17 @@ export class CotizacionFormComponent implements OnInit {
     // --- MOTOR MATEMÁTICO BASE ---
 
     recalcularTotales() {
-        // 1. Subtotal de los items
-        this.subtotal = this.itemsArray.controls.reduce((acc, currentGrp) => {
-            return acc + (currentGrp.get('subtotal')?.value || 0);
-        }, 0);
+        // 1. Subtotal de los items separando opcionales
+        this.subtotal = 0;
+        this.subtotalOpcional = 0;
+        this.itemsArray.controls.forEach(grp => {
+            const st = grp.get('subtotal')?.value || 0;
+            if (grp.get('opcional')?.value) {
+                this.subtotalOpcional += st;
+            } else {
+                this.subtotal += st;
+            }
+        });
 
         // 2. Aplicar Descuentos Globales
         const dType = this.cotiForm.get('descuentoTipo')?.value;
@@ -251,7 +270,8 @@ export class CotizacionFormComponent implements OnInit {
                 descripcion: it.descripcion,
                 cantidad: Number(it.cantidad),
                 precioUnitario: Number(it.precioUnitario),
-                subtotal: Number(it.cantidad) * Number(it.precioUnitario)
+                subtotal: Number(it.cantidad) * Number(it.precioUnitario),
+                opcional: !!it.opcional
             })),
 
             subtotal: this.subtotal,
@@ -286,5 +306,35 @@ export class CotizacionFormComponent implements OnInit {
 
     goBack() {
         this.location.back();
+    }
+
+    async consultarCapacidad() {
+        this.isLoadingCapacidad = true;
+        try {
+            const callFn = httpsCallable(this.functions, 'evaluarCapacidadYPrecios');
+            const result = await callFn({});
+            const payload: any = result.data;
+            if (payload?.success) {
+                this.capacidadData = payload.data;
+            } else {
+                this.toastr.warning('No se pudo obtener la evaluación de capacidad.');
+            }
+        } catch (error) {
+            console.error('Error evaluando capacidad:', error);
+            this.toastr.error('Error al consultar la inteligencia de precios.');
+        } finally {
+            this.isLoadingCapacidad = false;
+        }
+    }
+
+    copyLink() {
+        if (!this.itemId) return;
+        const link = `${window.location.origin}/p/${this.itemId}`;
+        navigator.clipboard.writeText(link).then(() => {
+            this.toastr.success('Enlace de la propuesta copiado al portapapeles');
+        }).catch(err => {
+            console.error('Error al copiar el enlace:', err);
+            this.toastr.error('No se pudo copiar el enlace');
+        });
     }
 }

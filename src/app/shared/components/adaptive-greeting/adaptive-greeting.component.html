@@ -1,0 +1,23 @@
+<div class="adaptive-greeting-container glass-panel" [ngClass]="timeClass">
+
+    <!-- Aura de fondo dinámica conectada a la variable computada en TS -->
+    <div class="environmental-aura" [style.--glow-color]="themeGlowColor()"></div>
+
+    <div class="greeting-content d-flex align-items-center gap-4 position-relative z-10">
+        <div class="icon-wrapper glass mb-0 p-3 rounded-circle">
+            <!-- Icono variable dinámicamente -->
+            <i-lucide
+                [name]="timeOfDay() === 'morning' ? 'sunrise' : timeOfDay() === 'afternoon' ? 'sun' : timeOfDay() === 'evening' ? 'sunset' : 'moon'"
+                class="time-icon animate-float" [style.color]="themeGlowColor()" size="32"></i-lucide>
+        </div>
+
+        <div class="text-wrapper">
+            <h2 class="greeting-title fw-bold mb-1 text-white text-shadow-glow">
+                {{ greetingText() }}
+            </h2>
+            <p class="greeting-subtitle text-gray-300 mb-0">
+                {{ subGreeting() }}
+            </p>
+        </div>
+    </div>
+</div>

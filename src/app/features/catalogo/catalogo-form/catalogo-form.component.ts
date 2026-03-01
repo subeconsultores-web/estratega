@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, Banknote, Loader2, Package, Save, Settings2  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ArrowLeft, Banknote, Loader2, Package, Save, Settings2 } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 import { CatalogoService } from '../../../core/services/catalogo.service';
 import { CatalogoItem } from '../../../core/models/catalogo.model';
@@ -11,9 +12,9 @@ import { CatalogoItem } from '../../../core/models/catalogo.model';
     selector: 'app-catalogo-form',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterModule, LucideAngularModule],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Banknote, Loader2, Package, Save, Settings2 }) }
-  ],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Banknote, Loader2, Package, Save, Settings2 }) }
+    ],
     templateUrl: './catalogo-form.component.html'
 })
 export class CatalogoFormComponent implements OnInit {
@@ -23,6 +24,7 @@ export class CatalogoFormComponent implements OnInit {
     private router = inject(Router);
     private location = inject(Location);
     private toastr = inject(ToastrService);
+    private destroyRef = inject(DestroyRef);
 
     catalogoForm: FormGroup;
     itemId = this.route.snapshot.paramMap.get('id');
@@ -53,7 +55,7 @@ export class CatalogoFormComponent implements OnInit {
         if (!this.itemId) return;
         this.isLoading = true;
 
-        this.catalogoService.getItem(this.itemId).subscribe({
+        this.catalogoService.getItem(this.itemId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (item: CatalogoItem | undefined) => {
                 if (item) {
                     this.catalogoForm.patchValue(item);

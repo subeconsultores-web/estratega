@@ -22,6 +22,19 @@ service cloud.firestore {
     function isSuperAdmin() {
       return request.auth.token.email == 'bruno@subeia.tech' || hasRole('super_admin');
     }
+
+    // Client Portal helpers
+    function isClient() {
+      return hasRole('client');
+    }
+
+    function getClienteId() {
+      return request.auth.token.clienteId;
+    }
+
+    function isStaff() {
+      return !isClient();
+    }
     
     // Tenants collection
     match /tenants/{tenantId} {
@@ -82,12 +95,48 @@ service cloud.firestore {
     match /catalogoServicios/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
     match /cotizaciones/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
     match /contratos/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
-    match /facturas/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
-    match /proyectos/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    // Facturas: clients can only read their own
+    match /facturas/{docId} {
+      allow read: if isAuthenticated() && (
+        (isStaff() && canReadTenantDoc()) ||
+        (isClient() && isTenantData(resource.data) && resource.data.clienteId == getClienteId())
+      );
+      allow create: if canCreateTenantDoc() && isStaff();
+      allow update: if canUpdateTenantDoc() && isStaff();
+      allow delete: if canDeleteTenantDoc();
+    }
+    // Proyectos: clients can only read their own
+    match /proyectos/{docId} {
+      allow read: if isAuthenticated() && (
+        (isStaff() && canReadTenantDoc()) ||
+        (isClient() && isTenantData(resource.data) && resource.data.clienteId == getClienteId())
+      );
+      allow create: if canCreateTenantDoc() && isStaff();
+      allow update: if canUpdateTenantDoc() && isStaff();
+      allow delete: if canDeleteTenantDoc();
+    }
+    // Tareas: clients can read tasks of their projects (filtered in queries by clienteId on project)
     match /tareas/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
     match /registrosTiempo/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
     match /movimientosFinancieros/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
     match /notificaciones/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /catalogo/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /transacciones/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /sostenibilidad/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    // Tickets: clients can read/create their own
+    match /tickets/{docId} {
+      allow read: if isAuthenticated() && (
+        (isStaff() && canReadTenantDoc()) ||
+        (isClient() && isTenantData(resource.data) && resource.data.clienteId == getClienteId())
+      );
+      allow create: if isAuthenticated() && (
+        (isStaff() && canCreateTenantDoc()) ||
+        (isClient() && isTenantData(request.resource.data) && request.resource.data.clienteId == getClienteId())
+      );
+      allow update: if canUpdateTenantDoc();
+      allow delete: if canDeleteTenantDoc();
+    }
+    match /webhooks/{docId} { allow read: if canReadTenantDoc() && isAdmin(); allow create: if canCreateTenantDoc() && isAdmin(); allow update: if canUpdateTenantDoc() && isAdmin(); allow delete: if canDeleteTenantDoc(); }
     
     // Clientes subcollections (like archivos)
     match /clientes/{clienteId}/archivos/{docId} {
@@ -97,6 +146,36 @@ service cloud.firestore {
     // Public collections
     match /client-logos/{docId} {
       allow read: if true;
+    }
+
+    // Temporary registration collection — write-only for authenticated users
+    // Cloud Function processes and deletes these docs after tenant provisioning
+    match /_registros_temp/{docId} {
+      allow create: if isAuthenticated();
+      allow read, update, delete: if false;
+    }
+
+    // Pilar 3: Mensajería Omnicanal
+    match /conversaciones/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update: if canUpdateTenantDoc(); allow delete: if canDeleteTenantDoc(); }
+    match /mensajes/{docId} { allow read: if canReadTenantDoc(); allow create: if canCreateTenantDoc(); allow update, delete: if false; }
+
+    // Pilar 4: Seguridad Enterprise
+    match /session_logs/{docId} {
+      allow create: if isAuthenticated();
+      allow read, update, delete: if false;
+    }
+    match /activity_logs/{docId} {
+      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && isAdmin();
+      allow update, delete: if false;
+    }
+    match /audit_ledger/{docId} {
+      allow read: if isAuthenticated() && isSuperAdmin();
+      allow create, update, delete: if false;
+    }
+    match /zero_trust_logs/{docId} {
+      allow read: if isAuthenticated() && isSuperAdmin();
+      allow create, update, delete: if false;
     }
   }
 }

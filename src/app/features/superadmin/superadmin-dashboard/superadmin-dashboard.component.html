@@ -1,60 +1,86 @@
-<div class="space-y-8">
+<div class="space-y-8 animate-fade-in">
+
+    <!-- Wow Factor: Adaptative Greeting Banner (Fase 6) -->
+    <app-adaptive-greeting class="d-block w-100 mb-4"></app-adaptive-greeting>
+
     <!-- Metrics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+        <div
+            class="bg-surface border border-white/5 rounded-xl p-6 shadow-elevation-1 hover:shadow-elevation-2 transition-all animate-fade-in-up delay-1 glass-panel">
             <div class="flex items-center justify-between mb-2">
-                <h3 class="text-slate-400 font-medium text-sm">Total Tenants</h3>
-                <lucide-icon name="briefcase" [size]="20" class="text-indigo-500"></lucide-icon>
+                <h3 class="text-txt-muted font-medium text-sm">Total Tenants</h3>
+                <lucide-icon name="briefcase" [size]="20" class="text-primary"></lucide-icon>
             </div>
-            <p class="text-3xl font-bold text-white">{{ metrics.total }}</p>
+            <p class="text-3xl font-bold text-txt-primary">{{ metrics.total }}</p>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+        <div
+            class="bg-surface border border-white/5 rounded-xl p-6 shadow-elevation-1 hover:shadow-elevation-2 transition-all animate-fade-in-up delay-2 glass-panel">
             <div class="flex items-center justify-between mb-2">
-                <h3 class="text-slate-400 font-medium text-sm">Activos</h3>
-                <lucide-icon name="check-square" [size]="20" class="text-emerald-500"></lucide-icon>
+                <h3 class="text-txt-muted font-medium text-sm">Activos</h3>
+                <lucide-icon name="check-square" [size]="20" class="text-success"></lucide-icon>
             </div>
-            <p class="text-3xl font-bold text-white">{{ metrics.active }}</p>
+            <p class="text-3xl font-bold text-txt-primary">{{ metrics.active }}</p>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+        <div
+            class="bg-surface border border-white/5 rounded-xl p-6 shadow-elevation-1 hover:shadow-elevation-2 transition-all animate-fade-in-up delay-3 glass-panel">
             <div class="flex items-center justify-between mb-2">
-                <h3 class="text-slate-400 font-medium text-sm">En Prueba (Trial)</h3>
-                <lucide-icon name="clock" [size]="20" class="text-amber-500"></lucide-icon>
+                <h3 class="text-txt-muted font-medium text-sm">En Prueba (Trial)</h3>
+                <lucide-icon name="clock" [size]="20" class="text-warning"></lucide-icon>
             </div>
-            <p class="text-3xl font-bold text-white">{{ metrics.trial }}</p>
+            <p class="text-3xl font-bold text-txt-primary">{{ metrics.trial }}</p>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
-            <div class="flex items-center justify-between mb-2">
-                <h3 class="text-slate-400 font-medium text-sm">MRR Estimado</h3>
-                <lucide-icon name="dollar-sign" [size]="20" class="text-emerald-500"></lucide-icon>
+        <div
+            class="bg-surface border border-white/5 rounded-xl p-6 shadow-elevation-1 hover:shadow-elevation-2 transition-all animate-fade-in-up delay-4 neon-border">
+            <div class="flex items-center justify-between mb-2 z-10 relative">
+                <h3 class="text-txt-muted font-medium text-sm">MRR Estimado</h3>
+                <lucide-icon name="dollar-sign" [size]="20" class="text-success"></lucide-icon>
             </div>
-            <p class="text-3xl font-bold text-emerald-400">${{ metrics.mrr }}</p>
+            <p class="text-3xl font-bold text-success z-10 relative">${{ metrics.mrr }}</p>
         </div>
     </div>
 
-    <!-- Loading State -->
-    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
-        <lucide-icon name="loader-2" [size]="32" class="text-indigo-500 animate-spin"></lucide-icon>
+    <!-- Loading State (Liquid State UI) -->
+    <div *ngIf="isLoading" class="mt-8 space-y-8 animate-fade-in">
+        <!-- Skeleton Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-surface/50 border border-white/5 rounded-xl h-32 animate-shimmer delay-1"></div>
+            <div class="bg-surface/50 border border-white/5 rounded-xl h-32 animate-shimmer delay-2"></div>
+            <div class="bg-surface/50 border border-white/5 rounded-xl h-32 animate-shimmer delay-3"></div>
+            <div class="bg-surface/50 border border-white/5 rounded-xl h-32 animate-shimmer delay-4"></div>
+        </div>
+
+        <!-- Skeleton Table -->
+        <div
+            class="bg-surface/50 border border-white/5 rounded-xl shadow-elevation-1 overflow-hidden animate-shimmer delay-5">
+            <div class="h-16 border-b border-white/5 bg-surface/30"></div>
+            <div class="p-0">
+                <div class="h-16 border-b border-white/5 bg-surface/20"></div>
+                <div class="h-16 border-b border-white/5 bg-surface/20"></div>
+                <div class="h-16 border-b border-white/5 bg-surface/20"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Table -->
-    <div *ngIf="!isLoading" class="bg-slate-900 border border-slate-800 rounded-xl shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-slate-800 flex justify-between items-center">
-            <h2 class="text-lg font-bold text-white">Agencias (Tenants)</h2>
-            <div class="relative">
+    <div *ngIf="!isLoading"
+        class="glass-panel border border-white/5 rounded-xl shadow-elevation-1 overflow-hidden animate-fade-in-up delay-5">
+        <div class="p-6 border-b border-white/5 flex justify-between items-center">
+            <h2 class="text-lg font-bold text-txt-primary">Agencias (Tenants)</h2>
+            <div class="relative group">
                 <lucide-icon name="search" [size]="20"
-                    class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></lucide-icon>
+                    class="absolute left-3 top-1/2 -translate-y-1/2 text-txt-muted group-hover:text-primary transition-colors"></lucide-icon>
                 <input type="text" placeholder="Buscar agencia..."
-                    class="pl-10 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                    class="pl-10 pr-4 py-2 bg-base border border-border rounded-lg text-sm text-txt-primary focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all">
             </div>
         </div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-slate-950 border-b border-slate-800 text-xs uppercase text-slate-400">
+                    <tr class="bg-base border-b border-border text-xs uppercase text-txt-muted">
                         <th class="px-6 py-4 font-semibold">Agencia / ID</th>
                         <th class="px-6 py-4 font-semibold">Contacto</th>
                         <th class="px-6 py-4 font-semibold">Estado</th>
@@ -63,34 +89,35 @@
                         <th class="px-6 py-4 font-semibold text-right">Controles Globales</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-800/50">
-                    <tr *ngFor="let tenant of tenants" class="hover:bg-slate-800/20 transition-colors">
+                <tbody class="divide-y divide-border">
+                    <tr *ngFor="let tenant of tenants; trackBy: trackById"
+                        class="hover:bg-surface-hover transition-colors">
                         <!-- Agencia -->
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
                                 <div
-                                    class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 font-bold shrink-0">
+                                    class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
                                     {{ tenant.nombre.charAt(0) | uppercase }}
                                 </div>
                                 <div>
-                                    <p class="font-medium text-slate-200">{{ tenant.nombre }}</p>
-                                    <p class="text-xs text-slate-500 font-mono">{{ tenant.id | slice:0:8 }}...</p>
+                                    <p class="font-medium text-txt-primary">{{ tenant.nombre }}</p>
+                                    <p class="text-xs text-txt-muted font-mono">{{ tenant.id | slice:0:8 }}...</p>
                                 </div>
                             </div>
                         </td>
 
                         <!-- Contacto -->
                         <td class="px-6 py-4">
-                            <p class="text-sm text-slate-300">{{ tenant.emailContacto || 'Sin correo' }}</p>
-                            <p class="text-xs text-slate-500">RUT: {{ tenant.rut || 'N/A' }}</p>
+                            <p class="text-sm text-txt-secondary">{{ tenant.emailContacto || 'Sin correo' }}</p>
+                            <p class="text-xs text-txt-muted">RUT: {{ tenant.rut || 'N/A' }}</p>
                         </td>
 
                         <!-- Estado -->
                         <td class="px-6 py-4">
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
-                                [ngClass]="tenant.isActive ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'">
+                                [ngClass]="tenant.isActive ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'">
                                 <span class="w-1.5 h-1.5 rounded-full"
-                                    [ngClass]="tenant.isActive ? 'bg-emerald-400' : 'bg-red-400'"></span>
+                                    [ngClass]="tenant.isActive ? 'bg-success' : 'bg-danger'"></span>
                                 {{ tenant.isActive ? 'Activa' : 'Suspendida' }}
                             </span>
                         </td>
@@ -98,7 +125,7 @@
                         <!-- Plan -->
                         <td class="px-6 py-4">
                             <select
-                                class="bg-slate-950 border border-slate-800 text-slate-300 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2"
+                                class="bg-base border border-border text-txt-secondary text-sm rounded-lg focus:ring-primary/50 focus:border-primary block w-full p-2 transition-colors"
                                 [ngModel]="tenant.plan" (ngModelChange)="changePlan(tenant, $event)">
                                 <option value="trial">Trial (14 días)</option>
                                 <option value="pro">Pro ($50/mo)</option>
@@ -107,17 +134,17 @@
                         </td>
 
                         <!-- Fecha -->
-                        <td class="px-6 py-4 text-sm text-slate-400">
+                        <td class="px-6 py-4 text-sm text-txt-muted">
                             {{ getDate(tenant.createdAt) | date:'dd MMM, yyyy' }}
                         </td>
 
                         <!-- Acciones -->
                         <td class="px-6 py-4 text-right">
                             <button (click)="toggleStatus(tenant)"
-                                class="inline-flex items-center justify-center px-3 py-1.5 rounded text-xs font-medium transition-colors border"
+                                class="inline-flex items-center justify-center px-3 py-1.5 rounded text-xs font-medium transition-colors border btn-press"
                                 [ngClass]="tenant.isActive 
-                  ? 'bg-red-500/10 border-red-500/20 text-red-500 hover:bg-red-500/20' 
-                  : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/20'">
+                  ? 'bg-danger/10 border-danger/20 text-danger hover:bg-danger/20' 
+                  : 'bg-success/10 border-success/20 text-success hover:bg-success/20'">
                                 <lucide-icon [name]="tenant.isActive ? 'panel-left-close' : 'check-square'" [size]="14"
                                     class="mr-1.5"></lucide-icon>
                                 {{ tenant.isActive ? 'Bloquear Acceso' : 'Restaurar' }}
@@ -127,10 +154,112 @@
                 </tbody>
             </table>
 
-            <div *ngIf="tenants.length === 0" class="p-8 text-center text-slate-500">
-                <lucide-icon name="bot" [size]="48" class="mx-auto mb-4 opacity-50"></lucide-icon>
-                <p>No hay tenants registrados en la plataforma.</p>
+            <div *ngIf="tenants.length === 0" class="p-8">
+                <app-empty-state icon="bot" title="Sin agencias registradas"
+                    description="No se encontraron tenants activos en la base de datos.">
+                </app-empty-state>
             </div>
         </div>
+    </div>
+
+    <!-- WOW Factor Demo: Skill Radar -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="h-96">
+            <app-skill-radar></app-skill-radar>
+        </div>
+        <div class="bg-surface border border-border rounded-xl p-6 shadow-elevation-1 flex flex-col justify-center">
+            <h3 class="text-xl font-bold text-gradient mb-2">WOW Factor Demo</h3>
+            <p class="text-txt-muted">
+                Este es el nuevo componente <strong>Skill Tree Radárico</strong> (Fase 3).
+                Implementa un gráfico interactivo utilizando Chart.js incrustado en nuestra nueva
+                clase <code>glass-panel</code> con delineados de neón y efectos reactivos al hover.
+            </p>
+        </div>
+        <!-- Estratega - CRM Data Node Graph Demo -->
+        <div class="glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group">
+            <div
+                class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            </div>
+
+            <div class="flex items-center justify-between mb-4 relative z-10">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <lucide-icon name="Activity" class="text-cyan-400 w-5 h-5 animate-pulse"></lucide-icon>
+                    Ecosistema Estratega
+                </h3>
+                <span
+                    class="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-medium border border-cyan-500/20">
+                    Predictive CRM Base
+                </span>
+            </div>
+
+            <p class="text-slate-400 text-sm mb-6 relative z-10">
+                Visualización interactiva (Canvas 2D) de nodos y relaciones complejas entre clientes, proyectos y
+                métricas predictivas. Las posiciones se calculan mediante simulación física gravitacional en tiempo
+                real.
+            </p>
+
+            <div class="relative z-10 w-full h-[400px]">
+                <app-data-node-graph></app-data-node-graph>
+            </div>
+        </div>
+
+        <!-- Estratega - Churn Radar Demos -->
+        <div class="glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group">
+            <div
+                class="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            </div>
+
+            <div class="flex items-center justify-between mb-4 relative z-10">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <lucide-icon name="Trending-up" class="text-rose-400 w-5 h-5"></lucide-icon>
+                    Alerta de Churn
+                </h3>
+            </div>
+            <div class="relative z-10 w-full h-[300px]">
+                <app-churn-radar [churnRiskScore]="85" [trend]="'up'"></app-churn-radar>
+            </div>
+        </div>
+
+        <!-- Estratega - Magic Proposal Demo -->
+        <div
+            class="glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group lg:col-span-3 flex flex-col items-center">
+            <div
+                class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 mix-blend-overlay">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-tr from-cyan-900/20 via-slate-900 to-indigo-900/20"></div>
+
+            <div class="relative z-10 text-center mb-8 w-full">
+                <h3 class="text-2xl font-bold text-white mb-2">Magic Proposals</h3>
+                <p class="text-slate-400 max-w-2xl mx-auto">Experiencia de ventas inmersiva. Interactúa con la tarjeta
+                    3D para ver el efecto holográfico en tiempo real dependiente del cursor.</p>
+            </div>
+
+            <div class="relative z-20 w-full max-w-4xl flex justify-center pb-8">
+                <app-magic-proposal></app-magic-proposal>
+            </div>
+        </div>
+
+        <!-- Auditoría Cognitiva Replay (AVE Wow Factor) -->
+        <div class="glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group lg:col-span-3">
+            <div class="absolute inset-0 bg-gradient-to-tr from-rose-900/10 via-slate-900 to-indigo-900/10"></div>
+
+            <div class="relative z-10 w-full">
+                <h3 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                    <lucide-icon name="shield-check" class="text-emerald-400"></lucide-icon> Proof of Competence (Visor
+                    Forense AVE)
+                </h3>
+                <p class="text-slate-400 max-w-4xl mb-8">
+                    Las certificaciones sin contexto carecen de valor en la Era IA. Este visor <strong>comprueba el
+                        aprendizaje humano</strong> permitiendo a las empresas auditar en <i>modo replay</i> el flujo de
+                    código, las distracciones (pérdida de foco) y los tiempos de resolución de cada candidato. Un pilar
+                    del sistema AVE.
+                </p>
+            </div>
+
+            <div class="relative z-20 w-full">
+                <app-proof-of-competence-replay></app-proof-of-competence-replay>
+            </div>
+        </div>
+
     </div>
 </div>

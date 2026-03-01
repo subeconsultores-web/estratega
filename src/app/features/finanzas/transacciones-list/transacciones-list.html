@@ -1,19 +1,19 @@
-<div class="max-w-7xl mx-auto pb-12">
+<div class="max-w-7xl mx-auto pb-12 animate-fade-in-up">
     <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Transacciones e Historial de Caja</h2>
-            <p class="text-gray-500 mt-2 text-sm max-w-2xl">
+            <h1 class="text-3xl font-bold text-txt-primary tracking-tight">Transacciones e Historial de Caja</h1>
+            <p class="text-txt-secondary mt-2 text-sm max-w-2xl">
                 Revisa los movimientos monetarios de entrada y salida, su relación con las facturas y el estado de
                 compensación de las pasarelas.
             </p>
         </div>
         <div class="flex gap-3">
-            <a routerLink="/finanzas"
-                class="btn btn-secondary inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+            <a routerLink="/finanzas" aria-label="Ver dashboard financiero"
+                class="btn btn-secondary inline-flex items-center px-4 py-2 bg-surface border border-border text-txt-secondary text-sm font-medium rounded-lg hover:bg-surface-hover transition-colors shadow-sm">
                 <lucide-icon name="line-chart" class="w-4 h-4 mr-2"></lucide-icon> Ver Dashboard
             </a>
-            <a routerLink="/finanzas/transacciones/nueva"
-                class="btn btn-primary inline-flex items-center px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+            <a routerLink="/finanzas/transacciones/nueva" aria-label="Crear nueva transacción"
+                class="btn btn-primary inline-flex items-center px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:brightness-110 transition-all shadow-sm btn-press">
                 <lucide-icon name="plus" class="w-4 h-4 mr-2"></lucide-icon> Nueva Transacción
             </a>
         </div>

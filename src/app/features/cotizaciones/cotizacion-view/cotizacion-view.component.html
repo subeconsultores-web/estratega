@@ -44,17 +44,22 @@
             </div>
 
             <div class="flex flex-col items-end">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                    [class.bg-yellow-500/10]="cotizacion.estadoActual==='Borrador'"
-                    [class.text-yellow-600]=" cotizacion.estadoActual==='Borrador'"
-                    [class.bg-blue-500/10]=" cotizacion.estadoActual==='Enviada'"
-                    [class.text-blue-600]=" cotizacion.estadoActual==='Enviada'"
-                    [class.bg-purple-500/10]=" cotizacion.estadoActual==='Revision_Solicitada'"
-                    [class.text-purple-600]=" cotizacion.estadoActual==='Revision_Solicitada'"
-                    [class.bg-green-500/10]=" cotizacion.estadoActual==='Aceptada'"
-                    [class.text-green-600]=" cotizacion.estadoActual==='Aceptada'"
-                    [class.bg-red-500/10]=" cotizacion.estadoActual==='Rechazada'"
-                    [class.text-red-600]=" cotizacion.estadoActual==='Rechazada'">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border"
+                    [class.bg-surface-hover]="cotizacion.estadoActual==='Borrador'"
+                    [class.text-txt-secondary]="cotizacion.estadoActual==='Borrador'"
+                    [class.border-border]="cotizacion.estadoActual==='Borrador'"
+                    [class.bg-info/10]="cotizacion.estadoActual==='Enviada'"
+                    [class.text-info]="cotizacion.estadoActual==='Enviada'"
+                    [class.border-info/20]="cotizacion.estadoActual==='Enviada'"
+                    [class.bg-warning/10]="cotizacion.estadoActual==='Revision_Solicitada'"
+                    [class.text-warning]="cotizacion.estadoActual==='Revision_Solicitada'"
+                    [class.border-warning/20]="cotizacion.estadoActual==='Revision_Solicitada'"
+                    [class.bg-success/10]="cotizacion.estadoActual==='Aceptada'"
+                    [class.text-success]="cotizacion.estadoActual==='Aceptada'"
+                    [class.border-success/20]="cotizacion.estadoActual==='Aceptada'"
+                    [class.bg-error/10]="cotizacion.estadoActual==='Rechazada'"
+                    [class.text-error]="cotizacion.estadoActual==='Rechazada'"
+                    [class.border-error/20]="cotizacion.estadoActual==='Rechazada'">
                     {{ cotizacion.estadoActual }}
                 </span>
                 <p class=" text-xs text-txt-muted mt-2">Válida hasta: {{ getExpirationDateStr() }}</p>

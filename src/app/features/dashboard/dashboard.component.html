@@ -1,4 +1,4 @@
-<div class="space-y-6">
+<div class="space-y-6 animate-fade-in">
 
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -12,7 +12,7 @@
                 <lucide-icon name="clock" [size]="16" class="mr-2"></lucide-icon>
                 Últimos 30 días
             </button>
-            <button
+            <button routerLink="/cotizaciones/nueva"
                 class="bg-primary text-white border border-transparent px-4 py-2 rounded-lg text-sm font-medium hover:brightness-110 transition-all shadow-sm flex items-center">
                 <lucide-icon name="plus" [size]="16" class="mr-2"></lucide-icon>
                 Nueva Cotización
@@ -33,7 +33,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div *ngFor="let insight of estrategaInsights"
+                <div *ngFor="let insight of estrategaInsights; trackBy: trackByInsight"
                     class="bg-surface/80 backdrop-blur-sm rounded-lg p-4 border border-border shadow-sm text-sm text-txt-secondary flex items-start">
                     <lucide-icon name="chevron-right" [size]="16"
                         class="mt-0.5 mr-2 text-primary shrink-0"></lucide-icon>
@@ -43,16 +43,27 @@
         </div>
     </div>
 
+    <!-- KPI Error Banner -->
+    <div *ngIf="kpiError"
+        class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 flex items-center space-x-3">
+        <lucide-icon name="clock" [size]="20" class="text-yellow-500 shrink-0"></lucide-icon>
+        <p class="text-sm text-yellow-700">No se pudieron cargar las métricas en tiempo real. Los valores se mostrarán
+            cuando haya datos disponibles.</p>
+    </div>
+
     <!-- KPIs Grid -->
     <div *ngIf="isLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div *ngFor="let _ of [1,2,3,4]" class="bg-surface rounded-xl border border-border h-32 animate-pulse"></div>
+        <div *ngFor="let _ of [1,2,3,4]; trackBy: trackByIndex"
+            class="bg-surface rounded-xl border border-border h-32 animate-shimmer"></div>
     </div>
 
     <div *ngIf="!isLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <app-stat-card *ngFor="let kpi of kpis" [title]="kpi.label" [value]="kpi.value" [type]="kpi.type"
-            [trend]="kpi.trend" [trendText]="kpi.trendText" [trendDesc]="kpi.trendDesc" [icon]="kpi.icon"
-            [color]="kpi.color">
-        </app-stat-card>
+        <div *ngFor="let kpi of kpis; let i = index; trackBy: trackByKpi" class="animate-fade-in-up"
+            [class]="'delay-' + (i + 1)">
+            <app-stat-card [title]="kpi.label" [value]="kpi.value" [type]="kpi.type" [trend]="kpi.trend"
+                [trendText]="kpi.trendText" [trendDesc]="kpi.trendDesc" [icon]="kpi.icon" [color]="kpi.color">
+            </app-stat-card>
+        </div>
     </div>
 
     <!-- Forecast AI Dashboard -->
@@ -71,26 +82,30 @@
                         [size]="18"></lucide-icon></button>
             </div>
             <div class="h-80 w-full relative">
-                <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="barChartType">
+                <canvas *ngIf="hasBarData" baseChart [data]="barChartData" [options]="barChartOptions"
+                    [type]="barChartType">
                 </canvas>
+                <div *ngIf="!hasBarData" class="flex items-center justify-center h-full">
+                    <app-empty-state icon="trending-up" title="Sin movimientos"
+                        description="No hay transacciones registradas en los últimos 30 días.">
+                    </app-empty-state>
+                </div>
             </div>
         </div>
 
-        <!-- Doughnut Chart -->
         <div class="bg-surface rounded-xl border border-border shadow-sm p-6 flex flex-col">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-base font-bold text-txt-primary">Distribución de Horas</h3>
+                <h3 class="text-base font-bold text-txt-primary">Estado de Proyectos</h3>
                 <button class="text-txt-muted hover:text-txt-primary"><lucide-icon name="settings"
                         [size]="18"></lucide-icon></button>
             </div>
             <div class="h-64 flex-1 w-full relative flex items-center justify-center">
-                <canvas baseChart [data]="doughnutChartData" [options]="doughnutChartOptions"
+                <canvas *ngIf="hasDoughnutData" baseChart [data]="doughnutChartData" [options]="doughnutChartOptions"
                     [type]="doughnutChartType">
                 </canvas>
-            </div>
-            <div class="mt-4 pt-4 border-t border-border text-center">
-                <button class="text-sm text-primary font-medium hover:underline">Ver reporte de rentabilidad
-                    &rarr;</button>
+                <app-empty-state *ngIf="!hasDoughnutData" icon="briefcase" title="Sin proyectos"
+                    description="Crea tu primer proyecto para ver la distribución aquí.">
+                </app-empty-state>
             </div>
         </div>
     </div>
@@ -102,8 +117,6 @@
         <div class="bg-surface rounded-xl border border-border shadow-sm">
             <div class="px-6 py-5 border-b border-border flex justify-between items-center">
                 <h3 class="text-base font-bold text-txt-primary">Tareas Pendientes</h3>
-                <span class="bg-yellow-500/10 text-yellow-500 text-xs font-semibold px-2.5 py-0.5 rounded-full">3
-                    Urgentes</span>
             </div>
             <div class="p-6">
                 <app-empty-state icon="check-square" title="Todo al día"
@@ -116,42 +129,32 @@
         <!-- Actividad Reciente -->
         <div class="bg-surface rounded-xl border border-border shadow-sm">
             <div class="px-6 py-5 border-b border-border">
-                <h3 class="text-base font-bold text-txt-primary">Actividad del Equipo</h3>
+                <h3 class="text-base font-bold text-txt-primary">Actividad Reciente</h3>
             </div>
             <div class="p-6">
-                <div class="space-y-6">
-                    <div class="flex items-start">
+                <!-- Loading state -->
+                <div *ngIf="activitiesLoading" class="space-y-4">
+                    <div *ngFor="let _ of [1,2,3]; trackBy: trackByIndex"
+                        class="h-12 bg-surface-hover rounded animate-pulse"></div>
+                </div>
+
+                <!-- Empty state -->
+                <app-empty-state *ngIf="!activitiesLoading && recentActivities.length === 0" icon="clock"
+                    title="Sin actividad reciente" description="Registra actividades en el CRM para verlas aquí.">
+                </app-empty-state>
+
+                <!-- Dynamic activity timeline -->
+                <div *ngIf="!activitiesLoading && recentActivities.length > 0" class="space-y-6">
+                    <div *ngFor="let act of recentActivities; let last = last; trackBy: trackByActivity"
+                        class="flex items-start">
                         <div class="bg-primary/10 p-2 rounded-full text-primary mr-4 mt-0.5 z-10 relative">
-                            <lucide-icon name="file-text" [size]="16"></lucide-icon>
+                            <lucide-icon [name]="getActivityIcon(act.tipo)" [size]="16"></lucide-icon>
                         </div>
-                        <div class="flex-1 border-l-2 border-border -ml-[23px] pl-8 pb-1">
-                            <p class="text-sm font-medium text-txt-primary">Cotización COT-042 enviada</p>
-                            <p class="text-sm text-txt-secondary mt-1">María envió la cotización a "TechCorp Ltda."</p>
-                            <span class="text-xs text-txt-muted mt-1 block">Hace 2 horas</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start">
-                        <div class="bg-accent/10 p-2 rounded-full text-accent mr-4 mt-0.5 z-10 relative">
-                            <lucide-icon name="dollar-sign" [size]="16"></lucide-icon>
-                        </div>
-                        <div class="flex-1 border-l-2 border-border -ml-[23px] pl-8 pb-1">
-                            <p class="text-sm font-medium text-txt-primary">Pago recibido</p>
-                            <p class="text-sm text-txt-secondary mt-1">Factura FACT-089 fue pagada en su totalidad.</p>
-                            <span class="text-xs text-txt-muted mt-1 block">Hace 5 horas</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start">
-                        <div class="bg-purple-500/10 p-2 rounded-full text-purple-500 mr-4 mt-0.5 z-10 relative">
-                            <lucide-icon name="briefcase" [size]="16"></lucide-icon>
-                        </div>
-                        <div class="flex-1 pl-4 pb-1">
-                            <p class="text-sm font-medium text-txt-primary">Nuevo Proyecto iniciado</p>
-                            <p class="text-sm text-txt-secondary mt-1">"Implementación CRM" ha pasado a estado En
-                                Progreso.
-                            </p>
-                            <span class="text-xs text-txt-muted mt-1 block">Ayer</span>
+                        <div class="flex-1"
+                            [ngClass]="{'border-l-2 border-border -ml-[23px] pl-8 pb-1': !last, 'pl-4 pb-1': last}">
+                            <p class="text-sm font-medium text-txt-primary">{{ act.descripcion || act.tipo }}</p>
+                            <p *ngIf="act.resultado" class="text-sm text-txt-secondary mt-1">{{ act.resultado }}</p>
+                            <span class="text-xs text-txt-muted mt-1 block">{{ formatTimeAgo(act.fecha) }}</span>
                         </div>
                     </div>
                 </div>

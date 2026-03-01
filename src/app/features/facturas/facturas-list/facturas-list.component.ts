@@ -1,22 +1,26 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Loader2, Plus, Receipt  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, Loader2, Plus, Receipt } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
 
 import { FacturaService } from '../../../core/services/factura.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Factura } from '../../../core/models/factura.model';
 import { DataTableComponent, ColumnDef } from '../../../shared/components/data-table/data-table.component';
+import { EmptyState } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
     selector: 'app-facturas-list',
     standalone: true,
-    imports: [CommonModule, RouterModule, LucideAngularModule, DataTableComponent],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Loader2, Plus, Receipt }) }
-  ],
-    templateUrl: './facturas-list.component.html'
+    imports: [CommonModule, RouterModule, LucideAngularModule, DataTableComponent, EmptyState],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Loader2, Plus, Receipt }) }
+    ],
+    templateUrl: './facturas-list.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FacturasListComponent implements OnInit {
     private facturaService = inject(FacturaService);
@@ -24,6 +28,8 @@ export class FacturasListComponent implements OnInit {
     private router = inject(Router);
     private toastr = inject(ToastrService);
     private cdr = inject(ChangeDetectorRef);
+    private confirmDialog = inject(ConfirmDialogService);
+    private destroyRef = inject(DestroyRef);
 
     facturas: Factura[] = [];
     isLoading = true;
@@ -52,7 +58,7 @@ export class FacturasListComponent implements OnInit {
                 return;
             }
 
-            this.facturaService.getFacturas(tenantId).subscribe({
+            this.facturaService.getFacturas(tenantId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
                 next: (data) => {
                     this.facturas = data.map(f => ({
                         ...f,
@@ -78,12 +84,18 @@ export class FacturasListComponent implements OnInit {
         }
     }
 
-    onAction(event: { action: string, item: any }) {
+    async onAction(event: { action: string, item: any }) {
         if (event.action === 'edit' || event.action === 'view') {
             const routePath = event.action === 'view' ? `/facturas/${event.item.id}/view` : `/facturas/${event.item.id}`;
             this.router.navigate([routePath]);
         } else if (event.action === 'delete') {
-            if (confirm('¿Seguro de que deseas anular esta factura?')) {
+            const ok = await this.confirmDialog.confirm({
+                title: 'Anular factura',
+                message: '¿Seguro de que deseas anular esta factura? Este cambio es irreversible.',
+                variant: 'warning',
+                confirmText: 'Anular'
+            });
+            if (ok) {
                 this.facturaService.cambiarEstado(event.item.id, 'anulada').then(() => {
                     this.toastr.info('Factura anulada exitosamente');
                 }).catch(e => {
@@ -92,5 +104,9 @@ export class FacturasListComponent implements OnInit {
                 });
             }
         }
+    }
+
+    goToNuevaFactura() {
+        this.router.navigate(['/facturas/new']);
     }
 }

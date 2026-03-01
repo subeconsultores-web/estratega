@@ -42,3 +42,32 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Build & deploy logs
+*.log
+build_*.txt
+build_output*.txt
+deploy_*.txt
+clean_build.log
+
+# Temporary debug/fix scripts
+add-comma.js
+check-clientes.js
+check-fields.js
+check-firestore.js
+debug.js
+fix-lucide*.js
+fix-tenant.js
+refactor_lucide.js
+save-result.js
+test-provider*.js
+tmp_extract.js
+instalar-extensiones-bq.ps1
+
+# Temporary data files (may contain sensitive info)
+auth_users.json
+clientes-result.json
+extracted_icons*.txt
+sites.json
+sites.txt
+temp_files.txt

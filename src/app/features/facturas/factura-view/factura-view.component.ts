@@ -1,8 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, Ban, Calendar, CheckCircle2, Clock, CreditCard, Loader2, ShieldCheck  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ArrowLeft, Ban, Calendar, CheckCircle2, Clock, CreditCard, Loader2, ShieldCheck } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
 import { Functions, httpsCallable } from '@angular/fire/functions';
 
 import { FacturaService } from '../../../core/services/factura.service';
@@ -13,9 +15,9 @@ import { Factura } from '../../../core/models/factura.model';
     selector: 'app-factura-view',
     standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Ban, Calendar, CheckCircle2, Clock, CreditCard, Loader2, ShieldCheck }) }
-  ],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Ban, Calendar, CheckCircle2, Clock, CreditCard, Loader2, ShieldCheck }) }
+    ],
     templateUrl: './factura-view.component.html'
 })
 export class FacturaViewComponent implements OnInit {
@@ -26,6 +28,8 @@ export class FacturaViewComponent implements OnInit {
     private toastr = inject(ToastrService);
     private location = inject(Location);
     private functions = inject(Functions);
+    private confirmDialog = inject(ConfirmDialogService);
+    private destroyRef = inject(DestroyRef);
 
     facturaId = this.route.snapshot.paramMap.get('id');
     factura: Factura | undefined;
@@ -38,11 +42,11 @@ export class FacturaViewComponent implements OnInit {
 
     loadFactura() {
         if (this.facturaId) {
-            this.facturaService.getFactura(this.facturaId).subscribe(f => {
+            this.facturaService.getFactura(this.facturaId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(f => {
                 if (f) {
                     this.factura = f;
                     if (this.factura.clienteId) {
-                        this.crmService.getCliente(this.factura.clienteId).subscribe(c => {
+                        this.crmService.getCliente(this.factura.clienteId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(c => {
                             this.cliente = c;
                             this.isLoading = false;
                         });
@@ -81,8 +85,14 @@ export class FacturaViewComponent implements OnInit {
         }
     }
 
-    anularFactura() {
-        if (confirm('¿Estás seguro de que deseas anular esta factura definitivamente?')) {
+    async anularFactura() {
+        const ok = await this.confirmDialog.confirm({
+            title: 'Anular factura',
+            message: '¿Estás seguro de que deseas anular esta factura definitivamente? Este cambio es irreversible.',
+            variant: 'danger',
+            confirmText: 'Anular'
+        });
+        if (ok) {
             this.facturaService.cambiarEstado(this.facturaId!, 'anulada').then(() => {
                 this.toastr.success('Factura Anulada');
             }).catch(e => {

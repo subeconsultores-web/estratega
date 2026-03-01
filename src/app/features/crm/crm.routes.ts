@@ -15,6 +15,10 @@ export const CRM_ROUTES: Routes = [
         loadComponent: () => import('./cliente-form/cliente-form.component').then(m => m.ClienteFormComponent)
     },
     {
+        path: 'clientes/:id',
+        loadComponent: () => import('./cliente-detalle/cliente-detalle').then(m => m.ClienteDetalle)
+    },
+    {
         path: 'clientes/:id/editar',
         loadComponent: () => import('./cliente-form/cliente-form.component').then(m => m.ClienteFormComponent)
     },

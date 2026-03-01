@@ -1,12 +1,15 @@
-import { Component, inject, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ElementRef, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FinanzasService } from '../../../core/services/finanzas.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, Bot, Info, Loader2, ScanLine, Sparkles  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ArrowLeft, Bot, Info, Loader2, ScanLine, Sparkles } from 'lucide-angular';
 import { Transaccion } from '../../../core/models/finanzas.model';
 import { SubeIaExtractService } from '../../../core/services/sube-ia-extract.service';
+import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-transaccion-form',
@@ -25,6 +28,9 @@ export class TransaccionForm implements OnInit {
   private subeIaExtract = inject(SubeIaExtractService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private confirmDialog = inject(ConfirmDialogService);
+  private toastr = inject(ToastrService);
+  private destroyRef = inject(DestroyRef);
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
@@ -179,15 +185,21 @@ export class TransaccionForm implements OnInit {
 
   async anularTransaccion() {
     if (!this.transaccionId) return;
-    if (confirm('¿Estás seguro de anular esta transacción? Esto no se puede deshacer y modificará los reportes de caja.')) {
+    const ok = await this.confirmDialog.confirm({
+      title: 'Anular transacción',
+      message: '¿Estás seguro de anular esta transacción? Esto no se puede deshacer y modificará los reportes de caja.',
+      variant: 'danger',
+      confirmText: 'Anular'
+    });
+    if (ok) {
       this.isSubmitting = true;
       try {
         await this.finanzasService.updateTransaccion(this.transaccionId, { estado: 'anulado' });
-        alert('Transacción anulada exitosamente.');
+        this.toastr.success('Transacción anulada exitosamente.');
         this.router.navigate(['/finanzas/transacciones']);
       } catch (e) {
         console.error('Error al anular:', e);
-        alert('No se pudo anular la transacción.');
+        this.toastr.error('No se pudo anular la transacción.');
       } finally {
         this.isSubmitting = false;
       }

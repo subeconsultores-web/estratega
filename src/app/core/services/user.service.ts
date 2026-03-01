@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, collection, doc, setDoc, updateDoc, deleteDoc, getDocs, query, where } from '@angular/fire/firestore';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { AuthService } from './auth.service';
 import { Observable, from, map, switchMap } from 'rxjs';
 import { UserData } from '../models/user.model';
@@ -10,6 +11,7 @@ import { UserData } from '../models/user.model';
 export class UserService {
     private firestore = inject(Firestore);
     private authService = inject(AuthService);
+    private functions = inject(Functions);
 
     /**
      * Obtiene todos los usuarios pertenecientes al tenant actual.
@@ -30,20 +32,37 @@ export class UserService {
     }
 
     /**
-     * Crea un nuevo doc de usuario (la creación en Firebase Auth requiere Cloud Function adicional o Admin SDK).
-     * Aquí solo se crea la pre-reserva del documento.
+     * Crea un nuevo miembro del equipo llamando a Cloud Functions.
+     * Firebase Auth no permite crear usuarios directamente desde el SDK web seguro.
      */
-    async createUserDoc(uid: string, userData: Partial<UserData>): Promise<void> {
-        const tenantId = await this.authService.getTenantId();
-        if (!tenantId) throw new Error('No tenantId to create user');
+    async createTeamMember(userData: Partial<UserData>): Promise<{ uid: string, message: string }> {
+        const callable = httpsCallable<{ email: string, nombre: string, role: string, password?: string }, { success: boolean, uid: string, message: string }>(this.functions, 'createTeamMember');
 
-        const userRef = doc(this.firestore, `users/${uid}`);
-        await setDoc(userRef, {
-            ...userData,
-            uid,
-            tenantId,
-            createdAt: new Date()
-        });
+        try {
+            const result = await callable({
+                email: userData.email!,
+                nombre: userData.nombre!,
+                role: userData.role!
+            });
+            return { uid: result.data.uid, message: result.data.message };
+        } catch (error) {
+            console.error('[UserService] Error al crear usuario de equipo', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Actualiza un miembro del equipo existente llamando a Cloud Functions.
+     */
+    async updateTeamMember(data: { uid: string, nombre?: string, role?: string, password?: string, activo?: boolean }): Promise<{ message: string }> {
+        const callable = httpsCallable<any, { success: boolean, message: string }>(this.functions, 'updateTeamMember');
+        try {
+            const result = await callable(data);
+            return { message: result.data.message };
+        } catch (error) {
+            console.error('[UserService] Error al actualizar usuario de equipo', error);
+            throw error;
+        }
     }
 
     /**

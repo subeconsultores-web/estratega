@@ -32,7 +32,7 @@ export class SuperAdminGuard {
                     if (role === 'superadmin') {
                         return true;
                     } else {
-                        console.warn('SuperAdminGuard: Access Denied. User does not have superadmin role.');
+                        // Access denied — user is not superadmin
                         this.router.navigate(['/dashboard']);
                         return false;
                     }

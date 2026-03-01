@@ -1,19 +1,21 @@
-import { Component, inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, KanbanSquare, Plus, Search, Users  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, KanbanSquare, Plus, Search, Users } from 'lucide-angular';
 import { CrmService } from '../../../core/services/crm.service';
 import { Cliente } from '../../../core/models/crm.model';
 import { DataTableComponent, ColumnDef } from '../../../shared/components/data-table/data-table.component';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
 
 @Component({
     selector: 'app-clientes-list',
     standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule, DataTableComponent],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ KanbanSquare, Plus, Search, Users }) }
-  ],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ KanbanSquare, Plus, Search, Users }) }
+    ],
     templateUrl: './clientes-list.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -22,6 +24,8 @@ export class ClientesListComponent implements OnInit {
     private router = inject(Router);
     private toastr = inject(ToastrService);
     private cdr = inject(ChangeDetectorRef);
+    private destroyRef = inject(DestroyRef);
+    private confirmDialog = inject(ConfirmDialogService);
 
     clientes: Cliente[] = [];
     isLoading = true;
@@ -42,12 +46,10 @@ export class ClientesListComponent implements OnInit {
 
     loadClientes() {
         this.isLoading = true;
-        this.crmService.getClientes().subscribe({
+        this.crmService.getClientes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (data: Cliente[]) => {
-                console.log('[ClientesList] Datos recibidos en componente:', data.length, 'clientes');
                 this.clientes = data;
                 this.isLoading = false;
-                console.log('[ClientesList] isLoading:', this.isLoading, 'clientes.length:', this.clientes.length);
                 this.cdr.detectChanges();
             },
             error: (err: any) => {
@@ -59,13 +61,20 @@ export class ClientesListComponent implements OnInit {
         });
     }
 
-    handleAction(event: { item: Cliente, action: string }) {
+    async handleAction(event: { item: Cliente, action: string }) {
         if (event.action === 'edit') {
             this.router.navigate(['/crm/clientes', event.item.id, 'editar']);
         } else if (event.action === 'view') {
             this.router.navigate(['/crm/clientes', event.item.id]);
         } else if (event.action === 'delete') {
-            if (event.item.id && confirm(`¿Estás seguro de eliminar a ${event.item.nombreEmpresa}?`)) {
+            if (!event.item.id) return;
+            const ok = await this.confirmDialog.confirm({
+                title: 'Eliminar cliente',
+                message: `¿Estás seguro de eliminar a ${event.item.nombreEmpresa}? Esta acción no se puede deshacer.`,
+                variant: 'danger',
+                confirmText: 'Eliminar'
+            });
+            if (ok) {
                 this.crmService.deleteCliente(event.item.id).then(() => {
                     this.toastr.success('Cliente eliminado correctamente', 'Éxito');
                 }).catch(err => {

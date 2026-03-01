@@ -1,0 +1,186 @@
+:host {
+    display: block;
+}
+
+.onboarding-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    /* Dejar pasar clics en el spotlight si hiciera falta, aunque ideal no */
+
+    // Variables manejadas desde Angular para definir la linterna
+    --spotlight-x: 50vw;
+    --spotlight-y: 50vh;
+    --spotlight-radius: 100px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* La máscara oscura con el corte de luz (radial-gradient invertido) */
+.spotlight-mask {
+    position: absolute;
+    inset: 0;
+    pointer-events: all; // Bloquear fondo oscuro
+
+    background: radial-gradient(var(--spotlight-radius) circle at var(--spotlight-x) var(--spotlight-y),
+            transparent 0%,
+            transparent 80%,
+            rgba(10, 15, 25, 0.8) 100%, // color de fondo
+            rgba(10, 15, 25, 0.95) 150%);
+
+    backdrop-filter: blur(8px); // Desenfocar lo que no iluminamos
+    mask-image: radial-gradient(var(--spotlight-radius) circle at var(--spotlight-x) var(--spotlight-y),
+            transparent 100%,
+            black 110%);
+    -webkit-mask-image: radial-gradient(var(--spotlight-radius) circle at var(--spotlight-x) var(--spotlight-y),
+            transparent 100%,
+            black 110%);
+
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.onboarding-content {
+    position: absolute;
+    width: 450px;
+    max-width: 90vw;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    background: rgba(18, 25, 38, 0.85);
+    /* Dark blur */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8),
+        0 0 40px rgba(0, 240, 255, 0.15); // Cyan glow
+
+    pointer-events: auto;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.4s ease;
+
+    &.fade-in {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    &.fade-out {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+
+    /* Posicionamiento Inteligente respecto al Spotlight */
+    &.position-center {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        &.fade-out {
+            transform: translate(-50%, -40%);
+        }
+    }
+
+    &.position-bottom {
+        top: calc(var(--spotlight-y) + var(--spotlight-radius) + 40px);
+        left: 50%;
+        transform: translateX(-50%);
+
+        &.fade-out {
+            transform: translate(-50%, 20px);
+        }
+    }
+
+    &.position-top {
+        bottom: calc(100vh - (var(--spotlight-y) - var(--spotlight-radius) - 40px));
+        left: 50%;
+        transform: translateX(-50%);
+
+        &.fade-out {
+            transform: translate(-50%, 20px);
+        }
+    }
+
+    &.position-left {
+        right: calc(100vw - (var(--spotlight-x) - var(--spotlight-radius) - 40px));
+        top: var(--spotlight-y);
+        transform: translateY(-50%);
+
+        &.fade-out {
+            transform: translate(-20px, -50%);
+        }
+    }
+
+    &.position-right {
+        left: calc(var(--spotlight-x) + var(--spotlight-radius) + 40px);
+        top: var(--spotlight-y);
+        transform: translateY(-50%);
+
+        &.fade-out {
+            transform: translate(20px, -50%);
+        }
+    }
+}
+
+.onboarding-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.step-indicator {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+}
+
+.skip-pulse-btn {
+    background: none;
+    border: none;
+    color: #9CA3AF;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+
+    &:hover {
+        color: white;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+}
+
+.cinematic-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.cinematic-desc {
+    color: #D1D5DB;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.onboarding-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+    transition: width 0.6s ease-in-out;
+}

@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, FileSignature  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, FileSignature } from 'lucide-angular';
 import { Observable } from 'rxjs';
 import { ContratoService } from '../../../core/services/contrato.service';
 import { Contrato } from '../../../core/models/contrato.model';
@@ -12,13 +12,13 @@ import { DataTableComponent, ColumnDef } from '../../../shared/components/data-t
     standalone: true,
     imports: [CommonModule, LucideAngularModule, LoadingSkeleton, DataTableComponent],
     providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ FileSignature }) },DatePipe],
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ FileSignature }) }, DatePipe],
     template: `
         <div class="space-y-6">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Acuerdos y Documentos Legales</h1>
-                    <p class="text-gray-500 mt-1 text-sm">Visualiza y aprueba tus contratos o propuestas técnicas emitidas.</p>
+                    <h1 class="text-2xl font-bold text-txt-primary tracking-tight">Acuerdos y Documentos Legales</h1>
+                    <p class="text-txt-secondary mt-1 text-sm">Visualiza y aprueba tus contratos o propuestas técnicas emitidas.</p>
                 </div>
             </div>
 
@@ -27,12 +27,12 @@ import { DataTableComponent, ColumnDef } from '../../../shared/components/data-t
                 </app-data-table>
 
                 <ng-template #emptyState>
-                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-                        <div class="w-16 h-16 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                     <div class="bg-surface rounded-xl shadow-elevation-1 border border-border p-12 text-center">
+                        <div class="w-16 h-16 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mx-auto mb-4">
                             <lucide-icon name="file-signature" class="w-8 h-8"></lucide-icon>
                         </div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-2">Bandeja Vacía</h3>
-                        <p class="text-gray-500 max-w-md mx-auto">No hay acuerdos pendientes o firmados en su expediente en este momento.</p>
+                        <h2 class="text-lg font-bold text-txt-primary mb-2">Bandeja Vacía</h2>
+                        <p class="text-txt-secondary max-w-md mx-auto">No hay acuerdos pendientes o firmados en su expediente en este momento.</p>
                     </div>
                 </ng-template>
             </ng-container>

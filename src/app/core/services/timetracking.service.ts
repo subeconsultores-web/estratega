@@ -115,7 +115,7 @@ export class TimetrackingService {
             await this.tareasService.updateTarea(current.tareaId, {
                 tiempoConsumido: parseFloat(fractionalHours.toFixed(2))
             });
-            console.log(`[Timetrack Record] Tracked ${fractionalHours.toFixed(2)}h for Task ${current.tareaId}`);
+            // Time committed successfully
         } catch (error) {
             console.error('Failed to commit tracking session offline.', error);
         }

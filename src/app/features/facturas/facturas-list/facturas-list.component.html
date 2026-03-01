@@ -28,20 +28,11 @@
         </div>
 
         <!-- Empty State -->
-        <div *ngIf="!isLoading && facturas.length === 0"
-            class="py-16 flex flex-col items-center justify-center text-center px-4">
-            <div
-                class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 border border-primary/20">
-                <lucide-icon name="receipt" class="w-8 h-8 text-primary"></lucide-icon>
-            </div>
-            <h3 class="text-lg font-semibold text-txt-primary mb-1">Sin Facturas Emitidas</h3>
-            <p class="text-txt-muted max-w-md mx-auto mb-6">Aún no has emitido ninguna factura.
-                Crea tu primera factura para formalizar tus cobros comerciales.</p>
-            <button routerLink="/facturas/new"
-                class="flex items-center justify-center px-5 py-2.5 bg-surface-hover border border-border text-txt-primary rounded-lg hover:bg-border transition-colors font-medium shadow-sm">
-                <lucide-icon name="plus" class="w-4 h-4 mr-2"></lucide-icon>
-                Emitir Primera Factura
-            </button>
+        <div *ngIf="!isLoading && facturas.length === 0" class="mt-8">
+            <app-empty-state icon="receipt" title="Sin Facturas Emitidas"
+                description="Aún no has emitido ninguna factura. Crea tu primera factura para formalizar tus cobros comerciales."
+                actionLabel="Emitir Primera Factura" actionIcon="plus" (onAction)="goToNuevaFactura()">
+            </app-empty-state>
         </div>
     </div>
 </div>

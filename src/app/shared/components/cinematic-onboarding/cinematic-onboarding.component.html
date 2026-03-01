@@ -1,0 +1,43 @@
+@if (isActive()) {
+<div class="onboarding-overlay" [style.--spotlight-x.px]="spotlightX()" [style.--spotlight-y.px]="spotlightY()"
+    [style.--spotlight-radius.px]="spotlightRadius()">
+
+    <!-- Spotlight visual mask -->
+    <div class="spotlight-mask"></div>
+
+    <!-- Contenido Flotante Inteligente -->
+    <div class="onboarding-content glass-panel glow" [class.position-top]="currentStepData.position === 'top'"
+        [class.position-bottom]="currentStepData.position === 'bottom'"
+        [class.position-left]="currentStepData.position === 'left'"
+        [class.position-right]="currentStepData.position === 'right'"
+        [class.position-center]="currentStepData.position === 'center'" [class.fade-in]="!isTransitioning()"
+        [class.fade-out]="isTransitioning()">
+
+        <div class="onboarding-header">
+            <div class="step-indicator neon-text">
+                0{{ currentStepIndex() + 1 }} / 0{{ steps.length }}
+            </div>
+            <button class="skip-pulse-btn" (click)="endOnboarding()">
+                Saltar Secuencia
+            </button>
+        </div>
+
+        <h2 class="cinematic-title neon-text-magenta">{{ currentStepData.title }}</h2>
+        <p class="cinematic-desc">{{ currentStepData.description }}</p>
+
+        <div class="onboarding-actions">
+            <button class="neon-button secondary" (click)="prevStep()" [disabled]="currentStepIndex() === 0">
+                Retroceder
+            </button>
+            <button class="neon-button glow-pulse" (click)="nextStep()">
+                {{ currentStepIndex() === steps.length - 1 ? 'Iniciar Misión' : 'Siguiente' }}
+            </button>
+        </div>
+
+        <!-- Animación de carga decorativa inferida -->
+        <div class="progress-bar-container mt-4">
+            <div class="progress-fill" [style.width.%]="((currentStepIndex() + 1) / steps.length) * 100"></div>
+        </div>
+    </div>
+</div>
+}

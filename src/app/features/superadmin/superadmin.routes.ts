@@ -17,6 +17,10 @@ export const SUPERADMIN_ROUTES: Routes = [
             {
                 path: 'overview',
                 component: SuperAdminDashboardComponent
+            },
+            {
+                path: 'audit-ledger',
+                loadComponent: () => import('./audit-ledger/audit-ledger.component').then(m => m.AuditLedgerComponent)
             }
         ]
     }

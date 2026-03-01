@@ -17,7 +17,13 @@
                 caja.</p>
         </div>
 
-        <div class="hidden sm:block">
+        <div class="hidden sm:flex items-center gap-3">
+            <button *ngIf="isEditMode" type="button" (click)="copyLink()"
+                class="flex items-center px-4 py-2.5 bg-background border border-border text-txt-primary rounded-lg hover:bg-surface-hover transition-colors font-medium shadow-sm">
+                <lucide-icon name="copy" class="w-4 h-4 mr-2"></lucide-icon>
+                Compartir Enlace
+            </button>
+
             <button type="button" (click)="onSubmit()" [disabled]="isSaving || cotiForm.invalid"
                 class="flex items-center px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
                 <lucide-icon *ngIf="isSaving" name="loader-2" class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
@@ -83,44 +89,58 @@
                 <div class="p-6" formArrayName="items">
 
                     <div *ngFor="let line of itemsArray.controls; let i=index" [formGroupName]="i"
-                        class="mb-4 pb-4 border-b border-border/50 flex flex-col sm:flex-row gap-4 items-start sm:items-center relative group">
+                        class="mb-4 pb-4 border-b border-border/50 flex flex-col relative group">
 
-                        <!-- Columna: Item Seleccionado del Catalogo (Ocupa la Mayoría) -->
-                        <div class="w-full sm:w-1/3">
-                            <select formControlName="catalogoItemId"
-                                class="w-full text-sm px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none">
-                                <option value="">-- Catálogo --</option>
-                                <option *ngFor="let prod of catalogoActivo" [value]="prod.id">{{ prod.tipo | uppercase
-                                    }}: {{ prod.nombre }}</option>
-                            </select>
+                        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center w-full">
+                            <!-- Columna: Item Seleccionado del Catalogo (Ocupa la Mayoría) -->
+                            <div class="w-full sm:w-1/3">
+                                <select formControlName="catalogoItemId"
+                                    class="w-full text-sm px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none">
+                                    <option value="">-- Catálogo --</option>
+                                    <option *ngFor="let prod of catalogoActivo" [value]="prod.id">{{ prod.tipo |
+                                        uppercase
+                                        }}: {{ prod.nombre }}</option>
+                                </select>
+                            </div>
+
+                            <!-- Columna: Nombre Override -->
+                            <div class="w-full sm:w-1/4">
+                                <input type="text" formControlName="nombre" placeholder="Nombre en Propuesta"
+                                    class="w-full text-sm px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none">
+                            </div>
+
+                            <!-- Columna: QTY -->
+                            <div class="w-24 shrink-0 relative">
+                                <input type="number" formControlName="cantidad" min="1" step="0.5"
+                                    class="w-full text-sm px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none text-center">
+                            </div>
+
+                            <!-- Columna: Precio Unitario -->
+                            <div class="w-32 shrink-0 relative">
+                                <input type="number" formControlName="precioUnitario" placeholder="Valor Ud."
+                                    class="w-full text-sm font-medium px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none text-right">
+                            </div>
+
+                            <!-- Subtotal Live Feedback-->
+                            <div class="w-32 text-right pr-6 shrink-0">
+                                <span class="text-sm font-semibold"
+                                    [ngClass]="{'text-txt-primary': !line.get('opcional')?.value, 'text-primary/70 line-through': line.get('opcional')?.value}">{{
+                                    line.get('subtotal')?.value |
+                                    currency:'CLP':'symbol-narrow':'1.0-0' }}</span>
+                            </div>
                         </div>
 
-                        <!-- Columna: Nombre Override -->
-                        <div class="w-full sm:w-1/4">
-                            <input type="text" formControlName="nombre" placeholder="Nombre en Propuesta"
-                                class="w-full text-sm px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none">
-                        </div>
-
-                        <!-- Columna: QTY -->
-                        <div class="w-24 shrink-0 relative">
-                            <input type="number" formControlName="cantidad" min="1" step="0.5"
-                                class="w-full text-sm px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none text-center">
-                        </div>
-
-                        <!-- Columna: Precio Unitario -->
-                        <div class="w-32 shrink-0 relative">
-                            <input type="number" formControlName="precioUnitario" placeholder="Valor Ud."
-                                class="w-full text-sm font-medium px-3 py-2 bg-background border border-border rounded-lg text-txt-primary focus:ring-2 focus:ring-primary/50 outline-none text-right">
-                        </div>
-
-                        <!-- Subtotal Live Feedback-->
-                        <div class="w-32 text-right pr-6 shrink-0">
-                            <span class="text-sm font-semibold text-txt-primary">{{ line.get('subtotal')?.value |
-                                currency:'CLP':'symbol-narrow':'1.0-0' }}</span>
+                        <div class="flex justify-start sm:justify-end mt-2 pr-8 sm:pr-12">
+                            <label
+                                class="flex items-center space-x-2 text-xs font-medium text-txt-secondary hover:text-primary cursor-pointer transition-colors">
+                                <input type="checkbox" formControlName="opcional"
+                                    class="rounded text-primary focus:ring-primary/50 bg-background border-border w-3.5 h-3.5">
+                                <span>Línea Opcional (El cliente decide si lo contrata)</span>
+                            </label>
                         </div>
 
                         <button type="button" (click)="removerLineaItem(i)"
-                            class="absolute right-0 text-txt-muted hover:text-red-500 transition-colors bg-surface-hover rounded-md p-1 opacity-0 group-hover:opacity-100">
+                            class="absolute right-0 top-1 text-txt-muted hover:text-red-500 transition-colors bg-surface-hover rounded-md p-1 opacity-0 group-hover:opacity-100">
                             <lucide-icon name="x" class="w-4 h-4"></lucide-icon>
                         </button>
                     </div>
@@ -164,6 +184,14 @@
                             }}</span>
                     </div>
 
+                    <!-- Upside Opcional -->
+                    <div *ngIf="subtotalOpcional > 0"
+                        class="flex justify-between items-center text-xs text-primary/80 mt-1">
+                        <span>Potencial Upsell Opcional</span>
+                        <span class="font-medium">+ {{ subtotalOpcional | currency:'CLP':'symbol-narrow':'1.0-0'
+                            }}</span>
+                    </div>
+
                     <!-- Descuentos Controller -->
                     <div class="pt-3 border-t border-border border-dashed">
                         <label class="block text-xs font-semibold text-txt-muted uppercase mb-2">Bonificación
@@ -204,6 +232,41 @@
                         <span class="text-base font-bold text-txt-primary">Total Propuesta</span>
                         <span class="text-xl font-bold text-primary">{{ totalFinal |
                             currency:'CLP':'symbol-narrow':'1.0-0' }}</span>
+                    </div>
+
+                    <!-- ✨ Yield Management IA Panel -->
+                    <div class="pt-4 mt-2 border-t border-border border-dashed">
+                        <button type="button" (click)="consultarCapacidad()" [disabled]="isLoadingCapacidad"
+                            class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium rounded-lg border transition-colors"
+                            [ngClass]="{
+                                'border-primary text-primary hover:bg-primary/5': !capacidadData,
+                                'border-green-300 text-green-700 bg-green-50': capacidadData?.tipoAlerta === 'neutral',
+                                'border-amber-300 text-amber-700 bg-amber-50': capacidadData?.tipoAlerta === 'premium',
+                                'border-blue-300 text-blue-700 bg-blue-50': capacidadData?.tipoAlerta === 'descuento'
+                            }">
+                            <lucide-icon *ngIf="isLoadingCapacidad" name="loader-2" [size]="14"
+                                class="animate-spin"></lucide-icon>
+                            <lucide-icon *ngIf="!isLoadingCapacidad" name="trending-up" [size]="14"></lucide-icon>
+                            {{ isLoadingCapacidad ? 'Analizando...' : '✨ Evaluar Precio Inteligente' }}
+                        </button>
+
+                        <div *ngIf="capacidadData" class="mt-3 p-3 rounded-lg text-xs space-y-2" [ngClass]="{
+                                'bg-green-50 border border-green-200': capacidadData.tipoAlerta === 'neutral',
+                                'bg-amber-50 border border-amber-200': capacidadData.tipoAlerta === 'premium',
+                                'bg-blue-50 border border-blue-200': capacidadData.tipoAlerta === 'descuento'
+                            }">
+                            <div class="flex justify-between items-center font-semibold">
+                                <span>Ocupación Equipo</span>
+                                <span class="text-sm">{{ capacidadData.indiceOcupacion | number:'1.0-1' }}%</span>
+                            </div>
+                            <p class="leading-relaxed opacity-90">{{ capacidadData.recomendacion }}</p>
+                            <div *ngIf="capacidadData.porcentajeAjusteSugerido !== 0"
+                                class="flex justify-between items-center pt-1 border-t border-current/10 font-medium">
+                                <span>Ajuste Sugerido</span>
+                                <span>{{ capacidadData.porcentajeAjusteSugerido > 0 ? '+' : '' }}{{
+                                    capacidadData.porcentajeAjusteSugerido }}%</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="pt-4 text-xs text-center text-txt-muted w-full">

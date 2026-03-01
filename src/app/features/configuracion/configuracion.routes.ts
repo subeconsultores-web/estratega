@@ -1,25 +1,30 @@
 import { Routes } from '@angular/router';
-import { ConfiguracionLayoutComponent } from './configuracion-layout.component';
-import { ApiKeysComponent } from './api-keys/api-keys.component';
-import { WebhooksComponent } from './webhooks/webhooks.component';
 
 export const CONFIG_ROUTES: Routes = [
     {
         path: '',
-        component: ConfiguracionLayoutComponent,
+        loadComponent: () => import('./configuracion-layout.component').then(m => m.ConfiguracionLayoutComponent),
         children: [
             {
                 path: '',
-                redirectTo: 'api-keys',
+                redirectTo: 'usuarios',
                 pathMatch: 'full'
             },
             {
+                path: 'usuarios',
+                loadComponent: () => import('./usuarios/usuarios-list/usuarios-list').then(m => m.UsuariosList)
+            },
+            {
                 path: 'api-keys',
-                component: ApiKeysComponent
+                loadComponent: () => import('./api-keys/api-keys.component').then(m => m.ApiKeysComponent)
             },
             {
                 path: 'webhooks',
-                component: WebhooksComponent
+                loadComponent: () => import('./webhooks/webhooks.component').then(m => m.WebhooksComponent)
+            },
+            {
+                path: 'apariencia',
+                loadComponent: () => import('./apariencia/apariencia.component').then(m => m.AparienciaComponent)
             }
         ]
     }

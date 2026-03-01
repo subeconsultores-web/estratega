@@ -1,0 +1,24 @@
+// Custom utilities not covered by global styles
+
+.animate-spin-slow {
+    animation: spin-slow 10s linear infinite;
+}
+
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// Enhance SVG rendering for radial progress
+svg {
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+
+    circle {
+        transition: stroke-dashoffset 1s ease-out, stroke 0.5s ease;
+    }
+}

@@ -2,21 +2,22 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ClipboardList, Plus  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ClipboardList, Plus } from 'lucide-angular';
 
 import { TareasService } from '../../../core/services/tareas.service';
 import { Tarea } from '../../../core/models/proyectos.model';
 import { DataTableComponent, ColumnDef } from '../../../shared/components/data-table/data-table.component';
 import { LoadingSkeleton } from '../../../shared/components/loading-skeleton/loading-skeleton.component';
 import { TareaFormComponent } from '../tarea-form/tarea-form.component';
+import { EmptyState } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
     selector: 'app-tarea-list',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, DataTableComponent, LoadingSkeleton, TareaFormComponent],
+    imports: [CommonModule, LucideAngularModule, DataTableComponent, LoadingSkeleton, TareaFormComponent, EmptyState],
     templateUrl: './tarea-list.component.html',
     providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ClipboardList, Plus }) },DatePipe]
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ClipboardList, Plus }) }, DatePipe]
 })
 export class TareaListComponent implements OnInit {
     private route = inject(ActivatedRoute);

@@ -4,23 +4,27 @@ import { FormsModule } from '@angular/forms';
 import { ApiKeyService } from '../../../core/services/api-key.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ApiKey } from '../../../core/models/api-key.model';
-import { Observable, switchMap } from 'rxjs';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Key, Plus, Copy, Trash2, ShieldAlert, Shield  } from 'lucide-angular';
+import { Observable, of, switchMap, catchError } from 'rxjs';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, Key, Plus, Copy, Trash2, ShieldAlert, Shield } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
+
+import { EmptyState } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
     selector: 'app-api-keys',
     standalone: true,
-    imports: [CommonModule, FormsModule, LucideAngularModule],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Key, Plus, Copy, Trash2, ShieldAlert, Shield }) }
-  ],
+    imports: [CommonModule, FormsModule, LucideAngularModule, EmptyState],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Key, Plus, Copy, Trash2, ShieldAlert, Shield }) }
+    ],
     templateUrl: './api-keys.component.html'
 })
 export class ApiKeysComponent implements OnInit {
     private apiKeyService = inject(ApiKeyService);
     private authService = inject(AuthService);
     private toastr = inject(ToastrService);
+    private confirmDialog = inject(ConfirmDialogService);
 
     readonly KeyIcon = Key;
     readonly PlusIcon = Plus;
@@ -35,10 +39,11 @@ export class ApiKeysComponent implements OnInit {
     recentlyCreatedKey = '';
 
     ngOnInit() {
-        this.apiKeys$ = this.authService.user$.pipe(
-            switchMap(user => {
-                if (!user?.tenantId) throw new Error('No tenant ID');
-                return this.apiKeyService.getApiKeys(user.tenantId);
+        this.apiKeys$ = this.authService.tenantId$.pipe(
+            switchMap(tenantId => this.apiKeyService.getApiKeys(tenantId)),
+            catchError(err => {
+                console.error('Error cargando API Keys:', err);
+                return of([] as ApiKey[]);
             })
         );
     }
@@ -49,10 +54,10 @@ export class ApiKeysComponent implements OnInit {
             return;
         }
         try {
-            const user = await this.authService.getCurrentUser();
-            if (!user?.tenantId) return;
+            const tenantId = await this.authService.getTenantId();
+            if (!tenantId) return;
 
-            this.recentlyCreatedKey = await this.apiKeyService.generateApiKey(user.tenantId, this.newKeyName);
+            this.recentlyCreatedKey = await this.apiKeyService.generateApiKey(tenantId, this.newKeyName);
             this.newKeyName = '';
             this.toastr.success('API Key generada con éxito');
         } catch (error) {
@@ -71,7 +76,13 @@ export class ApiKeysComponent implements OnInit {
     }
 
     async deleteKey(keyId: string) {
-        if (confirm('¿Estás seguro de que quieres revocar y eliminar esta API Key permanentemente? Cualquier integración que la use dejará de funcionar.')) {
+        const ok = await this.confirmDialog.confirm({
+            title: 'Revocar API Key',
+            message: '¿Estás seguro de que quieres revocar y eliminar esta API Key permanentemente? Cualquier integración que la use dejará de funcionar.',
+            variant: 'danger',
+            confirmText: 'Revocar'
+        });
+        if (ok) {
             try {
                 await this.apiKeyService.deleteApiKey(keyId);
                 this.toastr.success('API Key revocada');

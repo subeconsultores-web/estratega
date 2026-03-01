@@ -1,0 +1,22 @@
+// Enable 3D transform properties
+.preserve-3d {
+    transform-style: preserve-3d;
+}
+
+// 3D pop-out layers for the text and icons inside the card
+.transform-tz-20 {
+    transform: translateZ(20px);
+}
+
+.transform-tz-30 {
+    transform: translateZ(30px);
+}
+
+.transform-tz-40 {
+    transform: translateZ(40px);
+}
+
+.magic-card {
+    will-change: transform;
+    perspective: 1000px;
+}

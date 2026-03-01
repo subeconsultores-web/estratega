@@ -2,15 +2,16 @@ import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, Briefcase, FileText, Loader2, Search, User  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, Briefcase, FileText, Loader2, Search, Sparkles, User } from 'lucide-angular';
 import { CrmService } from '../../../core/services/crm.service';
 import { ProyectosService } from '../../../core/services/proyectos.service';
 import { FacturaService } from '../../../core/services/factura.service';
 import { firstValueFrom } from 'rxjs';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 
 interface SearchResult {
     id: string;
-    type: 'cliente' | 'proyecto' | 'factura';
+    type: 'cliente' | 'proyecto' | 'factura' | 'cotizacion';
     title: string;
     subtitle: string;
     route: string;
@@ -21,9 +22,9 @@ interface SearchResult {
     selector: 'app-global-search',
     standalone: true,
     imports: [CommonModule, FormsModule, LucideAngularModule],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Briefcase, FileText, Loader2, Search, User }) }
-  ],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ Briefcase, FileText, Loader2, Search, Sparkles, User }) }
+    ],
     templateUrl: './global-search.component.html'
 })
 export class GlobalSearchComponent implements OnInit {
@@ -33,12 +34,17 @@ export class GlobalSearchComponent implements OnInit {
     selectedIdx = 0;
     isLoading = false;
 
+    // Semantic search
+    modoIA = false;
+    intencionIA = '';
+
     private router = inject(Router);
     private crmService = inject(CrmService);
     private proyectosService = inject(ProyectosService);
     private facturaService = inject(FacturaService);
+    private functions = inject(Functions);
 
-    // Cache to avoid refetching during session if opened multiple times (optional)
+    // Cache to avoid refetching during session
     private cache: SearchResult[] = [];
     private hasFetched = false;
 
@@ -73,6 +79,7 @@ export class GlobalSearchComponent implements OnInit {
             this.searchQuery = '';
             this.results = [];
             this.selectedIdx = 0;
+            this.intencionIA = '';
             setTimeout(() => {
                 document.getElementById('globalSearchInput')?.focus();
             }, 50);
@@ -95,17 +102,17 @@ export class GlobalSearchComponent implements OnInit {
             ]);
 
             const mappedClientes: SearchResult[] = clientes.map(c => ({
-                id: c.id!, type: 'cliente', title: c.nombreEmpresa, subtitle: c.contactoPrincipal?.email || 'Sin correo', route: `/dashboard/clientes/${c.id}`, icon: 'user'
+                id: c.id!, type: 'cliente', title: c.nombreEmpresa, subtitle: c.contactoPrincipal?.email || 'Sin correo', route: `/crm/clientes/${c.id}`, icon: 'user'
             }));
 
             const mappedProyectos: SearchResult[] = proyectos.map(p => ({
-                id: p.id!, type: 'proyecto', title: p.nombre, subtitle: `Estado: ${p.estado}`, route: `/dashboard/proyectos/${p.id}`, icon: 'briefcase'
+                id: p.id!, type: 'proyecto', title: p.nombre, subtitle: `Estado: ${p.estado}`, route: `/proyectos/${p.id}`, icon: 'briefcase'
             }));
 
             const mappedFacturas: SearchResult[] = facturas.map(f => {
                 const cName = clientes.find(c => c.id === f.clienteId)?.nombreEmpresa || 'S/N';
                 return {
-                    id: f.id!, type: 'factura', title: `Factura ${f.codigoFormateado || f.id}`, subtitle: `Cliente: ${cName} - $${f.total}`, route: `/dashboard/cotizaciones/factura/${f.id}`, icon: 'file-text'
+                    id: f.id!, type: 'factura', title: `Factura ${f.codigoFormateado || f.id}`, subtitle: `Cliente: ${cName} - $${f.total}`, route: `/facturas/${f.id}`, icon: 'file-text'
                 };
             });
 
@@ -121,13 +128,46 @@ export class GlobalSearchComponent implements OnInit {
     onSearch() {
         if (!this.searchQuery.trim()) {
             this.results = [];
+            this.intencionIA = '';
             return;
         }
+
+        if (this.modoIA) {
+            this.busquedaSemantica();
+            return;
+        }
+
         const q = this.searchQuery.toLowerCase();
         this.results = this.cache.filter(item =>
             item.title.toLowerCase().includes(q) || item.subtitle.toLowerCase().includes(q)
-        ).slice(0, 10); // Limit to 10 results
+        ).slice(0, 10);
         this.selectedIdx = 0;
+    }
+
+    async busquedaSemantica() {
+        this.isLoading = true;
+        this.intencionIA = '';
+        try {
+            const callFn = httpsCallable(this.functions, 'busquedaSemantica');
+            const result = await callFn({ query: this.searchQuery });
+            const payload: any = result.data;
+            if (payload?.success) {
+                this.results = payload.data.resultados.map((r: any) => ({
+                    id: r.id,
+                    type: r.type,
+                    title: r.title,
+                    subtitle: r.subtitle,
+                    route: r.route,
+                    icon: r.type === 'cliente' ? 'user' : r.type === 'proyecto' ? 'briefcase' : 'file-text'
+                }));
+                this.intencionIA = payload.data.intencion;
+            }
+        } catch (error) {
+            console.error('Error en búsqueda semántica:', error);
+        } finally {
+            this.isLoading = false;
+            this.selectedIdx = 0;
+        }
     }
 
     selectItem(idx: number) {
@@ -141,4 +181,6 @@ export class GlobalSearchComponent implements OnInit {
         this.closeModal();
         this.router.navigate([selected.route]);
     }
+
+    trackById(index: number, item: SearchResult): string { return item.id; }
 }

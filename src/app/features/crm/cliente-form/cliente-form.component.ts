@@ -1,8 +1,9 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, Building2, Loader, Save, Sliders, User  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ArrowLeft, Building2, Loader, Save, Sliders, User } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 import { CrmService } from '../../../core/services/crm.service';
 import { Cliente } from '../../../core/models/crm.model';
@@ -11,9 +12,9 @@ import { Cliente } from '../../../core/models/crm.model';
     selector: 'app-cliente-form',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterModule, LucideAngularModule],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Building2, Loader, Save, Sliders, User }) }
-  ],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Building2, Loader, Save, Sliders, User }) }
+    ],
     templateUrl: './cliente-form.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -24,6 +25,7 @@ export class ClienteFormComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private toastr = inject(ToastrService);
     private cdr = inject(ChangeDetectorRef);
+    private destroyRef = inject(DestroyRef);
 
     clienteForm!: FormGroup;
     isEditing = false;
@@ -62,7 +64,7 @@ export class ClienteFormComponent implements OnInit {
     loadClienteData() {
         if (!this.clienteId) return;
 
-        this.crmService.getCliente(this.clienteId).subscribe({
+        this.crmService.getCliente(this.clienteId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (cliente: Cliente | undefined) => {
                 if (cliente) {
                     this.clienteForm.patchValue(cliente);
@@ -70,11 +72,11 @@ export class ClienteFormComponent implements OnInit {
                     this.toastr.error('Cliente no encontrado');
                     this.router.navigate(['/crm/clientes']);
                 }
-                this.cdr.markForCheck();
+                this.cdr.detectChanges();
             },
             error: () => {
                 this.toastr.error('Error al cargar datos del cliente');
-                this.cdr.markForCheck();
+                this.cdr.detectChanges();
             }
         });
     }
@@ -105,7 +107,7 @@ export class ClienteFormComponent implements OnInit {
             this.toastr.error('Ocurrió un error al guardar el cliente');
         } finally {
             this.isSaving = false;
-            this.cdr.markForCheck();
+            this.cdr.detectChanges();
         }
     }
 }

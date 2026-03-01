@@ -52,7 +52,8 @@ exports.generarSugerenciasUpselling = (0, https_1.onCall)({
         console.log(`Se analizarán ${clientesData.length} clientes usando Gemini...`);
         // 4. Construir el Prompt masivo para la IA
         const systemPrompt = `Eres un talentoso gerente de cuentas B2B (Key Account Manager).
-Tu objetivo es analizar un lote de clientes y sugerir una oportunidad lógica de Venta Cruzada (Cross-selling) o Upselling (mejora de plan) para cada cliente.
+Tu objetivo es analizar un lote de clientes y sugerir al menos una oportunidad lógica de Venta Cruzada (Cross-selling) o Upselling (mejora de plan) para CADA cliente listado, sin importar si los datos del cliente son escasos.
+Usa tu intuición comercial B2B para proponer servicios complementarios o mejoras de plan plausibles.
 
 SERVICIOS QUE PODEMOS OFRECER: ${serviciosOfertables}
 
@@ -61,12 +62,14 @@ Debes responder exclusivamente en formato JSON estricto con la siguiente estruct
   "sugerencias": [
     {
       "clienteId": "id-del-cliente",
-      "servicioSugerido": "Nombre del servicio a ofrecer",
-      "razonComercial": "Una justificación de 2 oraciones de por qué este cliente necesita este servicio según su giro o estado actual",
+      "servicioSugerido": "Nombre del servicio a ofrecer (de la lista o relacionado)",
+      "razonComercial": "Justificación comercial de 2 oraciones de por qué el cliente necesita esto para crecer o mejorar su gestión.",
       "probabilidadXito": "Alta, Media o Baja"
     }
   ]
 }
+
+REGLA DE ORO: DEBES incluir al menos una sugerencia en el JSON para cada cliente que recibas.
 No incluyas markdown, código, ni texto adicional. Solo el JSON válido.`;
         const userPrompt = `Aquí están los clientes a analizar:\n${JSON.stringify(clientesData, null, 2)}`;
         const response = await ai.models.generateContent({

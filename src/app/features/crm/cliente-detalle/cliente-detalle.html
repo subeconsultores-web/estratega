@@ -28,6 +28,17 @@
             </div>
         </div>
         <div class="flex space-x-3">
+            <!-- Portal Status / Invite Button -->
+            <button *ngIf="!cliente.portalActivo" (click)="isInviteDialogOpen = true"
+                class="flex items-center justify-center bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 transition-colors shadow-sm">
+                <lucide-icon name="users" [size]="18" class="mr-2"></lucide-icon>
+                Invitar al Portal
+            </button>
+            <span *ngIf="cliente.portalActivo"
+                class="flex items-center px-3 py-2 bg-emerald-50 text-emerald-700 text-sm font-semibold rounded-lg border border-emerald-200">
+                <lucide-icon name="external-link" [size]="16" class="mr-1.5"></lucide-icon>
+                Portal Activo
+            </span>
             <button (click)="openPropuestaModal()"
                 class="flex items-center justify-center bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold hover:brightness-110 transition-colors shadow-sm">
                 <lucide-icon name="sparkles" [size]="18" class="mr-2"></lucide-icon>
@@ -132,6 +143,75 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Copiloto de Ventas (Next Best Action) -->
+            <div
+                class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl shadow-sm border border-indigo-100 p-6 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-purple-200 rounded-full blur-3xl opacity-40">
+                </div>
+                <h3 class="text-lg font-semibold text-indigo-900 mb-2 flex items-center relative z-10">
+                    <lucide-icon name="sparkles" [size]="18" class="mr-2 text-indigo-500"></lucide-icon>
+                    Copiloto de Ventas IA
+                </h3>
+
+                <div class="relative z-10">
+                    <!-- Estado Inicial / Botón Generar -->
+                    <div *ngIf="!nextBestActionIA && !isGeneratingSugerencia" class="text-center py-4">
+                        <p class="text-sm text-indigo-700 mb-4">Genera una sugerencia de la IA basada en el historial y
+                            perfil de este cliente.</p>
+                        <button (click)="solicitarSugerenciaVentas()"
+                            class="w-full flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm">
+                            Generar Next Best Action
+                        </button>
+                    </div>
+
+                    <!-- Estado Cargando -->
+                    <div *ngIf="isGeneratingSugerencia" class="text-center py-6">
+                        <lucide-icon name="loader-2" [size]="24"
+                            class="mx-auto text-indigo-500 animate-spin mb-2"></lucide-icon>
+                        <p class="text-xs font-semibold text-indigo-700 animate-pulse">Analizando historial e
+                            interacciones...</p>
+                    </div>
+
+                    <!-- Resultado -->
+                    <div *ngIf="nextBestActionIA && !isGeneratingSugerencia" class="space-y-4">
+                        <div class="bg-white/80 backdrop-blur border border-indigo-50 rounded-lg p-3 shadow-sm">
+                            <p class="text-[10px] uppercase font-bold text-indigo-400 tracking-wider mb-1">Acción
+                                Sugerida</p>
+                            <p class="text-sm font-bold text-gray-900">{{ nextBestActionIA.siguienteMejorAccion }}</p>
+                        </div>
+
+                        <div>
+                            <p class="text-[10px] uppercase font-bold text-purple-400 tracking-wider mb-1">Contexto &
+                                Justificación</p>
+                            <p class="text-xs text-indigo-900/80 leading-relaxed">{{ nextBestActionIA.justificacion }}
+                            </p>
+                        </div>
+
+                        <div *ngIf="nextBestActionIA.asuntoSugerido">
+                            <p class="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">Asunto de Email
+                                Sugerido</p>
+                            <div
+                                class="bg-white px-2 py-1.5 rounded border border-gray-100 flex items-center justify-between group">
+                                <span class="text-xs font-medium text-gray-700 truncate mr-2">{{
+                                    nextBestActionIA.asuntoSugerido }}</span>
+                                <lucide-icon name="files" [size]="12"
+                                    class="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"></lucide-icon>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 flex items-center justify-between border-t border-indigo-100/50">
+                            <span class="text-[10px] text-indigo-400">{{ nextBestActionIA.fechaGeneracion | date:'short'
+                                }}</span>
+                            <button (click)="solicitarSugerenciaVentas()"
+                                class="text-[10px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center transition-colors">
+                                <lucide-icon name="loader" [size]="10" class="mr-1"></lucide-icon> Actualizar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- Panel Derecho: Actividades -->
@@ -253,7 +333,7 @@
                             <span *ngIf="!doc.analizadoPorIA"
                                 class="flex items-center text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-full border border-amber-100">
                                 <lucide-icon name="loader" [size]="10" class="mr-1 animate-spin"></lucide-icon>
-                                Analizando
+                                Pendiente
                             </span>
                         </div>
 
@@ -286,8 +366,18 @@
                             </div>
                         </div>
 
-                        <div class="mt-3 pt-3 border-t border-gray-50 flex justify-end">
-                            <a *ngIf="doc.storagePath" [href]="doc.url" target="_blank"
+                        <div class="mt-3 pt-3 border-t border-gray-50 flex justify-between items-center">
+                            <button *ngIf="!doc.analizadoPorIA && !isAnalyzingId" (click)="reanalizarDocumento(doc)"
+                                class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition-colors flex items-center">
+                                <lucide-icon name="sparkles" [size]="12" class="mr-1"></lucide-icon> Forzar Análisis IA
+                            </button>
+                            <span *ngIf="isAnalyzingId === doc.id"
+                                class="text-[10px] font-semibold text-indigo-400 flex items-center">
+                                <lucide-icon name="loader" [size]="12" class="mr-1 animate-spin"></lucide-icon>
+                                Procesando...
+                            </span>
+                            <div class="flex-1"></div>
+                            <a *ngIf="doc.storagePath" [href]="doc.url || '#'" target="_blank"
                                 class="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center">
                                 Abrir Archivo <lucide-icon name="external-link" [size]="12" class="ml-1"></lucide-icon>
                             </a>
@@ -303,3 +393,10 @@
 <app-propuesta-modal *ngIf="cliente" [isOpen]="isPropuestaModalOpen" [clienteId]="cliente.id!"
     [nombreEmpresa]="cliente.nombreEmpresa" (closeModal)="isPropuestaModalOpen = false">
 </app-propuesta-modal>
+
+<!-- Modal Invitación al Portal -->
+<app-invitar-cliente-dialog *ngIf="isInviteDialogOpen && cliente" [clienteId]="cliente.id!"
+    [empresaNombre]="cliente.nombreEmpresa" [contactoEmail]="cliente.contactoPrincipal?.email || ''"
+    [contactoNombre]="cliente.contactoPrincipal?.nombre || ''" (close)="isInviteDialogOpen = false"
+    (invited)="onClientInvited($event)">
+</app-invitar-cliente-dialog>

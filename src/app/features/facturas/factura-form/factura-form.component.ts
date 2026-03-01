@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, Loader2, Plus, Save, Trash  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ArrowLeft, Loader2, Plus, Save, Trash } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 
 import { FacturaService } from '../../../core/services/factura.service';
@@ -13,9 +14,9 @@ import { CrmService } from '../../../core/services/crm.service';
     selector: 'app-factura-form',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterModule, LucideAngularModule],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Loader2, Plus, Save, Trash }) }
-  ],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, Loader2, Plus, Save, Trash }) }
+    ],
     templateUrl: './factura-form.component.html'
 })
 export class FacturaFormComponent implements OnInit {
@@ -27,6 +28,7 @@ export class FacturaFormComponent implements OnInit {
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     private location = inject(Location);
+    private destroyRef = inject(DestroyRef);
 
     facturaForm: FormGroup;
     itemId = this.route.snapshot.paramMap.get('id');
@@ -53,7 +55,7 @@ export class FacturaFormComponent implements OnInit {
         });
 
         // Listeners para forzar recalculación
-        this.facturaForm.valueChanges.subscribe(() => {
+        this.facturaForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
             // En un entorno de producción, puedes agregar debounce o trigger events
         });
     }
@@ -99,12 +101,12 @@ export class FacturaFormComponent implements OnInit {
 
     async loadDropdowns() {
         if (this.tenantId) {
-            this.crmService.getClientes().subscribe(cs => this.clientes = cs);
+            this.crmService.getClientes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(cs => this.clientes = cs);
         }
     }
 
     async loadFactura(id: string) {
-        this.facturaService.getFactura(id).subscribe(factura => {
+        this.facturaService.getFactura(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(factura => {
             if (factura) {
                 // Limpiamos items array local y re-armamos
                 this.itemsArray.clear();

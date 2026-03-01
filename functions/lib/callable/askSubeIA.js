@@ -25,52 +25,93 @@ exports.askSubeIA = (0, https_1.onCall)({
         const ai = new genai_1.GoogleGenAI({
             apiKey: geminiApiKey.value()
         });
-        // Instrucción Base del Sistema
+        // Instrucción Base del Sistema (Ajustada para Generative UI JSON)
         let systemInstruction = `Eres SUBE IA, la inteligencia artificial integrada en el CRM "Estratega Sube". 
         Tu objetivo es comportarte como un asistente proactivo, analítico y profesional.
         Ayudas a los equipos (administradores y representantes) y a los clientes a entender sus datos financieros, proyectos, estado de facturación, y resolver dudas.
-        Debes responder en formato Markdown limpio, usando negritas, viñetas y saltos de línea donde corresponda para maximizar la legibilidad.
         
-        [NUEVO COMPORTAMIENTO PARA GRÁFICOS]
-        Si el usuario te solicita visualizar datos numéricos, comparar métricas, tendencias de ventas o pide explícitamente un gráfico ilustrativo, DEBES incluir en tu respuesta un bloque de código JSON marcado estrictamente con "json_chart".
-        El JSON debe contener la estructura básica de Chart.js ({ type, data: { labels, datasets } }).
-        Ejemplo:
-        \`\`\`json_chart
-        {
-           "type": "bar",
-           "data": { "labels": ["A", "B"], "datasets": [{ "label": "Datos", "data": [10, 20] }] }
-        }
-        \`\`\`
-        Asegúrate de explicar brevemente el gráfico antes o después del bloque. Usa barras (bar), líneas (line) o donas (doughnut) según convenga.`;
+        [REQUERIMIENTO ESTRICTO: GENERATIVE UI JSON]
+        SIEMPRE debes retornar un objeto JSON estructurado, sin importar lo que pregunte el usuario.
+        - Usa 'actionType' = 'MESSAGE' para respuestas conversacionales normales en formato Markdown.
+        - Usa 'actionType' = 'CHART' para generar gráficos (bar, line, doughnut) cuando el usuario pida comparar métricas.
+        - Usa 'actionType' = 'ACTION_PROMPT' si requieres que el usuario haga clic en un botón para confirmar una acción (ej. "Crear Cotización").
+        `;
         // Inyectar contexto situacional provisto por el Frontend para guiar al modelo
         if (context) {
             systemInstruction += `\n\n[CONTEXTO ACTUAL DEL SISTEMA]\n${JSON.stringify(context)}`;
         }
-        // Opcional: Podría inyectarse información del Tenant o Perfil del usuario consultando a Firestore aquí.
         if (tenantId) {
             systemInstruction += `\n[TENANT ID DE REFERENCIA]: ${tenantId}`;
         }
+        // Schema estricto que Gemini debe seguir al responder
+        const subeIaResponseSchema = {
+            type: genai_1.Type.OBJECT,
+            properties: {
+                actionType: {
+                    type: genai_1.Type.STRING,
+                    description: "El tipo de interfaz a renderizar en el frontend (MESSAGE, CHART, ACTION_PROMPT)"
+                },
+                message: {
+                    type: genai_1.Type.STRING,
+                    description: "El texto descriptivo de la respuesta en formato Markdown limpio, usando negritas o viñetas."
+                },
+                chartData: {
+                    type: genai_1.Type.OBJECT,
+                    description: "Opcional. Configuración de Chart.js si actionType es CHART. Debe incluir { type, data: { labels, datasets } }.",
+                    properties: {
+                        type: { type: genai_1.Type.STRING },
+                        data: {
+                            type: genai_1.Type.OBJECT,
+                            properties: {
+                                labels: { type: genai_1.Type.ARRAY, items: { type: genai_1.Type.STRING } },
+                                datasets: {
+                                    type: genai_1.Type.ARRAY,
+                                    items: {
+                                        type: genai_1.Type.OBJECT,
+                                        properties: {
+                                            label: { type: genai_1.Type.STRING },
+                                            data: { type: genai_1.Type.ARRAY, items: { type: genai_1.Type.NUMBER } }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                actionSuggested: {
+                    type: genai_1.Type.OBJECT,
+                    description: "Opcional. Datos de la acción sugerida si actionType es ACTION_PROMPT.",
+                    properties: {
+                        actionId: { type: genai_1.Type.STRING, description: "Identificador de la acción (ej. 'CREATE_INVOICE')" },
+                        buttonLabel: { type: genai_1.Type.STRING, description: "Texto del botón (ej. 'Generar Factura AHORA')" },
+                        payload: { type: genai_1.Type.OBJECT, description: "Datos pre-configurados para ejecutar la acción." }
+                    }
+                }
+            },
+            required: ["actionType", "message"]
+        };
         // 2. Definición de Herramientas (Tools)
         const tools = [{
                 functionDeclarations: [
                     {
                         name: "get_metricas_financieras",
-                        description: "Obtiene las métricas financieras clave actuales del negocio como ingresos del mes, cuentas por cobrar y MRR (Ingreso Mensual Recurrente). Usa esto cuando pregunten por dinero, facturación o ingresos.",
-                        parameters: { type: genai_1.Type.OBJECT, properties: {} }
+                        description: "Obtiene las métricas financieras clave actuales del negocio como ingresos del mes, cuentas por cobrar y MRR (Ingreso Mensual Recurrente).",
+                        // Dejamos properties vacías temporalmente o definimos un objecto genérico
                     },
                     {
                         name: "get_resumen_clientes",
                         description: "Obtiene información resumida de la cartera de clientes, incluyendo cantidad de clientes activos.",
-                        parameters: { type: genai_1.Type.OBJECT, properties: {} }
                     }
                 ]
             }];
-        // 3. Crear sesión de Chat para manejar turnos de herramientas
+        // 3. Crear sesión de Chat para manejar turnos de herramientas y Schema Estricto
         const chat = ai.chats.create({
             model: 'gemini-2.5-flash',
             config: {
                 systemInstruction: systemInstruction,
-                temperature: 0.4,
+                temperature: 0.2, // Reducida para asegurar precisión en JSON structures
+                responseMimeType: "application/json",
+                responseSchema: subeIaResponseSchema,
                 tools: tools
             }
         });
@@ -114,13 +155,26 @@ exports.askSubeIA = (0, https_1.onCall)({
                     }
                 });
             }
-            // Enviar resultados de vuelta al modelo
+            // Enviar resultados de vuelta al modelo para que genere el JSON Final
             response = await chat.sendMessage({ message: functionResponses });
         }
-        // 6. Devolver Respuesta Final
+        // 6. Parsear y Devolver Respuesta Estructurada
+        let jsonPayload;
+        try {
+            // response.text ya debería venir en string JSON gracias a responseMimeType
+            jsonPayload = JSON.parse(response.text || "{}");
+        }
+        catch (parseError) {
+            console.error("No se pudo parsear la respuesta JSON de Gemini:", parseError);
+            // Fallback de seguridad en caso de alucinación fuera de formato
+            jsonPayload = {
+                actionType: 'MESSAGE',
+                message: "Lo siento, tuve un problema interno estructurando mi respuesta gráfica. " + response.text
+            };
+        }
         return {
             success: true,
-            response: response.text
+            data: jsonPayload // Devolvemos el JSON validado directamente en .data
         };
     }
     catch (error) {

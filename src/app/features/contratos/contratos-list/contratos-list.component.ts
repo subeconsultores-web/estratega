@@ -1,22 +1,26 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, FileSignature, Loader2, Plus  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, FileSignature, Loader2, Plus } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog.service';
 
 import { ContratoService } from '../../../core/services/contrato.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Contrato } from '../../../core/models/contrato.model';
 import { DataTableComponent, ColumnDef } from '../../../shared/components/data-table/data-table.component';
+import { EmptyState } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
     selector: 'app-contratos-list',
     standalone: true,
-    imports: [CommonModule, RouterModule, LucideAngularModule, DataTableComponent],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ FileSignature, Loader2, Plus }) }
-  ],
-    templateUrl: './contratos-list.component.html'
+    imports: [CommonModule, RouterModule, LucideAngularModule, DataTableComponent, EmptyState],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ FileSignature, Loader2, Plus }) }
+    ],
+    templateUrl: './contratos-list.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContratosListComponent implements OnInit {
     private contratoService = inject(ContratoService);
@@ -24,6 +28,8 @@ export class ContratosListComponent implements OnInit {
     private router = inject(Router);
     private toastr = inject(ToastrService);
     private cdr = inject(ChangeDetectorRef);
+    private confirmDialog = inject(ConfirmDialogService);
+    private destroyRef = inject(DestroyRef);
 
     contratos: Contrato[] = [];
     isLoading = true;
@@ -51,7 +57,7 @@ export class ContratosListComponent implements OnInit {
                 return;
             }
 
-            this.contratoService.getContratos(tenantId).subscribe({
+            this.contratoService.getContratos(tenantId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
                 next: (data) => {
                     this.contratos = data.map(c => ({
                         ...c,
@@ -76,13 +82,18 @@ export class ContratosListComponent implements OnInit {
         }
     }
 
-    onAction(event: { action: string, item: any }) {
+    async onAction(event: { action: string, item: any }) {
         if (event.action === 'edit' || event.action === 'view') {
             const routePath = event.action === 'view' ? `/contratos/${event.item.id}/view` : `/contratos/${event.item.id}`;
             this.router.navigate([routePath]);
         } else if (event.action === 'delete') {
-            // Implement cancel logic quickly via the internal delete event mapped to Cancel
-            if (confirm('¿Seguro de que deseas cancelar este acuerdo?')) {
+            const ok = await this.confirmDialog.confirm({
+                title: 'Cancelar contrato',
+                message: '¿Seguro de que deseas cancelar este acuerdo? Esta acción no se puede deshacer.',
+                variant: 'warning',
+                confirmText: 'Cancelar contrato'
+            });
+            if (ok) {
                 this.contratoService.cambiarEstado(event.item.id, 'Cancelado').then(() => {
                     this.toastr.info('Contrato cancelado exitosamente');
                 }).catch(e => {
@@ -91,5 +102,9 @@ export class ContratosListComponent implements OnInit {
                 });
             }
         }
+    }
+
+    goToNuevoContrato() {
+        this.router.navigate(['/contratos/new']);
     }
 }

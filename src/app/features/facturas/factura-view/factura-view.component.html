@@ -39,10 +39,10 @@
                     <span
                         class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold border uppercase"
                         [ngClass]="{
-                            'bg-yellow-50 text-yellow-700 border-yellow-200': factura.estado === 'emitida',
-                            'bg-green-50 text-green-700 border-green-200': factura.estado === 'pagada',
-                            'bg-gray-50 text-gray-700 border-gray-200': factura.estado === 'borrador',
-                            'bg-red-50 text-red-700 border-red-200': factura.estado === 'vencida' || factura.estado === 'anulada'
+                            'bg-warning/10 text-warning border-warning/20': factura.estado === 'emitida',
+                            'bg-success/10 text-success border-success/20': factura.estado === 'pagada',
+                            'bg-surface-hover text-txt-secondary border-border': factura.estado === 'borrador',
+                            'bg-error/10 text-error border-error/20': factura.estado === 'vencida' || factura.estado === 'anulada'
                           }">
                         {{ factura.estado }}
                     </span>

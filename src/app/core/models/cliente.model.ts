@@ -34,6 +34,7 @@ export interface Cliente {
     vendedorAsignado: string;
     notas: string;
     totalHistorico: number;
+    diasPromedioPago?: number;
     ultimaInteraccion: Date;
     createdAt: Date;
     updatedAt: Date;

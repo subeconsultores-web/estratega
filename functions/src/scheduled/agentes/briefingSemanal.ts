@@ -11,7 +11,7 @@ export const briefingSemanal = onSchedule({
     secrets: [geminiApiKey],
     timeoutSeconds: 300, // Extendemos timeout por si hay muchos tenants
     memory: "512MiB"
-}, async (event) => {
+}, async (_event) => {
     try {
         const db = admin.firestore();
         // Obtener todos los tenants (Empresas)
@@ -86,7 +86,7 @@ Genera el resumen CFO-AI en HTML.`;
                 }
             });
 
-            const response = await chat.sendMessage(userPrompt);
+            const response = await chat.sendMessage({ message: userPrompt });
             const resumenIAHtml = response.text || '<p>Error al generar reporte.</p>';
 
             // 3. Guardar el Briefing en BD para historial interno

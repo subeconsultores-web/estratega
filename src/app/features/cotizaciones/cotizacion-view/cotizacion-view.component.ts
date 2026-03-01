@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, Location, CurrencyPipe, SlicePipe } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeft, CalendarClock, Edit, History, Layers, Send, User  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ArrowLeft, CalendarClock, Edit, History, Layers, Send, User } from 'lucide-angular';
 import { ToastrService } from 'ngx-toastr';
 import { CotizacionService } from '../../../core/services/cotizacion.service';
 import { CrmService } from '../../../core/services/crm.service';
@@ -15,9 +16,9 @@ import { Timestamp } from '@angular/fire/firestore';
     selector: 'app-cotizacion-view',
     standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule, CurrencyPipe],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, CalendarClock, Edit, History, Layers, Send, User }) }
-  ],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeft, CalendarClock, Edit, History, Layers, Send, User }) }
+    ],
     templateUrl: './cotizacion-view.component.html'
 })
 export class CotizacionViewComponent implements OnInit {
@@ -27,6 +28,7 @@ export class CotizacionViewComponent implements OnInit {
     private cotizacionService = inject(CotizacionService);
     private crmService = inject(CrmService);
     private toastr = inject(ToastrService);
+    private destroyRef = inject(DestroyRef);
 
     itemId = this.route.snapshot.paramMap.get('id');
     cotizacion: Cotizacion | null = null;
@@ -69,7 +71,7 @@ export class CotizacionViewComponent implements OnInit {
             return;
         }
 
-        this.cotizacionService.getCotizacion(this.itemId).subscribe(coti => {
+        this.cotizacionService.getCotizacion(this.itemId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(coti => {
             if (!coti) {
                 this.isLoading = false;
                 this.toastr.error('Cotización extraviada');
@@ -80,7 +82,7 @@ export class CotizacionViewComponent implements OnInit {
             this.cotizacion = coti;
 
             // Fetch data from foreign relationship CRM
-            this.crmService.getCliente(coti.clienteId).subscribe(cli => {
+            this.crmService.getCliente(coti.clienteId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(cli => {
                 if (cli) this.clienteAso = cli;
                 this.isLoading = false;
             });

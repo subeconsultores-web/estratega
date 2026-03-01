@@ -26,10 +26,20 @@ export class AuthService {
         shareReplay(1)
     );
 
+    /** Emite el clienteId del usuario-cliente autenticado (null para staff). */
+    clienteId$: Observable<string | null> = this.user$.pipe(
+        filter((user): user is User => !!user),
+        switchMap(user => defer(() => from(this.resolveClienteId(user)))),
+        shareReplay(1)
+    );
+
     async login(email: string, password: string) {
         try {
             const credential = await signInWithEmailAndPassword(this.auth, email, password);
-            this.router.navigate(['/dashboard']);
+            // Route clients to portal, staff to dashboard
+            const token = await credential.user.getIdTokenResult();
+            const role = token.claims['role'] as string;
+            this.router.navigate([role === 'client' ? '/portal' : '/dashboard']);
             return credential.user;
         } catch (error) {
             throw error;
@@ -66,35 +76,27 @@ export class AuthService {
     }
 
     async getTenantId(): Promise<string | null> {
-        const user = await this.getCurrentUser();
-        if (!user) return null;
-        return this.resolveTenantId(user);
+        try {
+            return await firstValueFrom(this.tenantId$);
+        } catch {
+            return null;
+        }
     }
 
     /**
-     * Intenta obtener tenantId de 3 fuentes en orden:
+     * Intenta obtener tenantId de 2 fuentes en orden:
      * 1. Token JWT (cached)
-     * 2. Token JWT (force refresh)
-     * 3. Firestore users/{uid} (fallback infalible)
+     * 2. Firestore users/{uid} (fallback real-time compatible)
      */
     private async resolveTenantId(user: User): Promise<string | null> {
         try {
             // 1. Intento rápido: token cacheado
-            let token = await user.getIdTokenResult();
+            const token = await user.getIdTokenResult();
             if (token.claims['tenantId']) {
                 return token.claims['tenantId'] as string;
             }
 
-            // 2. Force refresh del token
-            token = await user.getIdTokenResult(true);
-            if (token.claims['tenantId']) {
-                return token.claims['tenantId'] as string;
-            }
-
-            // 3. Fallback: leer desde Firestore usando docData (real-time compatible)
-            // NOTA: Usamos docData + firstValueFrom en vez de getDoc para evitar
-            // conflicto entre one-shot reads y real-time listeners en @angular/fire.
-            console.warn('AuthService: tenantId no encontrado en JWT, leyendo desde Firestore users/' + user.uid);
+            // 2. Fallback: leer desde Firestore usando docData (real-time compatible)
             const userDocRef = doc(this.firestore, 'users', user.uid);
             const userData = await firstValueFrom(
                 docData(userDocRef).pipe(map(data => data?.['tenantId'] as string | undefined))
@@ -103,13 +105,49 @@ export class AuthService {
                 return userData;
             }
 
-            // 4. Fallback final: usar UID como tenant personal
-            console.warn('AuthService: No se encontró tenantId para uid=' + user.uid + '. Usando UID como Tenant Personal.');
+            // 3. Fallback final: usar UID como tenant personal
             return user.uid;
         } catch (e) {
-            console.warn('Error resolviendo tenantId', e);
+            console.error('[AuthService] Error resolviendo tenantId', e);
             return user.uid;
         }
+    }
+
+    /**
+     * Resuelve clienteId desde JWT claims o Firestore.
+     * Retorna null para usuarios staff (no-client).
+     */
+    private async resolveClienteId(user: User): Promise<string | null> {
+        try {
+            const token = await user.getIdTokenResult();
+            if (token.claims['clienteId']) {
+                return token.claims['clienteId'] as string;
+            }
+
+            // Fallback: Firestore
+            const userDocRef = doc(this.firestore, 'users', user.uid);
+            const clienteId = await firstValueFrom(
+                docData(userDocRef).pipe(map(data => data?.['clienteId'] as string | undefined))
+            );
+            return clienteId || null;
+        } catch (e) {
+            console.error('[AuthService] Error resolviendo clienteId', e);
+            return null;
+        }
+    }
+
+    /** Obtiene el clienteId del usuario actual (sync-await). */
+    async getClienteId(): Promise<string | null> {
+        try {
+            return await firstValueFrom(this.clienteId$);
+        } catch {
+            return null;
+        }
+    }
+
+    /** Verifica si el usuario actual es un cliente del portal. */
+    async isClient(): Promise<boolean> {
+        return await this.hasRole('client');
     }
 
     async getUserRole(): Promise<string | null> {
@@ -132,7 +170,7 @@ export class AuthService {
     async isSuperAdmin(): Promise<boolean> {
         const user = await this.getCurrentUser();
         if (!user) return false;
-        // Check by email (hardcoded super admin) or by JWT role claim
+        // Fallback by email + JWT role claim
         if (user.email === 'bruno@subeia.tech') return true;
         return await this.hasRole('super_admin');
     }

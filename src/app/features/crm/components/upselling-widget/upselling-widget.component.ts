@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowRight, CheckCircle, Loader2, RefreshCw, TrendingUp  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ArrowRight, CheckCircle, Loader2, RefreshCw, TrendingUp } from 'lucide-angular';
 import { UpsellingIAService, OportunidadUpselling } from '../../services/upselling-ia.service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -9,14 +10,15 @@ import { ToastrService } from 'ngx-toastr';
     selector: 'app-upselling-widget',
     standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowRight, CheckCircle, Loader2, RefreshCw, TrendingUp }) }
-  ],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowRight, CheckCircle, Loader2, RefreshCw, TrendingUp }) }
+    ],
     templateUrl: './upselling-widget.component.html'
 })
 export class UpsellingWidgetComponent implements OnInit {
     private upsellingService = inject(UpsellingIAService);
     private toastr = inject(ToastrService);
+    private destroyRef = inject(DestroyRef);
 
     oportunidades: OportunidadUpselling[] = [];
     isLoading = true;
@@ -27,7 +29,7 @@ export class UpsellingWidgetComponent implements OnInit {
     }
 
     cargarOportunidades() {
-        this.upsellingService.getOportunidadesActivas().subscribe({
+        this.upsellingService.getOportunidadesActivas().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (data: OportunidadUpselling[]) => {
                 this.oportunidades = data.slice(0, 5); // Mostrar top 5
                 this.isLoading = false;

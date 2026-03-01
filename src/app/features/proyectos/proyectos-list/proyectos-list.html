@@ -7,20 +7,13 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
         <div>
-            <h1
-                class="text-3xl md:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 mb-2">
-                Proyectos y Tareas</h1>
-            <p class="text-slate-500 dark:text-slate-400 text-lg">Gestiona la ejecución y tableros operativos de los
-                clientes.</p>
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-txt-primary mb-2">Proyectos y Tareas</h1>
+            <p class="text-txt-muted text-lg">Gestiona la ejecución y tableros operativos de los clientes.</p>
         </div>
         <div class="flex space-x-3">
-            <button (click)="nuevoProyecto()"
-                class="relative group px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 flex items-center gap-2 overflow-hidden">
-                <div
-                    class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
-                </div>
-                <lucide-icon name="plus" class="w-5 h-5 relative z-10"></lucide-icon>
-                <span class="relative z-10">Nuevo Proyecto</span>
+            <button (click)="nuevoProyecto()" class="btn-primary flex items-center gap-2">
+                <lucide-icon name="plus" class="w-5 h-5"></lucide-icon>
+                <span>Nuevo Proyecto</span>
             </button>
         </div>
     </div>
@@ -36,23 +29,11 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!isLoading && proyectos.length === 0"
-        class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/40 dark:shadow-none border border-slate-200/60 dark:border-slate-700/60 p-12 text-center ring-1 ring-slate-900/5 relative overflow-hidden">
-        <div
-            class="w-20 h-20 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-6 transform rotate-3 shadow-inner border border-blue-100 dark:border-blue-800">
-            <lucide-icon name="folder-plus" class="w-10 h-10"></lucide-icon>
-        </div>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">No hay proyectos activos</h3>
-        <p class="text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto leading-relaxed">Comienza
-            estructurando tu equipo agrupando requerimientos por clientes debajo de un Proyecto principal.</p>
-        <button (click)="nuevoProyecto()"
-            class="relative group px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 inline-flex items-center gap-2 overflow-hidden mx-auto">
-            <div
-                class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
-            </div>
-            <lucide-icon name="plus" class="w-5 h-5 relative z-10"></lucide-icon>
-            <span class="relative z-10">Crear Primer Proyecto</span>
-        </button>
+    <div *ngIf="!isLoading && proyectos.length === 0" class="mt-8">
+        <app-empty-state icon="folder-plus" title="No hay proyectos activos"
+            description="Comienza estructurando tu equipo agrupando requerimientos por clientes debajo de un Proyecto principal."
+            actionLabel="Crear Primer Proyecto" actionIcon="plus" (onAction)="nuevoProyecto()">
+        </app-empty-state>
     </div>
 
     <!-- Modal de Nuevo Proyecto -->

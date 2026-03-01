@@ -1,0 +1,122 @@
+<div class="max-w-7xl mx-auto space-y-6 animate-fade-in">
+    <!-- Header & Actions -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-txt-primary">Equipo y Usuarios</h2>
+            <p class="text-sm text-txt-muted">Gestiona quién tiene acceso al panel de administración de tu agencia.</p>
+        </div>
+
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <div class="relative flex-1 sm:flex-none">
+                <lucide-icon name="search" [size]="18"
+                    class="absolute left-3 top-1/2 -translate-y-1/2 text-txt-muted border-none"></lucide-icon>
+                <input type="text" placeholder="Buscar usuario..."
+                    class="w-full sm:w-64 pl-9 pr-4 py-2 border border-border rounded-lg bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-txt-primary transition-all">
+            </div>
+
+            <button (click)="openUserForm()"
+                class="flex items-center gap-2 px-4 py-2 bg-primary hover:brightness-110 text-white text-sm font-medium rounded-lg transition-all shadow-elevation-1 btn-press">
+                <lucide-icon name="plus" [size]="18"></lucide-icon>
+                <span>Crear Usuario</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Table Container -->
+    <div class="bg-surface border border-border rounded-xl shadow-sm overflow-hidden">
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="p-12">
+            <app-loading-skeleton></app-loading-skeleton>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && usuarios.length === 0" class="p-8">
+            <app-empty-state icon="users" title="Sin usuarios registrados"
+                description="Aún no hay usuarios en este equipo. Crea miembros para colaborar."
+                actionLabel="Crear primer miembro" actionIcon="plus" (onAction)="openUserForm()">
+            </app-empty-state>
+        </div>
+
+        <!-- Data Table -->
+        <div *ngIf="!isLoading && usuarios.length > 0" class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr
+                        class="bg-surface-hover/50 border-b border-border text-xs uppercase text-txt-muted font-semibold tracking-wider">
+                        <th class="px-6 py-4">Usuario</th>
+                        <th class="px-6 py-4">Rol</th>
+                        <th class="px-6 py-4">Estado</th>
+                        <th class="px-6 py-4">Fecha de Alta</th>
+                        <th class="px-6 py-4 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border/50">
+                    <tr *ngFor="let user of usuarios; trackBy: trackByUid"
+                        class="hover:bg-surface-hover/30 transition-colors group">
+
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
+                                    {{ (user.nombre || user.email || '?').charAt(0).toUpperCase() }}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-txt-primary">
+                                        {{ user.nombre || 'Sin nombre' }}
+                                    </p>
+                                    <p class="text-xs text-txt-secondary">
+                                        {{ user.email }}
+                                    </p>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <!-- El rol debería venir del sistema de roles. Si no existe default a admin o tenant -->
+                            <span
+                                class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-surface border border-border text-txt-secondary">
+                                Administrador
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <span
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-success/10 text-success border border-success/20">
+                                <span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                                Activo
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-4 text-sm text-txt-secondary">
+                            <div class="text-sm">
+                                {{ ($any(user.createdAt)?.toDate ? $any(user.createdAt).toDate() : user.createdAt) |
+                                date:'dd MMM, yyyy' }}
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <div
+                                class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button (click)="openUserForm(user)"
+                                    class="p-1.5 text-txt-muted hover:text-primary rounded-md hover:bg-primary/10 transition-colors"
+                                    title="Editar Usuario">
+                                    <lucide-icon name="edit-2" [size]="16"></lucide-icon>
+                                </button>
+                                <button
+                                    class="p-1.5 text-txt-muted hover:text-error rounded-md hover:bg-error/10 transition-colors"
+                                    title="Eliminar Acceso">
+                                    <lucide-icon name="trash-2" [size]="16"></lucide-icon>
+                                </button>
+                            </div>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<app-usuario-form *ngIf="showModal" [userToEdit]="selectedUser" (close)="closeUserForm()"
+    (saved)="onUserSaved()"></app-usuario-form>

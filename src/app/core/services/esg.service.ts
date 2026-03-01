@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, query, where, getDocs, orderBy, Timestamp } from '@angular/fire/firestore';
-import { Observable, from, map } from 'rxjs';
+import { Firestore, collection, query, where, getDocs, orderBy, Timestamp, addDoc } from '@angular/fire/firestore';
+import { Observable, from, map, switchMap, take } from 'rxjs';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { RegistroESG, ResumenESG } from '../models/sostenibilidad.model';
 import { AuthService } from './auth.service';
 
@@ -10,29 +11,67 @@ import { AuthService } from './auth.service';
 export class EsgService {
     private firestore = inject(Firestore);
     private authService = inject(AuthService);
+    private functions = inject(Functions);
 
     constructor() { }
+
+    /**
+     * Agrega un registro ESG manual a la base de datos.
+     * @param registro Datos del registro (sin tenantId)
+     */
+    addRegistroManual(registro: Omit<RegistroESG, 'tenantId'>): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.authService.tenantId$.pipe(take(1)).subscribe(tenantId => {
+                if (!tenantId) {
+                    reject(new Error('No tenant ID available'));
+                    return;
+                }
+                const newRecord: RegistroESG = {
+                    ...registro,
+                    tenantId
+                } as RegistroESG;
+
+                const esgRef = collection(this.firestore, 'sostenibilidad');
+                addDoc(esgRef, newRecord)
+                    .then(resolve)
+                    .catch(reject);
+            });
+        });
+    }
+
+    /**
+     * Llama a la Cloud Function para calcular la huella digital automática del tenant.
+     */
+    calcularHuellaAutomatica(): Observable<any> {
+        return this.authService.tenantId$.pipe(
+            take(1),
+            switchMap(tenantId => {
+                const callable = httpsCallable(this.functions, 'calcularHuellaDigitalAuto');
+                return from(callable({ tenantId }));
+            })
+        );
+    }
 
     /**
      * Obtiene todos los registros ESG del Tenant actual, ordenados por fecha.
      */
     getRegistrosESG(): Observable<RegistroESG[]> {
-        return this.authService.user$.pipe(
-            map(user => {
-                if (!user || !user.tenantId) throw new Error('Usuario no autenticado o sin Tenant.');
-                return user.tenantId;
-            }),
-            map(tenantId => {
+        return this.authService.tenantId$.pipe(
+            switchMap(tenantId => {
                 const esgRef = collection(this.firestore, 'sostenibilidad');
-                // Para ordenar, Firestore requiere un índice compuesto: tenantId ASC, fechaFinPeriodo DESC
                 const q = query(
                     esgRef,
                     where('tenantId', '==', tenantId)
                 );
-                return q;
-            }),
-            map(q => from(getDocs(q))),
-            customFlatten()
+                return from(getDocs(q)).pipe(
+                    map(querySnapshot => {
+                        return querySnapshot.docs.map((doc: any) => ({
+                            id: doc.id,
+                            ...doc.data()
+                        })) as RegistroESG[];
+                    })
+                );
+            })
         );
     }
 
@@ -111,17 +150,4 @@ export class EsgService {
             })
         );
     }
-}
-
-// Operador custom básico para aplanar Observable<Observable<T>> a Observable<T>
-import { switchMap } from 'rxjs/operators';
-function customFlatten() {
-    return switchMap((obs: Observable<any>) => obs.pipe(
-        map(querySnapshot => {
-            return querySnapshot.docs.map((doc: any) => ({
-                id: doc.id,
-                ...doc.data()
-            })) as RegistroESG[];
-        })
-    ));
 }

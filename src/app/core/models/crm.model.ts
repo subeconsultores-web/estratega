@@ -20,10 +20,20 @@ export interface Cliente {
     pipelineEtapa?: string;
     score?: number;
     scoringIA?: ScoreIA;
+    nextBestActionIA?: {
+        siguienteMejorAccion: string;
+        justificacion: string;
+        asuntoSugerido?: string;
+        fechaGeneracion: Timestamp | Date;
+    };
     vendedorAsignado?: string;
     notas?: string;
     totalHistorico?: number;
+    diasPromedioPago?: number;
     ultimaInteraccion?: Timestamp | Date;
+    /** Portal de cliente */
+    portalActivo?: boolean;
+    portalUserId?: string;
     createdAt: Timestamp | Date;
     updatedAt: Timestamp | Date;
 }

@@ -1,19 +1,21 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ArrowLeftCircle, ArrowRightCircle, CheckCircle, List, MoreHorizontal, XCircle  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ArrowLeftCircle, ArrowRightCircle, CheckCircle, List, MoreHorizontal, XCircle, Sparkles } from 'lucide-angular';
 import { CrmService } from '../../../core/services/crm.service';
 import { Cliente } from '../../../core/models/crm.model';
 import { ToastrService } from 'ngx-toastr';
 import { RouterModule } from '@angular/router';
 import { ScoringService } from '../../../core/services/scoring.service';
+import { EmptyState } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
     selector: 'app-pipeline-kanban',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, RouterModule],
-  providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeftCircle, ArrowRightCircle, CheckCircle, List, MoreHorizontal, XCircle }) }
-  ],
+    imports: [CommonModule, LucideAngularModule, RouterModule, EmptyState],
+    providers: [
+        { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ArrowLeftCircle, ArrowRightCircle, CheckCircle, List, MoreHorizontal, XCircle, Sparkles }) }
+    ],
     templateUrl: './pipeline-kanban.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -22,6 +24,7 @@ export class PipelineKanbanComponent implements OnInit {
     public scoringService = inject(ScoringService);
     private toastr = inject(ToastrService);
     private cdr = inject(ChangeDetectorRef);
+    private destroyRef = inject(DestroyRef);
 
     isLoading = true;
     clientes: Cliente[] = [];
@@ -37,18 +40,18 @@ export class PipelineKanbanComponent implements OnInit {
 
     loadClientes() {
         this.isLoading = true;
-        this.crmService.getClientes().subscribe({
+        this.crmService.getClientes().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (data: Cliente[]) => {
                 this.clientes = data;
                 this.filterColumns();
                 this.isLoading = false;
-                this.cdr.markForCheck();
+                this.cdr.detectChanges();
             },
             error: (err: any) => {
                 console.error('Error fetching pipeline', err);
                 this.toastr.error('Error al cargar datos del pipeline');
                 this.isLoading = false;
-                this.cdr.markForCheck();
+                this.cdr.detectChanges();
             }
         });
     }
