@@ -1,0 +1,126 @@
+<div class="relative w-full overflow-hidden bg-slate-50 dark:bg-slate-950">
+
+    <!-- Background elements -->
+    <div
+        class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-indigo-500/5 to-transparent pointer-events-none">
+    </div>
+    <div
+        class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/10 dark:bg-purple-500/20 rounded-full blur-[100px] pointer-events-none">
+    </div>
+
+    <!-- Header -->
+    <section
+        class="relative pt-32 pb-16 md:pt-40 md:pb-20 border-b border-slate-200/50 dark:border-slate-800/50 relative z-10 text-center">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div
+                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 text-sm font-semibold mb-6">
+                <lucide-icon [img]="icons.Cpu" class="w-4 h-4"></lucide-icon>
+                {{ languageService.currentLang() === 'es' ? 'Nuestras Soluciones' : languageService.currentLang() ===
+                'en' ? 'Our Solutions' : 'Nossas Soluções' }}
+            </div>
+
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-slate-900 dark:text-white">
+                {{ languageService.currentLang() === 'es' ? 'Transformamos Ideas en ' : languageService.currentLang()
+                === 'en' ? 'We Transform Ideas into ' : 'Transformamos Ideias em ' }}
+                <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+                    {{ languageService.currentLang() === 'es' ? 'Realidad Digital' : languageService.currentLang() ===
+                    'en' ? 'Digital Reality' : 'Realidade Digital' }}
+                </span>
+            </h1>
+
+            <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                {{ languageService.currentLang() === 'es' ? 'Impulsa el crecimiento de tu empresa con soluciones
+                tecnológicas apalancadas en inteligencia artificial y desarrollo de alto rendimiento.' :
+                languageService.currentLang() === 'en' ? 'Drive your company\'s growth with technological solutions
+                leveraged by artificial intelligence and high-performance development.' : 'Impulsione o crescimento da
+                sua empresa com soluções tecnológicas alavancadas em inteligência artificial e desenvolvimento de alto
+                desempenho.' }}
+            </p>
+        </div>
+    </section>
+
+    <!-- Services Grid -->
+    <section class="py-20 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+                <div *ngFor="let s of services"
+                    class="group relative bg-white dark:bg-slate-900 rounded-3xl p-8 md:p-10 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-none hover:border-indigo-500/50 transition-all duration-300 overflow-hidden transform hover:-translate-y-1">
+                    <!-- Glass effect background -->
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-white/40 to-white/10 dark:from-slate-800/40 dark:to-slate-800/10 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    </div>
+
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-6 mb-8">
+                            <div
+                                [class]="'w-16 h-16 rounded-2xl flex items-center justify-center transition-colors ' + getColorClasses(s.color)">
+                                <lucide-icon [img]="s.icon" class="w-8 h-8"></lucide-icon>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">
+                                {{ s.title[languageService.currentLang()] }}
+                            </h3>
+                        </div>
+
+                        <p class="text-slate-600 dark:text-slate-400 text-lg mb-8 leading-relaxed">
+                            {{ s.description[languageService.currentLang()] }}
+                        </p>
+
+                        <ul class="space-y-4 mb-8">
+                            <li *ngFor="let f of s.features[languageService.currentLang()]"
+                                class="flex items-start gap-3">
+                                <lucide-icon [img]="icons.CheckCircle2"
+                                    class="w-6 h-6 text-indigo-500 flex-shrink-0 mt-0.5"></lucide-icon>
+                                <span class="text-slate-700 dark:text-slate-300">{{ f }}</span>
+                            </li>
+                        </ul>
+
+                        <button
+                            class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                            {{ languageService.currentLang() === 'es' ? 'Saber más' : languageService.currentLang() ===
+                            'en' ? 'Learn more' : 'Saber mais' }}
+                            <lucide-icon [img]="icons.ArrowRight"
+                                class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></lucide-icon>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-24 relative z-10">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div
+                class="p-10 md:p-16 rounded-3xl bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 text-white shadow-2xl overflow-hidden relative border border-indigo-500/20">
+
+                <div class="absolute inset-0 pointer-events-none">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-500/30 rounded-full blur-[80px]"></div>
+                    <div class="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/30 rounded-full blur-[80px]"></div>
+                </div>
+
+                <div class="relative z-10">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6">
+                        {{ languageService.currentLang() === 'es' ? '¿Listo para el siguiente paso?' :
+                        languageService.currentLang() === 'en' ? 'Ready for the next step?' : 'Pronto para o próximo
+                        passo?' }}
+                    </h2>
+                    <p class="text-indigo-200 text-lg md:text-xl mb-10 max-w-2xl mx-auto">
+                        {{ languageService.currentLang() === 'es' ? 'Hablemos de tus desafíos y descubramos cómo podemos
+                        ayudarte a superarlos.' : languageService.currentLang() === 'en' ? 'Let\'s talk about your
+                        challenges and discover how we can help you overcome them.' : 'Vamos falar sobre seus desafios e
+                        descobrir como podemos ajudá-lo a superá-los.' }}
+                    </p>
+                    <a href="mailto:hola@subeia.tech"
+                        class="inline-flex items-center justify-center h-14 px-8 rounded-full bg-white text-indigo-900 font-bold text-lg hover:bg-indigo-50 transition-colors shadow-lg shadow-white/10 hover:shadow-white/20">
+                        {{ languageService.currentLang() === 'es' ? 'Contáctanos Hoy' : languageService.currentLang()
+                        === 'en' ? 'Contact Us Today' : 'Contate-nos Hoje' }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>

@@ -1,0 +1,88 @@
+<div class="relative w-full overflow-hidden bg-slate-50 dark:bg-slate-950 min-h-screen">
+
+    <div *ngIf="isLoading()" class="pt-32 pb-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="animate-pulse space-y-6">
+            <div class="h-8 bg-slate-200 dark:bg-slate-800 rounded w-3/4"></div>
+            <div class="flex gap-4">
+                <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-24"></div>
+                <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-24"></div>
+            </div>
+            <div class="w-full h-96 bg-slate-200 dark:bg-slate-800 rounded-3xl mt-8"></div>
+            <div class="space-y-4 mt-8">
+                <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-full"></div>
+                <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-full"></div>
+                <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-5/6"></div>
+            </div>
+        </div>
+    </div>
+
+    <article *ngIf="!isLoading() && post() as p" class="relative pt-32 pb-24 z-10">
+        <!-- Header -->
+        <header class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
+            <a routerLink="/noticias"
+                class="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-medium hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors mb-8">
+                <lucide-icon [img]="icons.ArrowLeft" class="w-4 h-4"></lucide-icon>
+                {{ languageService.currentLang() === 'es' ? 'Volver a Noticias' : languageService.currentLang() === 'en'
+                ? 'Back to News' : 'Voltar a Notícias' }}
+            </a>
+
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-slate-900 dark:text-white">
+                {{ languageService.getTranslate(p.title) }}
+            </h1>
+
+            <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500 dark:text-slate-400">
+                <div class="flex items-center gap-2">
+                    <lucide-icon [img]="icons.Calendar" class="w-4 h-4"></lucide-icon>
+                    <time>{{ p.publishedAt?.toMillis() | date:'longDate' }}</time>
+                </div>
+                <div class="flex items-center gap-2" *ngIf="p.authorName">
+                    <lucide-icon [img]="icons.User" class="w-4 h-4"></lucide-icon>
+                    <span>{{ p.authorName }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Cover Image -->
+        <div *ngIf="p.imageUrl" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+            <div class="aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl relative">
+                <div class="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse"></div>
+                <img [src]="p.imageUrl" [alt]="languageService.getTranslate(p.title)"
+                    class="relative z-10 w-full h-full object-cover">
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- We assume p.content contains Markdown or HTML. In typical CMS setups we might use a markdown pipe here. 
+           For this implementation, using innerHTML assuming the admin saves it appropriately or we need a markdown parser.
+           If it's HTML from a rich text editor:
+      -->
+            <div class="prose prose-lg dark:prose-invert prose-indigo mx-auto text-slate-700 dark:text-slate-300 [&>p]:mb-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:mb-4 [&>h2]:mt-10 [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-6 [&>img]:rounded-xl [&>img]:my-8 [&>a]:text-indigo-600 [&>a]:dark:text-indigo-400"
+                [innerHTML]="languageService.getTranslate(p.content)">
+            </div>
+
+            <!-- Tags -->
+            <div *ngIf="p.tags && p.tags.length > 0" class="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800">
+                <h3 class="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">Tags</h3>
+                <div class="flex flex-wrap gap-2">
+                    <span *ngFor="let tag of p.tags"
+                        class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm">
+                        #{{ tag }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Share CTA-->
+            <div class="mt-12 flex justify-center">
+                <button
+                    class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors">
+                    <lucide-icon [img]="icons.Share2" class="w-4 h-4"></lucide-icon>
+                    {{ languageService.currentLang() === 'es' ? 'Compartir Artículo' : languageService.currentLang() ===
+                    'en' ? 'Share Article' : 'Compartilhar' }}
+                </button>
+            </div>
+
+        </div>
+    </article>
+
+</div>

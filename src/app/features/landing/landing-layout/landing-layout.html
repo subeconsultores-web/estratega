@@ -1,0 +1,263 @@
+<div
+    class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 flex flex-col">
+    <!-- Navbar -->
+    <header
+        class="fixed top-0 inset-x-0 z-50 border-b border-slate-200/50 dark:border-slate-800/50 bg-white/70 dark:bg-slate-950/70 backdrop-blur-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a routerLink="/" class="flex items-center gap-2 group">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/50 transition-all duration-300">
+                            <lucide-icon [img]="icons.Zap" class="w-6 h-6"></lucide-icon>
+                        </div>
+                        <span
+                            class="font-bold text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
+                            Sube <span class="text-indigo-600 dark:text-indigo-400">IA</span>
+                        </span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a routerLink="/acercade" routerLinkActive="text-indigo-600 dark:text-indigo-400"
+                        class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                        {{ currentLang === 'es' ? 'Nosotros' : currentLang === 'en' ? 'About Us' : 'Sobre Nós' }}
+                    </a>
+                    <a routerLink="/soluciones" routerLinkActive="text-indigo-600 dark:text-indigo-400"
+                        class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                        {{ currentLang === 'es' ? 'Soluciones' : currentLang === 'en' ? 'Solutions' : 'Soluções' }}
+                    </a>
+                    <a routerLink="/noticias" routerLinkActive="text-indigo-600 dark:text-indigo-400"
+                        class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                        {{ currentLang === 'es' ? 'Noticias' : currentLang === 'en' ? 'News' : 'Notícias' }}
+                    </a>
+                </nav>
+
+                <!-- Right side actions -->
+                <div class="hidden md:flex items-center space-x-4">
+
+                    <!-- Language Dropdown -->
+                    <div class="relative">
+                        <button (click)="toggleLangMenu()"
+                            class="flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors px-2 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                            <lucide-icon [img]="icons.Globe" class="w-4 h-4"></lucide-icon>
+                            <span class="uppercase">{{ currentLang }}</span>
+                            <lucide-icon [img]="icons.ChevronDown" class="w-3 h-3"></lucide-icon>
+                        </button>
+                        <div *ngIf="isLangMenuOpen()"
+                            class="absolute right-0 mt-2 w-32 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 py-1 z-50 overflow-hidden">
+                            <button (click)="setLanguage('es')"
+                                class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                [class.bg-slate-50]="currentLang === 'es'"
+                                [class.dark:bg-slate-700]="currentLang === 'es'">Español</button>
+                            <button (click)="setLanguage('en')"
+                                class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                [class.bg-slate-50]="currentLang === 'en'"
+                                [class.dark:bg-slate-700]="currentLang === 'en'">English</button>
+                            <button (click)="setLanguage('pt')"
+                                class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                [class.bg-slate-50]="currentLang === 'pt'"
+                                [class.dark:bg-slate-700]="currentLang === 'pt'">Português</button>
+                        </div>
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <button (click)="toggleTheme()"
+                        class="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        aria-label="Toggle Dark Mode">
+                        <lucide-icon *ngIf="isDarkMode" [img]="icons.Sun" class="w-5 h-5"></lucide-icon>
+                        <lucide-icon *ngIf="!isDarkMode" [img]="icons.Moon" class="w-5 h-5"></lucide-icon>
+                    </button>
+
+                    <!-- System Login CTA -->
+                    <a routerLink="/auth/login"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-semibold shadow-lg shadow-slate-900/20 dark:shadow-white/20 hover:scale-105 active:scale-95 transition-all duration-300">
+                        {{ currentLang === 'es' ? 'Acceder al Sistema' : currentLang === 'en' ? 'System Login' :
+                        'Acessar o Sistema' }}
+                        <lucide-icon [img]="icons.ArrowRight" class="w-4 h-4"></lucide-icon>
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="flex items-center md:hidden gap-3">
+                    <button (click)="toggleTheme()" class="p-2 text-slate-500 dark:text-slate-400"
+                        aria-label="Toggle Dark Mode">
+                        <lucide-icon *ngIf="isDarkMode" [img]="icons.Sun" class="w-5 h-5"></lucide-icon>
+                        <lucide-icon *ngIf="!isDarkMode" [img]="icons.Moon" class="w-5 h-5"></lucide-icon>
+                    </button>
+                    <button (click)="toggleMobileMenu()"
+                        class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 focus:outline-none">
+                        <lucide-icon [img]="isMobileMenuOpen() ? icons.X : icons.Menu" class="w-6 h-6"></lucide-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div *ngIf="isMobileMenuOpen()"
+            class="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 absolute w-full shadow-2xl">
+            <div class="px-4 py-4 space-y-1">
+                <a routerLink="/" (click)="toggleMobileMenu()"
+                    class="block px-3 py-3 rounded-xl text-base font-medium text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800">
+                    Inicio
+                </a>
+                <a routerLink="/acercade" (click)="toggleMobileMenu()"
+                    class="block px-3 py-3 rounded-xl text-base font-medium text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800">
+                    Nosotros
+                </a>
+                <a routerLink="/soluciones" (click)="toggleMobileMenu()"
+                    class="block px-3 py-3 rounded-xl text-base font-medium text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800">
+                    Soluciones
+                </a>
+                <a routerLink="/noticias" (click)="toggleMobileMenu()"
+                    class="block px-3 py-3 rounded-xl text-base font-medium text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800">
+                    Noticias
+                </a>
+
+                <div class="pt-4 pb-2 border-t border-slate-200 dark:border-slate-800 flex justify-center gap-4">
+                    <button (click)="setLanguage('es'); toggleMobileMenu()"
+                        class="text-sm font-medium px-3 py-2 rounded-lg" [class.bg-indigo-50]="currentLang === 'es'"
+                        [class.text-indigo-600]="currentLang === 'es'"
+                        [class.dark:bg-indigo-500/20]="currentLang === 'es'"
+                        [class.dark:text-indigo-400]="currentLang === 'es'">ES</button>
+                    <button (click)="setLanguage('en'); toggleMobileMenu()"
+                        class="text-sm font-medium px-3 py-2 rounded-lg" [class.bg-indigo-50]="currentLang === 'en'"
+                        [class.text-indigo-600]="currentLang === 'en'"
+                        [class.dark:bg-indigo-500/20]="currentLang === 'en'"
+                        [class.dark:text-indigo-400]="currentLang === 'en'">EN</button>
+                    <button (click)="setLanguage('pt'); toggleMobileMenu()"
+                        class="text-sm font-medium px-3 py-2 rounded-lg" [class.bg-indigo-50]="currentLang === 'pt'"
+                        [class.text-indigo-600]="currentLang === 'pt'"
+                        [class.dark:bg-indigo-500/20]="currentLang === 'pt'"
+                        [class.dark:text-indigo-400]="currentLang === 'pt'">PT</button>
+                </div>
+
+                <div class="pt-4">
+                    <a routerLink="/auth/login" (click)="toggleMobileMenu()"
+                        class="flex justify-center items-center gap-2 w-full px-5 py-3 rounded-xl bg-indigo-600 text-white font-semibold">
+                        Acceder al Sistema
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow pt-20 flex flex-col relative w-full overflow-hidden">
+        <!-- Animated background subtle elements -->
+        <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+            <div
+                class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-indigo-600/10 dark:bg-indigo-500/10 blur-[120px]">
+            </div>
+            <div
+                class="absolute top-[40%] -right-[10%] w-[40%] h-[40%] rounded-full bg-purple-600/10 dark:bg-purple-500/10 blur-[120px]">
+            </div>
+            <div
+                class="absolute -bottom-[10%] left-[20%] w-[60%] h-[40%] rounded-full bg-blue-600/10 dark:bg-blue-500/10 blur-[120px]">
+            </div>
+        </div>
+
+        <div class="relative z-10 flex-grow w-full">
+            <router-outlet></router-outlet>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 dark:bg-slate-950 dark:border-slate-800 pt-16 pb-8 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-12">
+                <!-- Brand -->
+                <div class="col-span-1 md:col-span-1">
+                    <a routerLink="/" class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+                            <lucide-icon [img]="icons.Zap" class="w-5 h-5"></lucide-icon>
+                        </div>
+                        <span class="font-bold text-xl tracking-tight text-slate-900 dark:text-white">
+                            Sube IA
+                        </span>
+                    </a>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                        {{ currentLang === 'es' ? 'Transformando el futuro corporativo con soluciones basadas en
+                        Inteligencia Artificial.' : currentLang === 'en' ? 'Transforming the corporate future with
+                        Artificial Intelligence solutions.' : 'Transformando o futuro corporativo com soluções baseadas
+                        em Inteligência Artificial.' }}
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#"
+                            class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                            <lucide-icon [img]="icons.Twitter" class="w-5 h-5"></lucide-icon>
+                        </a>
+                        <a href="#"
+                            class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                            <lucide-icon [img]="icons.Linkedin" class="w-5 h-5"></lucide-icon>
+                        </a>
+                        <a href="#"
+                            class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                            <lucide-icon [img]="icons.Instagram" class="w-5 h-5"></lucide-icon>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h3 class="font-semibold text-slate-900 dark:text-white mb-4">Plataforma</h3>
+                    <ul class="space-y-3">
+                        <li><a routerLink="/soluciones"
+                                class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Soluciones
+                                Eléctricas</a></li>
+                        <li><a routerLink="/soluciones"
+                                class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Inteligencia
+                                Artificial</a></li>
+                        <li><a routerLink="/noticias"
+                                class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Casos
+                                de Éxito</a></li>
+                        <li><a routerLink="/noticias"
+                                class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Blog</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Empresa -->
+                <div>
+                    <h3 class="font-semibold text-slate-900 dark:text-white mb-4">Empresa</h3>
+                    <ul class="space-y-3">
+                        <li><a routerLink="/acercade"
+                                class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Nuestra
+                                Historia</a></li>
+                        <li><a routerLink="/acercade"
+                                class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Equipo
+                                Ejecutivo</a></li>
+                        <li><a href="#"
+                                class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Contacto</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Legal -->
+                <div>
+                    <h3 class="font-semibold text-slate-900 dark:text-white mb-4">Legal</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#"
+                                class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Términos
+                                de Servicio</a></li>
+                        <li><a href="#"
+                                class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Políticas
+                                de Privacidad</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div
+                class="border-t border-slate-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                    &copy; {{ currentYear || '2026' }} Sube IA. Todos los derechos reservados.
+                </p>
+                <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                    Diseñado con <span class="text-rose-500 animate-pulse">♥</span> por el equipo Sube
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>

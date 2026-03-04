@@ -1,0 +1,192 @@
+<div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+    <div class="sm:flex sm:items-center sm:justify-between mb-8">
+        <div class="mb-4 sm:mb-0">
+            <h1 class="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold">Nuestro Equipo</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Gestiona los perfiles que aparecen en la sección
+                Acerca de.</p>
+        </div>
+        <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+            <button (click)="openModal()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
+                <svg class="w-4 h-4 fill-current opacity-50 shrink-0" viewBox="0 0 16 16">
+                    <path
+                        d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
+                </svg>
+                <span class="hidden xs:block ml-2">Añadir Miembro</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700 relative">
+        <div *ngIf="isLoading" class="p-6 text-center">Cargando equipo...</div>
+
+        <div *ngIf="!isLoading" class="overflow-x-auto">
+            <table class="table-auto w-full dark:text-slate-300">
+                <thead
+                    class="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/20 border-t border-b border-slate-200 dark:border-slate-700">
+                    <tr>
+                        <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                            <div class="font-semibold text-left">Orden</div>
+                        </th>
+                        <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                            <div class="font-semibold text-left">Nombre / Cargo</div>
+                        </th>
+                        <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                            <div class="font-semibold text-center">Activo</div>
+                        </th>
+                        <th class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                            <div class="font-semibold text-center">Acciones</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm divide-y divide-slate-200 dark:divide-slate-700">
+                    <tr *ngFor="let member of teamMembers">
+                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                            <div class="font-medium text-slate-800 dark:text-slate-100">{{member.order}}</div>
+                        </td>
+                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 shrink-0 mr-2 sm:mr-3">
+                                    <img class="rounded-full w-10 h-10 object-cover" [src]="member.imageUrl"
+                                        alt="{{member.name}}"
+                                        onerror="this.src='https://ui-avatars.com/api/?name=User&background=random'" />
+                                </div>
+                                <div>
+                                    <div class="font-medium text-slate-800 dark:text-slate-100">{{member.name}}</div>
+                                    <div class="text-xs text-slate-500">{{member.role['es']}}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap text-center">
+                            <button (click)="toggleActive(member)" [class.text-emerald-500]="member.isActive"
+                                [class.text-slate-400]="!member.isActive">
+                                <svg class="w-5 h-5 fill-current mx-auto" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 0a8 8 0 100 16A8 8 0 008 0zm-1 11.414L3.293 7.707l1.414-1.414L7 8.586l4.293-4.293 1.414 1.414L7 11.414z" />
+                                </svg>
+                            </button>
+                        </td>
+                        <td class="px-2 first:pl-5 last:pr-5 py-3 whitespace-nowrap text-center">
+                            <button (click)="openModal(member)"
+                                class="text-slate-400 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-400 rounded-full mr-2">
+                                <span class="sr-only">Editar</span>
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button (click)="deleteMember(member.id!)"
+                                class="text-rose-500 hover:text-rose-600 rounded-full">
+                                <span class="sr-only">Eliminar</span>
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="teamMembers.length === 0">
+                        <td colspan="4" class="px-5 py-3 text-center text-slate-500">No hay perfiles configurados.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div *ngIf="isModalOpen"
+    class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm transition-opacity flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-2xl max-h-full overflow-y-auto">
+        <div class="px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+            <h2 class="font-semibold text-slate-800 dark:text-slate-100">{{editingId ? 'Editar Perfil' : 'Nuevo
+                Perfil'}}</h2>
+            <button (click)="closeModal()" class="text-slate-400 hover:text-slate-500">
+                <svg class="w-4 h-4 fill-current">
+                    <path
+                        d="M7.95 6.536l4.242-4.243a1 1 0 111.415 1.414L9.364 7.95l4.243 4.242a1 1 0 11-1.415 1.415L7.95 9.364l-4.243 4.243a1 1 0 01-1.414-1.415L6.536 7.95 2.293 3.707a1 1 0 011.414-1.414L7.95 6.536z" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-5">
+            <form [formGroup]="memberForm" (ngSubmit)="saveMember()">
+                <div class="space-y-4">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1 dark:text-slate-300">Nombre *</label>
+                            <input formControlName="name" type="text" class="form-input w-full dark:bg-slate-900" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1 dark:text-slate-300">URL Imagen de Perfil
+                                *</label>
+                            <input formControlName="imageUrl" type="text" class="form-input w-full dark:bg-slate-900" />
+                        </div>
+                    </div>
+
+                    <!-- Cargo -->
+                    <div formGroupName="role" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1 dark:text-slate-300">Cargo (ES) *</label>
+                            <input formControlName="es" type="text" class="form-input w-full dark:bg-slate-900" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1 dark:text-slate-300">Cargo (EN)</label>
+                            <input formControlName="en" type="text" class="form-input w-full dark:bg-slate-900" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1 dark:text-slate-300">Cargo (PT)</label>
+                            <input formControlName="pt" type="text" class="form-input w-full dark:bg-slate-900" />
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div formGroupName="description" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1 dark:text-slate-300">Bio (ES) *</label>
+                            <textarea formControlName="es" rows="3"
+                                class="form-textarea w-full dark:bg-slate-900"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1 dark:text-slate-300">Bio (EN)</label>
+                            <textarea formControlName="en" rows="3"
+                                class="form-textarea w-full dark:bg-slate-900"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1 dark:text-slate-300">Bio (PT)</label>
+                            <textarea formControlName="pt" rows="3"
+                                class="form-textarea w-full dark:bg-slate-900"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium mb-1 dark:text-slate-300">URL LinkedIn</label>
+                            <input formControlName="linkedinUrl" type="text"
+                                class="form-input w-full dark:bg-slate-900" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1 dark:text-slate-300">Orden de aparición</label>
+                            <input formControlName="order" type="number" class="form-input w-full dark:bg-slate-900" />
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input formControlName="isActive" type="checkbox" id="isActive" class="form-checkbox" />
+                        <label for="isActive" class="text-sm ml-2 dark:text-slate-300">Perfil Visible
+                            Públicamente</label>
+                    </div>
+
+                </div>
+
+                <div class="mt-6 flex justify-end gap-3">
+                    <button type="button" (click)="closeModal()"
+                        class="btn border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-600 dark:text-slate-300">
+                        Cancelar
+                    </button>
+                    <button type="submit" [disabled]="isSaving"
+                        class="btn bg-indigo-500 hover:bg-indigo-600 text-white disabled:opacity-50">
+                        <span *ngIf="isSaving">Guardando...</span>
+                        <span *ngIf="!isSaving">Guardar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

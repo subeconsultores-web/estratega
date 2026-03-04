@@ -26,16 +26,39 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadChildren: () => import('./features/portal-cliente/portal.routes').then(m => m.PORTAL_ROUTES)
     },
+    // Landing Pages
+    {
+        path: '',
+        loadComponent: () => import('./features/landing/landing-layout/landing-layout').then(m => m.LandingLayout),
+        children: [
+            {
+                path: '',
+                loadComponent: () => import('./features/landing/landing-home/landing-home').then(m => m.LandingHome),
+                pathMatch: 'full'
+            },
+            {
+                path: 'acercade',
+                loadComponent: () => import('./features/landing/landing-about/landing-about').then(m => m.LandingAbout)
+            },
+            {
+                path: 'soluciones',
+                loadComponent: () => import('./features/landing/landing-services/landing-services').then(m => m.LandingServices)
+            },
+            {
+                path: 'noticias',
+                loadComponent: () => import('./features/landing/landing-blog/landing-blog').then(m => m.LandingBlog)
+            },
+            {
+                path: 'noticias/:slug',
+                loadComponent: () => import('./features/landing/landing-blog-post/landing-blog-post').then(m => m.LandingBlogPost)
+            }
+        ]
+    },
     {
         path: '',
         component: LayoutComponent,
         canActivate: [authGuard],
         children: [
-            {
-                path: '',
-                redirectTo: 'dashboard',
-                pathMatch: 'full'
-            },
             {
                 path: 'dashboard',
                 loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES)

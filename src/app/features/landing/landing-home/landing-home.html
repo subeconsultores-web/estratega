@@ -1,0 +1,174 @@
+<div class="relative w-full">
+
+    <!-- Hero Section -->
+    <section
+        class="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden flex items-center justify-center min-h-[90vh]">
+        <!-- Dynamic Orbs Background -->
+        <div
+            class="absolute top-[20%] left-[15%] w-72 h-72 bg-indigo-500/30 rounded-full mix-blend-multiply filter blur-[128px] opacity-70 animate-blob">
+        </div>
+        <div
+            class="absolute top-[30%] right-[15%] w-72 h-72 bg-purple-500/30 rounded-full mix-blend-multiply filter blur-[128px] opacity-70 animate-blob animation-delay-2000">
+        </div>
+        <div
+            class="absolute -bottom-8 left-[40%] w-72 h-72 bg-blue-500/30 rounded-full mix-blend-multiply filter blur-[128px] opacity-70 animate-blob animation-delay-4000">
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <!-- Loading Skeleton -->
+            <div *ngIf="isLoading()" class="animate-pulse flex flex-col items-center justify-center space-y-6">
+                <div class="h-12 w-3/4 bg-slate-200 dark:bg-slate-800 rounded-full"></div>
+                <div class="h-12 w-1/2 bg-slate-200 dark:bg-slate-800 rounded-full"></div>
+                <div class="h-6 w-2/3 bg-slate-200 dark:bg-slate-800 rounded-full mt-8"></div>
+            </div>
+
+            <!-- Content -->
+            <div *ngIf="!isLoading()" class="animate-fade-in-up">
+                <!-- AI Badge -->
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-sm font-medium mb-8 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                    <lucide-icon [img]="icons.Sparkles" class="w-4 h-4"></lucide-icon>
+                    Sube IA 5.0
+                </div>
+
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8">
+                    <span
+                        class="block bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
+                        {{ translatedHeroTitle }}
+                    </span>
+                </h1>
+
+                <p
+                    class="mt-6 text-xl md:text-2xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+                    {{ translatedHeroSubtitle }}
+                </p>
+
+                <div class="mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a routerLink="/soluciones"
+                        class="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105 transition-all duration-300">
+                        {{ languageService.currentLang() === 'es' ? 'Descubrir Soluciones' :
+                        languageService.currentLang() === 'en' ? 'Discover Solutions' : 'Descobrir Soluções' }}
+                        <lucide-icon [img]="icons.ArrowRight" class="w-5 h-5"></lucide-icon>
+                    </a>
+                    <a routerLink="/acercade"
+                        class="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold rounded-full bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                        {{ languageService.currentLang() === 'es' ? 'Nuestra Historia' : languageService.currentLang()
+                        === 'en' ? 'Our History' : 'Nossa História' }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trusted By Section -->
+    <app-landing-trusted-by></app-landing-trusted-by>
+
+    <!-- Features/Services Abstract Section -->
+    <section
+        class="py-24 bg-white/50 dark:bg-slate-950/50 backdrop-blur-md border-y border-slate-200/50 dark:border-slate-800/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+                <!-- Pillar 1 -->
+                <div
+                    class="group relative p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-none hover:border-indigo-500/50 transition-colors overflow-hidden flex flex-col h-full">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center mb-6 text-indigo-600 dark:text-indigo-400">
+                        <lucide-icon [img]="icons.Cpu" class="w-7 h-7"></lucide-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3 flex-grow">
+                        {{ languageService.currentLang() === 'es' ? 'Academia de formación en IA' :
+                        languageService.currentLang() === 'en' ? 'AI Training Academy' : 'Academia de Formação em IA' }}
+                    </h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm">
+                        {{ languageService.currentLang() === 'es' ? 'Plataforma especializada en capacitación ejecutiva
+                        y técnica orientada a desarrollar competencias prácticas.' : languageService.currentLang() ===
+                        'en' ?
+                        'Specialized platform for executive and technical training aimed at developing practical
+                        skills.' :
+                        'Plataforma especializada em capacitação executiva e técnica orientada a desenvolver
+                        competências práticas.' }}
+                    </p>
+                </div>
+
+                <!-- Pillar 2 -->
+                <div
+                    class="group relative p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-none hover:border-purple-500/50 transition-colors overflow-hidden flex flex-col h-full">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center mb-6 text-purple-600 dark:text-purple-400">
+                        <lucide-icon [img]="icons.Sparkles" class="w-7 h-7"></lucide-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3 flex-grow">
+                        {{ languageService.currentLang() === 'es' ? 'Consultoría Estratégica en IA' :
+                        languageService.currentLang() === 'en' ? 'Strategic AI Consulting' : 'Consultoria Estratégica em
+                        IA' }}
+                    </h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm">
+                        {{ languageService.currentLang() === 'es' ? 'Diseñamos estrategias de adopción alineadas a
+                        objetivos institucionales identificando oportunidades.' : languageService.currentLang() === 'en'
+                        ? 'We design adoption strategies aligned with institutional objectives identifying
+                        opportunities.' : 'Desenhamos estratégias de adoção alinhadas a objetivos institucionais
+                        identificando oportunidades.' }}
+                    </p>
+                </div>
+
+                <!-- Pillar 3 -->
+                <div
+                    class="group relative p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-none hover:border-amber-500/50 transition-colors overflow-hidden flex flex-col h-full">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-6 text-amber-600 dark:text-amber-400">
+                        <lucide-icon [img]="icons.Code" class="w-7 h-7"></lucide-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3 flex-grow">
+                        {{ languageService.currentLang() === 'es' ? 'Desarrollo e Implementación' :
+                        languageService.currentLang() === 'en' ? 'Development & Implementation' : 'Desenvolvimento e
+                        Implementação' }}
+                    </h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm">
+                        {{ languageService.currentLang() === 'es' ? 'Creación de modelos, automatizaciones y plataformas
+                        inteligentes que optimizan tus procesos.' : languageService.currentLang() === 'en' ?
+                        'Creation of models, automations and intelligent platforms that optimize your processes.' :
+                        'Criação de modelos, automações e plataformas inteligentes que otimizam seus processos.' }}
+                    </p>
+                </div>
+
+                <!-- Pillar 4 -->
+                <div
+                    class="group relative p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-none hover:border-blue-500/50 transition-colors overflow-hidden flex flex-col h-full">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-6 text-blue-600 dark:text-blue-400">
+                        <lucide-icon [img]="icons.Zap" class="w-7 h-7"></lucide-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3 flex-grow">
+                        {{ languageService.currentLang() === 'es' ? 'Proyectos Institucionales IA' :
+                        languageService.currentLang() === 'en' ? 'Institutional AI Projects' : 'Projetos Institucionais
+                        de IA' }}
+                    </h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm">
+                        {{ languageService.currentLang() === 'es' ? 'Acompañamiento integral para iniciativas de
+                        transformación y proyectos con triple impacto.' : languageService.currentLang() === 'en' ?
+                        'Comprehensive support for transformation initiatives and projects with triple impact.' :
+                        'Acompanhamento integral para iniciativas de transformação e projetos com impacto triplo.' }}
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Alliances Section -->
+    <app-landing-alliances></app-landing-alliances>
+
+</div>

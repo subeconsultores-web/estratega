@@ -1,0 +1,67 @@
+<section
+    class="py-24 relative overflow-hidden bg-white dark:bg-[#060913] transition-colors duration-300 border-t border-slate-200 dark:border-slate-800/50">
+
+    <!-- Background Glows -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+            class="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-500/10 dark:bg-indigo-600/10 rounded-full blur-3xl opacity-50 mix-blend-multiply dark:mix-blend-screen">
+        </div>
+        <div
+            class="absolute top-1/2 right-1/4 -translate-y-1/2 w-[400px] h-[400px] bg-purple-500/10 dark:bg-purple-600/10 rounded-full blur-3xl opacity-50 mix-blend-multiply dark:mix-blend-screen">
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
+
+            <!-- Text Content -->
+            <div @fadeUp class="mb-12 lg:mb-0">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-500/10 text-indigo-800 dark:text-indigo-300 text-sm font-medium mb-6 backdrop-blur-sm border border-indigo-200 dark:border-indigo-500/20">
+                    <lucide-icon name="network" class="w-4 h-4"></lucide-icon>
+                    <span>Ecosistema IA</span>
+                </div>
+
+                <h2
+                    class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-indigo-800 to-purple-900 dark:from-white dark:via-indigo-300 dark:to-purple-300 sm:text-4xl mb-6">
+                    {{ title }}
+                </h2>
+
+                <p class="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+                    {{ description }}
+                </p>
+
+                <a href="#contacto"
+                    class="inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-base font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-500 shadow-lg shadow-indigo-600/20 dark:shadow-indigo-500/20 hover:shadow-indigo-600/40 dark:hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all duration-300">
+                    {{ ctaText }}
+                    <lucide-icon name="arrow-right" class="w-5 h-5 ml-2"></lucide-icon>
+                </a>
+            </div>
+
+            <!-- Features Grid -->
+            <div @fadeUp class="grid grid-cols-2 gap-6 relative">
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 dark:from-indigo-500/10 dark:to-purple-500/10 rounded-3xl -m-6 backdrop-blur-3xl border border-white/20 dark:border-white/5">
+                </div>
+
+                @for (feature of features; track $index) {
+                <div
+                    class="relative glass-panel rounded-2xl p-6 hover:-translate-y-1 transition-all duration-300 group">
+                    <div
+                        class="w-12 h-12 rounded-xl {{ feature.bg }} flex items-center justify-center mb-4 transition-colors">
+                        <lucide-icon [img]="feature.icon" [class]="feature.color + ' w-6 h-6'"></lucide-icon>
+                    </div>
+                    <h3
+                        class="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                        {{ feature.title[languageService.currentLang()] }}
+                    </h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-400">
+                        {{ feature.text[languageService.currentLang()] }}
+                    </p>
+                </div>
+                }
+            </div>
+
+        </div>
+    </div>
+</section>

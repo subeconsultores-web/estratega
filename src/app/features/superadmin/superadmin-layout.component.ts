@@ -2,16 +2,16 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { Auth, signOut } from '@angular/fire/auth';
-import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ChevronRight, LayoutDashboard, LogOut, Sparkles, Users  } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ChevronRight, LayoutDashboard, LogOut, Sparkles, Users, Settings, Image, FileText } from 'lucide-angular';
 
 @Component({
-    selector: 'app-superadmin-layout',
-    standalone: true,
-    imports: [CommonModule, RouterModule, LucideAngularModule],
+  selector: 'app-superadmin-layout',
+  standalone: true,
+  imports: [CommonModule, RouterModule, LucideAngularModule],
   providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ChevronRight, LayoutDashboard, LogOut, Sparkles, Users }) }
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ChevronRight, LayoutDashboard, LogOut, Sparkles, Users, Settings, Image, FileText }) }
   ],
-    template: `
+  template: `
     <div class="flex h-screen bg-slate-900 text-slate-100 font-sans overflow-hidden">
       <!-- Sidebar -->
       <aside class="w-64 bg-slate-950 border-r border-slate-800 flex flex-col hidden md:flex">
@@ -25,7 +25,28 @@ import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ChevronRight, L
             <lucide-icon name="layout-dashboard" [size]="20"></lucide-icon>
             <span class="font-medium text-sm">Overview</span>
           </a>
+
+          <div class="pt-4 pb-2">
+            <p class="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">CMS Landing</p>
+          </div>
+          
+          <a routerLink="/superadmin/cms-config" routerLinkActive="bg-white/10 text-white" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
+            <lucide-icon name="settings" [size]="20"></lucide-icon>
+            <span class="font-medium text-sm">Configuración</span>
+          </a>
+          <a routerLink="/superadmin/cms-team" routerLinkActive="bg-white/10 text-white" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
+            <lucide-icon name="users" [size]="20"></lucide-icon>
+            <span class="font-medium text-sm">Equipo</span>
+          </a>
+          <a routerLink="/superadmin/cms-blog" routerLinkActive="bg-white/10 text-white" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
+            <lucide-icon name="file-text" [size]="20"></lucide-icon>
+            <span class="font-medium text-sm">Noticias</span>
+          </a>
+
           <!-- Futuribles opciones -->
+          <div class="pt-4 pb-2">
+            <p class="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Sistema</p>
+          </div>
           <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 cursor-not-allowed">
             <lucide-icon name="users" [size]="20"></lucide-icon>
             <span class="font-medium text-sm">Gestionar Roles</span>
@@ -65,11 +86,11 @@ import { LUCIDE_ICONS, LucideIconProvider,  LucideAngularModule, ChevronRight, L
   `
 })
 export class SuperAdminLayoutComponent {
-    private auth = inject(Auth);
-    private router = inject(Router);
+  private auth = inject(Auth);
+  private router = inject(Router);
 
-    async logout() {
-        await signOut(this.auth);
-        this.router.navigate(['/auth/login']);
-    }
+  async logout() {
+    await signOut(this.auth);
+    this.router.navigate(['/auth/login']);
+  }
 }

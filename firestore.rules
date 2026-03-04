@@ -146,6 +146,19 @@ service cloud.firestore {
     // Public collections
     match /client-logos/{docId} {
       allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+    match /landing_config/{docId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+    match /team_members/{docId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+    match /blog_posts/{docId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
     }
 
     // Temporary registration collection — write-only for authenticated users
